@@ -1,7 +1,7 @@
 
 #' Kernel density bootstrap
 #'
-#' @param data
+#' @param data        Data.
 #' @param statistic   A function which when applied to data returns a vector containing
 #'                    the statistic(s) of interest. The first argument passed will always
 #'                    be the original data. Any further arguments can be passed to
@@ -92,7 +92,7 @@ kernelboot <- function(data, statistic, R = 500,
 
   kdeFun <- switch (kernel,
     "gaussian" = function() rnorm(n*k, sd = H),
-    function() mvtnorm::rmvnorm(n, sigma = H)
+    function() rmvnorm(n, sigma = H)
   )
 
   res <- replicate(R, {
