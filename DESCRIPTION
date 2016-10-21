@@ -1,7 +1,7 @@
 Package: kernelboot
 Type: Package
 Title: Kernel density bootstrap and sampling from kernel densities
-Version: 0.1.1
+Version: 0.1.2
 Author: Tymoteusz Wolodzko
 Maintainer: Tymoteusz Wolodzko <twolodzko+kernelboot@gmail.com>
 Description: Kernel density bootstrap and sampling from kernel densities

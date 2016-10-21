@@ -13,38 +13,38 @@
 #' @aliases roptcos
 #' @aliases rbiweight
 #' @aliases rtriweight
-NULL
-
+#' @export
 rempan <- function(n) {
     .Call('kernelboot_rempan', PACKAGE = 'kernelboot', n)
 }
 
 #' @rdname KernelRNG
+#' @export
 roptcos <- function(n) {
     .Call('kernelboot_roptcos', PACKAGE = 'kernelboot', n)
 }
 
 #' @rdname KernelRNG
+#' @export
 rtriang <- function(n) {
     .Call('kernelboot_rtriang', PACKAGE = 'kernelboot', n)
 }
 
 #' @rdname KernelRNG
+#' @export
 rrect <- function(n) {
     .Call('kernelboot_rrect', PACKAGE = 'kernelboot', n)
 }
 
 #' @rdname KernelRNG
+#' @export
 rbiweight <- function(n) {
     .Call('kernelboot_rbiweight', PACKAGE = 'kernelboot', n)
 }
 
 #' @rdname KernelRNG
+#' @export
 rtriweight <- function(n) {
     .Call('kernelboot_rtriweight', PACKAGE = 'kernelboot', n)
-}
-
-rsmvnorm <- function(n, sigma) {
-    .Call('kernelboot_rsmvnorm', PACKAGE = 'kernelboot', n, sigma)
 }
 

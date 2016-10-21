@@ -1,26 +1,28 @@
 
 
-#' @useDynLib kernelboot
-#' @importFrom Rcpp sourceCpp
-#'
-#' @importFrom stats density
-#' @importFrom mvtnorm rmvnorm
-NULL
 
-#
-# sd(rrect(1e6))
-# sd(rtriang(1e6))
-# sd(rbiweight(1e6))
-# sd(rtriweight(1e6))
-# sd(rempan(1e6))
-# sd(roptcos(1e6))
-#
-# hist(rrect(1e6), 100)
-# hist(rtriang(1e6), 100)
-# hist(rbiweight(1e6), 100)
-# hist(rtriweight(1e6), 100)
-# hist(rempan(1e6), 100)
-# hist(roptcos(1e6), 100)
+sd(rrect(1e6))
+sd(rtriang(1e6))
+sd(rbiweight(1e6))
+sd(rtriweight(1e6))
+sd(rempan(1e6))
+sd(roptcos(1e6))
+
+mean(abs(rrect(1e6) < 1))
+mean(abs(rtriang(1e6) < 1))
+mean(abs(rbiweight(1e6) < 1))
+mean(abs(rtriweight(1e6) < 1))
+mean(abs(rempan(1e6) < 1))
+mean(abs(roptcos(1e6) < 1))
+
+hist(rrect(1e6), 100)
+hist(rtriang(1e6), 100)
+hist(rbiweight(1e6), 100)
+hist(rtriweight(1e6), 100)
+hist(rempan(1e6), 100)
+hist(roptcos(1e6), 100)
+
+
 
 
 # rempan <- function(n) {

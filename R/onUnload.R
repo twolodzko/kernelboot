@@ -1,4 +1,4 @@
 
 .onUnload <- function (libpath) {
-  library.dynam.unload("extraDistr", libpath)
+  library.dynam.unload("kernelboot", libpath)
 }
