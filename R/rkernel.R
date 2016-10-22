@@ -5,6 +5,8 @@
 #' @param n            number of observations to be drawn. If \code{length(n) > 1}, the length is taken to be the number required.
 #'                     If \code{n} is not provided, it defaults to \code{length(x)}.
 #' @param x            the data from which the estimate is to be computed. \emph{Warning:} infinite values are omiitted.
+#'                     If not provided, draws samples from given \code{kernel} and uses \code{bw} only if
+#'                     it was provided as numeric value.
 #' @param bw           the smoothing bandwidth to be used. The kernels are scaled such that this is
 #'                     the standard deviation of the smoothing kernel. (Note this differs from the
 #'                     reference books cited below, and from S-PLUS.)
@@ -121,9 +123,7 @@ rkernel <- function(n, x, bw = "nrd0",
     n <- length(n)
   }
 
-  if (is.null(weights)) {
-    idx <- sample.int(nx, n, replace = TRUE)
-  } else {
+  if (!is.null(weights)) {
     if (length(weights) != N)
       stop("'x' and 'weights' have unequal length")
     if (!all(is.finite(weights)))
@@ -132,8 +132,9 @@ rkernel <- function(n, x, bw = "nrd0",
       stop("'weights' must not be negative")
     if (any(!x.finite))
       weights <- weights[x.finite]
-    idx <- sample.int(nx, n, replace = TRUE, prob = weights)
   }
+
+  idx <- sample.int(nx, n, replace = TRUE, prob = weights)
 
   bw <- adjust * bw
   eps <- rng_kern(n) * bw

@@ -12,7 +12,9 @@ rkernel(n, x, bw = "nrd0", kernel = c("epanechnikov", "gaussian",
 \item{n}{number of observations to be drawn. If \code{length(n) > 1}, the length is taken to be the number required.
 If \code{n} is not provided, it defaults to \code{length(x)}.}
 
-\item{x}{the data from which the estimate is to be computed. \emph{Warning:} infinite values are omiitted.}
+\item{x}{the data from which the estimate is to be computed. \emph{Warning:} infinite values are omiitted.
+If not provided, draws samples from given \code{kernel} and uses \code{bw} only if
+it was provided as numeric value.}
 
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that this is
 the standard deviation of the smoothing kernel. (Note this differs from the

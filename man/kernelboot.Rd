@@ -4,10 +4,9 @@
 \alias{kernelboot}
 \title{Kernel density bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500, bw = bw.silv86(data),
-  kernel = c("epanechnikov", "gaussian", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), preserve.var = TRUE,
-  adjust = 1, weights, ...)
+kernelboot(data, statistic, R = 500, bw, kernel = c("epanechnikov",
+  "gaussian", "rectangular", "triangular", "biweight", "triweight", "cosine",
+  "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL, ...)
 }
 \arguments{
 \item{data}{Data.}
@@ -21,8 +20,8 @@ be the original data. Any further arguments can be passed to
 
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that
 this is the standard deviation, or covariance matrix of the smoothing kernel.
-If provided as numeric value it must be: single numeric value for univariate data;
-vector of numbers for multivariate data (length equal to \code{ncol(data)}.}
+If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
+and \code{\link{bw.silv86}} is used for multivariate data.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.}
 
