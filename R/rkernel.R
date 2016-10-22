@@ -16,6 +16,8 @@
 #'                     would rather fit, see also Venables and Ripley (2002).
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
+#'                     \emph{Warning:} this leads to samples that differ from \code{\link[stats]{density}}
+#'                     estimates, so for samples consistent with it \code{preserve.var} should be set to \code{FALSE}.
 #' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify values like
 #'                     'half the default' bandwidth.
 #' @param weights      numeric vector of non-negative observation weights, hence of same length as \code{x}.
@@ -43,14 +45,14 @@
 #'
 #' @examples
 #'
-#' hist(rkernel(1e5, mtcars$disp), 100, freq = FALSE)
+#' hist(rkernel(1e5, mtcars$disp, preserve.var = FALSE, kernel = "gaussian"), 100, freq = FALSE)
 #' lines(density(mtcars$disp), col = "red")
 #' rug(mtcars$disp, lwd = 2)
 #'
 #' @export
 
 rkernel <- function(n, x, bw = "nrd0",
-                    kernel = c("epanechnikov", "gaussian", "rectangular",
+                    kernel = c("gaussian", "epanechnikov", "rectangular",
                                "triangular", "biweight", "triweight",
                                "cosine", "optcosine"), preserve.var = TRUE,
                     adjust = 1, weights = NULL, na.rm = FALSE) {

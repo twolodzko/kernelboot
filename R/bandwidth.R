@@ -24,6 +24,8 @@
 #' @export
 
 bw.silv86 <- function(x) {
+  if (!(is.matrix(x) || is.data.frame(x)))
+    stop("this method works only for matrix, or data.frame objects")
   sigma <- apply(x, 2, sd)
   d <- ncol(x)
   n <- nrow(x)
@@ -35,6 +37,8 @@ bw.silv86 <- function(x) {
 #' @export
 
 bw.scott <- function(x) {
+  if (!(is.matrix(x) || is.data.frame(x)))
+    stop("this method works only for matrix, or data.frame objects")
   sigma <- apply(x, 2, sd)
   d <- ncol(x)
   n <- nrow(x)
