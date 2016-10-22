@@ -48,20 +48,15 @@ double rng_epan() {
   }
 }
 
+double rng_cosine() {
+  return (R::rbeta(3.3575, 3.3575) * 2.0 - 1.0) * 2.766159483867713042571;
+}
+
 double rng_optcos() {
   double u;
   u = (rng_unif() * 2.0 - 1.0);
   return (2.0 * acos(u)/M_PI - 1.0) * 2.297603117487196922042;
 }
-
-// pi/4*cos(pi*kords/2)
-// pi/4*cos(pi/2*x)
-// acos(u)/M_PI*2.0 / (pi/4)
-
-// 1+cos(pi*x))/2
-// 2.0 * acos(u)/M_PI - 1.0
-// cos: 2.766159483867713042571
-// optcos: 2.297603117487196922042
 
 double rng_triang() {
   double u, v;
@@ -94,6 +89,7 @@ double rng_triweight() {
 //' @aliases rtriang
 //' @aliases rrect
 //' @aliases roptcos
+//' @aliases rcosine
 //' @aliases rbiweight
 //' @aliases rtriweight
 //' @export
@@ -102,6 +98,16 @@ NumericVector rempan(int n) {
   NumericVector x(n);
   for (int i = 0; i < n; i++)
     x[i] = rng_epan();
+  return x;
+}
+
+//' @rdname KernelRNG
+//' @export
+// [[Rcpp::export]]
+NumericVector rcosine(int n) {
+  NumericVector x(n);
+  for (int i = 0; i < n; i++)
+    x[i] = rng_cosine();
   return x;
 }
 
@@ -156,26 +162,15 @@ NumericVector rtriweight(int n) {
 }
 
 
-
-/*
-NumericMatrix rsmvnorm(int n, NumericVector sigma) {
-
-  int k = sigma.length();
-  NumericMatrix x(n, k);
-
-  for (int i = 0; i < n; i++)
-    for (int j = 0; j < k; j++)
-      x(i, j) = R::rnorm(0.0, sigma[j]);
-
-  return x;
-}
-*/
-
-/*
+//' @export
+// [[Rcpp::export]]
 NumericMatrix add_noise(
-    NumericMatrix x,
-    std::string kernel,
-    NumericVector bandwidth
+    const NumericMatrix &x,
+    const std::string &kernel = "gaussian",
+    const NumericVector &bandwidth = 1.0,
+    const NumericVector &mean = 1.0,
+    const NumericVector &var = 0.0,
+    const bool &preserve_var = false
   ) {
 
   double (*rng_kern)();
@@ -189,7 +184,9 @@ NumericMatrix add_noise(
   } else if (kernel == "triweight") {
     rng_kern = rng_triweight;
   } else if (kernel == "cosine") {
-    rng_kern = rng_cos;
+    rng_kern = rng_cosine;
+  } else if (kernel == "optcosine") {
+    rng_kern = rng_optcos;
   } else if (kernel == "epanechnikov") {
     rng_kern = rng_epan;
   } else {
@@ -199,9 +196,49 @@ NumericMatrix add_noise(
   int n = x.nrow();
   int k = x.ncol();
   NumericMatrix out(n, k);
+  NumericVector bw(k);
+  int bn = bandwidth.length();
+
+  if (!preserve_var) {
+
+    for (int j = 0; j < k; j++) {
+      bw[j] = bandwidth[j % bn];
+      if (bw[j] < 0)
+        Rcpp::stop("bandwidth < 0");
+    }
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < k; j++)
+        out(i, j) = x(i, j) * rng_kern() * bw[j];
+
+  } else {
+
+    NumericVector bw(k);
+    NumericVector m(k);
+    NumericVector s(k);
+    NumericVector norm_const(k);
+
+    int mn = mean.length();
+    int sn = var.length();
+
+    for (int j = 0; j < k; j++) {
+      bw[j] = bandwidth[j % bn];
+      if (bw[j] < 0)
+        Rcpp::stop("bandwidth < 0");
+      m[j] = mean[j % mn];
+      s[j] = var[j % sn];
+      if (s[j] < 0)
+        Rcpp::stop("variance < 0");
+      norm_const[j] = sqrt(1.0 + pow(bw[j], 2.0)/s[j]);
+    }
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < k; j++)
+        out(i, j) = m[j] + (x(i, j) - m[j] + rng_kern() * bw[j]) / norm_const[j];
+
+  }
 
   return out;
 
 }
-*/
 

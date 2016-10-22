@@ -4,9 +4,10 @@
 \alias{kernelboot}
 \title{Kernel density bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500, bw = c("default", "hns", "silverman",
-  "bw.nrd0", "bw.nrd", "bw.ucv", "bw.bcv", "bw.SJ"), kernel = c("mvn",
-  "gaussian"), adjust = 1, weights, exclude, ...)
+kernelboot(data, statistic, R = 500, bw = bw.silv86(data),
+  kernel = c("epanechnikov", "gaussian", "rectangular", "triangular",
+  "biweight", "triweight", "cosine", "optcosine"), preserve.var = TRUE,
+  adjust = 1, weights, ...)
 }
 \arguments{
 \item{data}{Data.}
@@ -21,24 +22,31 @@ be the original data. Any further arguments can be passed to
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that
 this is the standard deviation, or covariance matrix of the smoothing kernel.
 If provided as numeric value it must be: single numeric value for univariate data;
-vector of numbers for multivariate data (length equal to \code{ncol(data)},
-not counting the excluded columns declared in \code{exclude});
-or matrix of numbers for \code{mvn} kernel (number of columns and rows
-equal to \code{ncol(data)}, not counting the excluded columns declared
-in \code{exclude}).}
+vector of numbers for multivariate data (length equal to \code{ncol(data)}.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.}
+
+\item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.}
 
 \item{adjust}{the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
 values like ‘half the default’ bandwidth.}
 
 \item{weights}{Vector or matrix of importance weights. It should have as many
 elements as there are observations in \code{data}.}
-
-\item{exclude}{a character vector naming columns \emph{not} to be sampled from the kernel
-density. Regular bootstrap is applied to those columns.}
 }
 \description{
 Kernel density bootstrap
+}
+\references{
+Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+
+Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+
+Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+and visualization. John Wiley & Sons.
+}
+\seealso{
+\code{\link{bandwidth}}, \code{\link[stats]{density}},
+         \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 }
 

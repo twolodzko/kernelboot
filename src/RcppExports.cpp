@@ -16,6 +16,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcosine
+NumericVector rcosine(int n);
+RcppExport SEXP kernelboot_rcosine(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcosine(n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // roptcos
 NumericVector roptcos(int n);
 RcppExport SEXP kernelboot_roptcos(SEXP nSEXP) {
@@ -68,6 +79,22 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     rcpp_result_gen = Rcpp::wrap(rtriweight(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// add_noise
+NumericMatrix add_noise(const NumericMatrix& x, const std::string& kernel, const NumericVector& bandwidth, const NumericVector& mean, const NumericVector& var, const bool& preserve_var);
+RcppExport SEXP kernelboot_add_noise(SEXP xSEXP, SEXP kernelSEXP, SEXP bandwidthSEXP, SEXP meanSEXP, SEXP varSEXP, SEXP preserve_varSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type bandwidth(bandwidthSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type mean(meanSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type var(varSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type preserve_var(preserve_varSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_noise(x, kernel, bandwidth, mean, var, preserve_var));
     return rcpp_result_gen;
 END_RCPP
 }

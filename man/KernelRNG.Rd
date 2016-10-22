@@ -3,6 +3,7 @@
 \name{KernelRNG}
 \alias{KernelRNG}
 \alias{rbiweight}
+\alias{rcosine}
 \alias{rempan}
 \alias{roptcos}
 \alias{rrect}
@@ -11,6 +12,8 @@
 \title{Random generation from kernels}
 \usage{
 rempan(n)
+
+rcosine(n)
 
 roptcos(n)
 

@@ -1,41 +1,51 @@
 
 #' Kernel density bootstrap
 #'
-#' @param data        Data.
-#' @param statistic   A function which when applied to data returns a vector containing
-#'                    the statistic(s) of interest. The first argument passed will always
-#'                    be the original data. Any further arguments can be passed to
-#'                    \code{statistic} through the \code{...} argument.
-#' @param R           The number of bootstrap replicates.
-#' @param bw          the smoothing bandwidth to be used. The kernels are scaled such that
-#'                    this is the standard deviation, or covariance matrix of the smoothing kernel.
-#'                    If provided as numeric value it must be: single numeric value for univariate data;
-#'                    vector of numbers for multivariate data (length equal to \code{ncol(data)},
-#'                    not counting the excluded columns declared in \code{exclude});
-#'                    or matrix of numbers for \code{mvn} kernel (number of columns and rows
-#'                    equal to \code{ncol(data)}, not counting the excluded columns declared
-#'                    in \code{exclude}).
-#' @param kernel      a character string giving the smoothing kernel to be used.
-#' @param adjust      the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
-#'                    values like ‘half the default’ bandwidth.
-#' @param weights     Vector or matrix of importance weights. It should have as many
-#'                    elements as there are observations in \code{data}.
-#' @param exclude     a character vector naming columns \emph{not} to be sampled from the kernel
-#'                    density. Regular bootstrap is applied to those columns.
+#' @param data         Data.
+#' @param statistic    A function which when applied to data returns a vector containing
+#'                     the statistic(s) of interest. The first argument passed will always
+#'                     be the original data. Any further arguments can be passed to
+#'                     \code{statistic} through the \code{...} argument.
+#' @param R            The number of bootstrap replicates.
+#' @param bw           the smoothing bandwidth to be used. The kernels are scaled such that
+#'                     this is the standard deviation, or covariance matrix of the smoothing kernel.
+#'                     If provided as numeric value it must be: single numeric value for univariate data;
+#'                     vector of numbers for multivariate data (length equal to \code{ncol(data)}.
+#' @param kernel       a character string giving the smoothing kernel to be used.
+#' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
+#' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
+#'                     values like ‘half the default’ bandwidth.
+#' @param weights      Vector or matrix of importance weights. It should have as many
+#'                     elements as there are observations in \code{data}.
+#'
+#' @references
+#' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+#'
+#' @references
+#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#'
+#' @references
+#' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+#' and visualization. John Wiley & Sons.
+#'
+#' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
+#'          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 #'
 #' @export
 
 kernelboot <- function(data, statistic, R = 500,
-                       bw = c("default", "hns", "silverman",
-                              "bw.nrd0", "bw.nrd", "bw.ucv",
-                              "bw.bcv", "bw.SJ"),
-                       kernel = c("mvn", "gaussian"),
-                       #covariance = c("uniform", "variance", "covariance"),
-                       adjust = 1, weights, exclude, ...) {
+                       bw = bw.silv86(data),
+                       kernel = c("epanechnikov", "gaussian", "rectangular",
+                                  "triangular", "biweight", "triweight",
+                                  "cosine", "optcosine"), preserve.var = TRUE,
+                       adjust = 1, weights, ...) {
 
   call <- match.call()
-  bw <- match.arg(bw)
   kernel <- match.arg(kernel)
+  bw <- bw*adjust
+
+  data <- as.matrix(data)
+  n <- nrow(data)
 
   tryCatch(
     orig.stat <- statistic(data, ...),
@@ -45,82 +55,48 @@ kernelboot <- function(data, statistic, R = 500,
     }
   )
 
-  if (is.matrix(data) || is.data.frame(data)) {
+  if (preserve.var) {
 
-    if (bw == "default") {
-      message("switching bandwidth estimation method to 'hns'")
-      bw <- "hns"
-    } else if (!is.numeric(bw) && bw %in% c("bw.nrd0", "bw.nrd", "bw.ucv",
-                                     "bw.bcv", "bw.SJ")) {
-      stop("only the 'hns' and 'silvernam' methods for estimating bandwidth are supported for multivariate data")
-    }
+    means <- apply(data, 2, mean)
+    vars <- apply(data, 2, var)
 
-    n <- nrow(data)
-    k <- ncol(data)
+    res <- replicate(R, {
 
-    if (!missing(exclude))
-      kernel.cols <- !(colnames(data) %in% exclude)
-    else
-      kernel.cols <- rep(TRUE, k)
+      idx <- sample.int(n, n, replace = TRUE)
+      data.new <- add_noise(data[idx, ], kernel, bw,
+                            mean = means, var = vars,
+                            preserve_var = preserve.var)
 
-    mx <- colMeans(data)
-    sx <- cov(data)
-    H <- NULL
+      statistic(data.new, ...)
+
+    })
 
   } else {
 
-    if (bw == "default") {
-      message("switching bandwidth estimation method to 'nrd0'")
-      bw <- "nrd0"
-    } else if (!is.numeric(bw) && bw %in% c("hns", "silverman")) {
-      stop("only the 'bw.nrd0', 'bw.nrd', 'bw.ucv', 'bw.bcv', 'bw.SJ' methods for estimating bandwidth are supported for multivariate data")
-    }
+    res <- replicate(R, {
 
-    n <- length(data)
+      idx <- sample.int(n, n, replace = TRUE)
+      data.new <- add_noise(data[idx, ], kernel, bw,
+                            preserve_var = FALSE)
 
-    mx <- mean(x)
-    sx <- var(x)
-    H <- NULL
+      statistic(data.new, ...)
 
-    if (kernel == "mvn") {
-      message("'mvn' kernel is not available for univariate data, 'gaussian' kernel is going to be used instead")
-      kernel <- "gaussian"
-    }
-
+    })
 
   }
-
-  kdeFun <- switch (kernel,
-    "gaussian" = function() rnorm(n*k, sd = H),
-    function() rmvnorm(n, sigma = H)
-  )
-
-  res <- replicate(R, {
-
-    idx <- sample.int(n, n, replace = TRUE)
-    data.boot <- data[idx, ]
-
-    if (any(kernel.cols)) {
-      # KDE sim
-    }
-
-    statistic(data.boot, ...)
-
-  })
 
   structure(list(
     orig.stat   = orig.stat,
     boot.sample = res,
-    call = call,
-    statistic = statistic,
+    call        = call,
+    statistic   = statistic,
     param = list(
-      R           = R,
-      bw          = bw,
-      adjust      = adjust,
-      H           = H,
-      kernel      = kernel,
-      weights     = if (missing(weights)) "uniform" else weights,
-      exclude     = if (missing(exclude)) NA else exclude
+      R            = R,
+      bw           = bw,
+      adjust       = adjust,
+      kernel       = kernel,
+      preserve.var = preserve.var,
+      weights      = if (missing(weights)) "uniform" else weights
     )
   ), class = "kernelboot")
 
