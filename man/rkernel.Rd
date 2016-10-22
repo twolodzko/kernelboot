@@ -47,10 +47,14 @@ rug(mtcars$disp, lwd = 2)
 
 }
 \references{
-Silverman, B.W. (2000). Density estimation for statistics and data analysis.
-CRC/Chapman & Hall. (pp. 142-144)
+Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 
-Venables, W.N. and Ripley, B.D. (2002) Modern Applied Statistics with S.
+Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+
+Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+and visualization. John Wiley & Sons.
+
+Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S.
 New York: Springer.
 }
 \seealso{

@@ -25,13 +25,17 @@
 #' @seealso \code{\link[stats]{density}}
 #'
 #' @references
-#'
-#' Silverman, B.W. (2000). Density estimation for statistics and data analysis.
-#' CRC/Chapman & Hall. (pp. 142-144)
+#' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
+#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 #'
-#' Venables, W.N. and Ripley, B.D. (2002) Modern Applied Statistics with S.
+#' @references
+#' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+#' and visualization. John Wiley & Sons.
+#'
+#' @references
+#' Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S.
 #' New York: Springer.
 #'
 #' @examples
@@ -116,7 +120,6 @@ rkernel <- function(n, x, bw = "nrd0",
   }
 
   bw <- adjust * bw
-
   mx <- mean(x)
   sx <- var(x)
 
