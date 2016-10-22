@@ -54,11 +54,27 @@ rkernel <- function(n, x, bw = "nrd0",
 
   kernel <- match.arg(kernel)
 
-  if (missing(x))
-    x <- numeric(n)
+  rng_kern <- switch(kernel,
+                     epanechnikov = rempan,
+                     rectangular = rrect,
+                     triangular = rtriang,
+                     biweight = rbiweight,
+                     triweight = rtriweight,
+                     cosine = rcosine,
+                     optcosine = roptcos,
+                     rnorm)
+
+  if (missing(x)) {
+    if (!is.numeric(bw)) {
+      warning(paste0("missing x, not using '", bw, "' bandwidth"))
+      bw <- 1
+    }
+    return(rng_kern(n) * bw*adjust)
+  }
+
   x <- as.vector(x)
 
-  if (all.equal(var(x), 0)) {
+  if (length(x) == 1 || isTRUE(all.equal(var(x), 0))) {
     preserve.var <- FALSE
     warning("var(x) is 0: preserve.var was changed to FALSE")
   }
@@ -120,24 +136,14 @@ rkernel <- function(n, x, bw = "nrd0",
   }
 
   bw <- adjust * bw
-  mx <- mean(x)
-  sx <- var(x)
+  eps <- rng_kern(n) * bw
 
-  rng_kern <- switch(kernel,
-                     epanechnikov = rempan,
-                     rectangular = rrect,
-                     triangular = rtriang,
-                     biweight = rbiweight,
-                     triweight = rtriweight,
-                     cosine = rcosine,
-                     optcosine = roptcos,
-                     rnorm)
-
-  heps <- rng_kern(n) * bw
   if (preserve.var) {
-    mx + (x[idx]-mx+heps)/sqrt(1 + bw^2/sx)
+    mx <- mean(x)
+    sx <- var(x)
+    mx + (x[idx]-mx+eps)/sqrt(1 + bw^2/sx)
   } else {
-    x[idx]+heps
+    x[idx]+eps
   }
 
 }
