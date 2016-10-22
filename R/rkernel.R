@@ -42,7 +42,7 @@
 #'
 #' @export
 
-rkernel <- function(n, x, bw = "nrd0",
+rkernel <- function(n, x = numeric(n), bw = "nrd0",
                     kernel = c("epanechnikov", "gaussian", "rectangular",
                                "triangular", "biweight", "triweight",
                                "cosine", "optcosine"), preserve.var = TRUE,
