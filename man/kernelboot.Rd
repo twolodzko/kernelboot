@@ -28,16 +28,19 @@ and \code{\link{bw.silv86}} is used for multivariate data.}
 \item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.}
 
 \item{adjust}{the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
-values like ‘half the default’ bandwidth.}
+values like 'half the default' bandwidth.}
 
-\item{weights}{Vector or matrix of importance weights. It should have as many
+\item{weights}{Vector of importance weights. It should have as many
 elements as there are observations in \code{data}.}
+
+\item{\dots}{further arguments passed to \code{statistic}.}
 }
 \description{
 Kernel density bootstrap
 }
 \references{
-Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+Silverman, B. W. (1986). Density estimation for statistics and data analysis.
+Chapman and Hall/CRC.
 
 Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 

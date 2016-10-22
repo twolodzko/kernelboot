@@ -162,7 +162,6 @@ NumericVector rtriweight(int n) {
 }
 
 
-//' @export
 // [[Rcpp::export]]
 NumericMatrix add_noise(
     const NumericMatrix &x,

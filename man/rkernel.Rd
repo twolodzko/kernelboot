@@ -29,7 +29,7 @@ would rather fit, see also Venables and Ripley (2002).}
 \item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.}
 
 \item{adjust}{the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify values like
-‘half the default’ bandwidth.}
+'half the default' bandwidth.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{x}.
 The default NULL is equivalent to \code{weights = rep(1/nx, nx)} where \code{nx}
@@ -43,13 +43,14 @@ Draw samples from kernel density
 }
 \examples{
 
-hist(rkde(1e5, mtcars$disp), 100, freq = FALSE)
+hist(rkernel(1e5, mtcars$disp), 100, freq = FALSE)
 lines(density(mtcars$disp), col = "red")
 rug(mtcars$disp, lwd = 2)
 
 }
 \references{
-Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+Silverman, B. W. (1986). Density estimation for statistics and data analysis.
+Chapman and Hall/CRC.
 
 Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 

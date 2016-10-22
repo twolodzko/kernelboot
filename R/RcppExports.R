@@ -55,7 +55,6 @@ rtriweight <- function(n) {
     .Call('kernelboot_rtriweight', PACKAGE = 'kernelboot', n)
 }
 
-#' @export
 add_noise <- function(x, kernel = "gaussian", bandwidth = 1.0, mean = 1.0, var = 0.0, preserve_var = FALSE) {
     .Call('kernelboot_add_noise', PACKAGE = 'kernelboot', x, kernel, bandwidth, mean, var, preserve_var)
 }

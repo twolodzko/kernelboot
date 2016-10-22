@@ -14,12 +14,14 @@
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
 #' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
-#'                     values like ‘half the default’ bandwidth.
+#'                     values like 'half the default' bandwidth.
 #' @param weights      Vector of importance weights. It should have as many
 #'                     elements as there are observations in \code{data}.
+#' @param \dots        further arguments passed to \code{statistic}.
 #'
 #' @references
-#' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+#' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
+#' Chapman and Hall/CRC.
 #'
 #' @references
 #' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
@@ -75,8 +77,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
       stop("'weights' must all be finite")
     if (any(weights < 0))
       stop("'weights' must not be negative")
-    if (any(!x.finite))
-      weights <- weights[x.finite]
   }
 
   tryCatch(

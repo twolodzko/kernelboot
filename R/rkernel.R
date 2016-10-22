@@ -17,7 +17,7 @@
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
 #' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify values like
-#'                     ‘half the default’ bandwidth.
+#'                     'half the default' bandwidth.
 #' @param weights      numeric vector of non-negative observation weights, hence of same length as \code{x}.
 #'                     The default NULL is equivalent to \code{weights = rep(1/nx, nx)} where \code{nx}
 #'                     is the length of (the finite entries of) \code{x[]}.
@@ -27,7 +27,8 @@
 #' @seealso \code{\link[stats]{density}}
 #'
 #' @references
-#' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
+#' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
+#' Chapman and Hall/CRC.
 #'
 #' @references
 #' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
@@ -42,7 +43,7 @@
 #'
 #' @examples
 #'
-#' hist(rkde(1e5, mtcars$disp), 100, freq = FALSE)
+#' hist(rkernel(1e5, mtcars$disp), 100, freq = FALSE)
 #' lines(density(mtcars$disp), col = "red")
 #' rug(mtcars$disp, lwd = 2)
 #'
