@@ -4,10 +4,9 @@
 \alias{rkernel}
 \title{Draw samples from kernel density}
 \usage{
-rkernel(n, x = numeric(n), bw = "nrd0", kernel = c("epanechnikov",
-  "gaussian", "rectangular", "triangular", "biweight", "triweight", "cosine",
-  "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
-  na.rm = FALSE)
+rkernel(n, x, bw = "nrd0", kernel = c("epanechnikov", "gaussian",
+  "rectangular", "triangular", "biweight", "triweight", "cosine", "optcosine"),
+  preserve.var = TRUE, adjust = 1, weights = NULL, na.rm = FALSE)
 }
 \arguments{
 \item{n}{number of observations to be drawn. If \code{length(n) > 1}, the length is taken to be the number required.

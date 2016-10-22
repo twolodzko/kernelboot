@@ -42,14 +42,22 @@
 #'
 #' @export
 
-rkernel <- function(n, x = numeric(n), bw = "nrd0",
+rkernel <- function(n, x, bw = "nrd0",
                     kernel = c("epanechnikov", "gaussian", "rectangular",
                                "triangular", "biweight", "triweight",
                                "cosine", "optcosine"), preserve.var = TRUE,
                     adjust = 1, weights = NULL, na.rm = FALSE) {
 
   kernel <- match.arg(kernel)
+
+  if (missing(x))
+    x <- numeric(n)
   x <- as.vector(x)
+
+  if (all.equal(var(x), 0)) {
+    preserve.var <- FALSE
+    warning("var(x) is 0: preserve.var was changed to FALSE")
+  }
 
   x.na <- is.na(x)
   if (any(x.na)) {
