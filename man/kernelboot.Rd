@@ -6,7 +6,8 @@
 \usage{
 kernelboot(data, statistic, R = 500, bw, kernel = c("epanechnikov",
   "gaussian", "rectangular", "triangular", "biweight", "triweight", "cosine",
-  "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL, ...)
+  "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
+  paralell = FALSE, ...)
 }
 \arguments{
 \item{data}{Data.}

@@ -10,6 +10,6 @@ License: GPL-2
 URL: https://github.com/twolodzko/kernelboot
 BugReports: https://github.com/twolodzko/kernelboot/issues
 LinkingTo: Rcpp
-Imports: Rcpp
+Imports: Rcpp, parallel, mvtnorm
 LazyData: TRUE
 RoxygenNote: 5.0.1

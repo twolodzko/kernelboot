@@ -39,11 +39,12 @@ kernelboot <- function(data, statistic, R = 500, bw,
                        kernel = c("epanechnikov", "gaussian", "rectangular",
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"), preserve.var = TRUE,
-                       adjust = 1, weights = NULL, ...) {
+                       adjust = 1, weights = NULL, paralell = FALSE, ...) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
   n <- NROW(data)
+  k <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("'data' must be a vector, data.frame, or matrix.")
@@ -59,13 +60,13 @@ kernelboot <- function(data, statistic, R = 500, bw,
   }
   if (!is.numeric(bw))
     stop("non-numeric 'bw' value")
-  if (length(bw) > 1) {
-    bw <- bw[1]
-    warning("'bw' has length > 1 and only the first element will be used")
+  if (length(bw) > k) {
+    bw <- bw[1:k]
+    warning("'bw' has length > number of dimensions of the data")
   }
-  if (!is.finite(bw))
+  if (!all(is.finite(bw)))
     stop("non-finite 'bw'")
-  if (bw <= 0)
+  if (all(bw <= 0))
     stop("'bw' is not positive.")
 
   bw <- bw*adjust
@@ -87,6 +88,12 @@ kernelboot <- function(data, statistic, R = 500, bw,
     }
   )
 
+  if (paralell) {
+    repeatFun <- mclapply
+  } else {
+    repeatFun <- lapply
+  }
+
   if (is.data.frame(data) || is.matrix(data)) {
 
     num_cols <- apply(data, 2, is.numeric)
@@ -96,7 +103,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
       mx <- apply(data, 2, mean)
       sx <- apply(data, 2, var)
 
-      res <- replicate(R, {
+      res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx, ]
@@ -108,9 +115,11 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
       })
 
+      res <- do.call(rbind, res)
+
     } else {
 
-      res <- replicate(R, {
+      res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx, ]
@@ -120,6 +129,8 @@ kernelboot <- function(data, statistic, R = 500, bw,
         statistic(boot.data, ...)
 
       })
+
+      res <- do.call(rbind, res)
 
     }
 
@@ -140,7 +151,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
       mx <- mean(data)
       sx <- var(data)
 
-      res <- replicate(R, {
+      res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         eps <- rng_kern(n) * bw
@@ -150,9 +161,11 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
       })
 
+      res <- do.call(rbind, res)
+
     } else {
 
-      res <- replicate(R, {
+      res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         eps <- rng_kern(n) * bw
@@ -161,6 +174,8 @@ kernelboot <- function(data, statistic, R = 500, bw,
         statistic(boot.data, ...)
 
       })
+
+      res <- do.call(rbind, res)
 
     }
 
