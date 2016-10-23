@@ -7,7 +7,7 @@
 kernelboot(data, statistic, R = 500, bw, kernel = c("epanechnikov",
   "gaussian", "rectangular", "triangular", "biweight", "triweight", "cosine",
   "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
-  paralell = FALSE, ...)
+  parallel = FALSE, mc.cores = getOption("mc.cores", 2L), ...)
 }
 \arguments{
 \item{data}{Data.}
@@ -33,6 +33,10 @@ values like 'half the default' bandwidth.}
 
 \item{weights}{Vector of importance weights. It should have as many
 elements as there are observations in \code{data}.}
+
+\item{parallel}{if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).}
+
+\item{mc.cores}{number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).}
 
 \item{\dots}{further arguments passed to \code{statistic}.}
 }

@@ -17,6 +17,8 @@
 #'                     values like 'half the default' bandwidth.
 #' @param weights      Vector of importance weights. It should have as many
 #'                     elements as there are observations in \code{data}.
+#' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
+#' @param mc.cores     number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
 #' @param \dots        further arguments passed to \code{statistic}.
 #'
 #' @references
@@ -39,7 +41,9 @@ kernelboot <- function(data, statistic, R = 500, bw,
                        kernel = c("epanechnikov", "gaussian", "rectangular",
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"), preserve.var = TRUE,
-                       adjust = 1, weights = NULL, paralell = FALSE, ...) {
+                       adjust = 1, weights = NULL,
+                       parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
+                       ...) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
@@ -88,10 +92,10 @@ kernelboot <- function(data, statistic, R = 500, bw,
     }
   )
 
-  if (paralell) {
-    repeatFun <- mclapply
+  if (mc.cores > 1 && parallel) {
+    repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
   } else {
-    repeatFun <- lapply
+    repeatFun <- function(i, FUN, mc.cores) lapply(i, FUN)
   }
 
   if (is.data.frame(data) || is.matrix(data)) {
@@ -113,7 +117,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
         statistic(boot.data, ...)
 
-      })
+      }, mc.cores = mc.cores)
 
       res <- do.call(rbind, res)
 
@@ -128,7 +132,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
         statistic(boot.data, ...)
 
-      })
+      }, mc.cores = mc.cores)
 
       res <- do.call(rbind, res)
 
@@ -159,7 +163,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
         statistic(boot.data, ...)
 
-      })
+      }, mc.cores = mc.cores)
 
       res <- do.call(rbind, res)
 
@@ -173,7 +177,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
         statistic(boot.data, ...)
 
-      })
+      }, mc.cores = mc.cores)
 
       res <- do.call(rbind, res)
 
@@ -192,7 +196,8 @@ kernelboot <- function(data, statistic, R = 500, bw,
       adjust       = adjust,
       kernel       = kernel,
       preserve.var = preserve.var,
-      weights      = if (missing(weights)) "uniform" else weights
+      weights      = if (missing(weights)) "uniform" else weights,
+      parallel     = parallel
     )
   ), class = "kernelboot")
 
