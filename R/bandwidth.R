@@ -26,10 +26,10 @@
 bw.silv86 <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
-  sigma <- apply(x, 2, sd)
+  S <- diag(cov(x))
   d <- ncol(x)
   n <- nrow(x)
-  (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * sigma
+  (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * S
 }
 
 
@@ -39,8 +39,8 @@ bw.silv86 <- function(x) {
 bw.scott <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
-  sigma <- apply(x, 2, sd)
+  S <- diag(cov(x))
   d <- ncol(x)
   n <- nrow(x)
-  n^(-1/(d+4)) * sigma
+  n^(-1/(d+4)) * S
 }

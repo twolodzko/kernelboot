@@ -48,7 +48,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
   call <- match.call()
   kernel <- match.arg(kernel)
   n <- NROW(data)
-  k <- NCOL(data)
+  d <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("'data' must be a vector, data.frame, or matrix.")
@@ -64,16 +64,18 @@ kernelboot <- function(data, statistic, R = 500, bw,
   }
   if (!is.numeric(bw))
     stop("non-numeric 'bw' value")
-  if (length(bw) > k) {
-    bw <- bw[1:k]
+
+  if (length(bw) > d) {
+    bw <- bw[1:d]
     warning("'bw' has length > number of dimensions of the data")
   }
+
   if (!all(is.finite(bw)))
     stop("non-finite 'bw'")
-  if (all(bw <= 0))
+  if (any(bw <= 0))
     stop("'bw' is not positive.")
 
-  bw <- bw*adjust
+  bw <- bw * adjust
 
   if (!is.null(weights)) {
     if (length(weights) != n)
@@ -105,7 +107,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
     if (preserve.var) {
 
       mx <- apply(data, 2, mean)
-      sx <- apply(data, 2, var)
+      sx <- diag(cov(data))
 
       res <- repeatFun(1:R, function(i) {
 
@@ -119,8 +121,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
       }, mc.cores = mc.cores)
 
-      res <- do.call(rbind, res)
-
     } else {
 
       res <- repeatFun(1:R, function(i) {
@@ -133,8 +133,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
         statistic(boot.data, ...)
 
       }, mc.cores = mc.cores)
-
-      res <- do.call(rbind, res)
 
     }
 
@@ -165,8 +163,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
       }, mc.cores = mc.cores)
 
-      res <- do.call(rbind, res)
-
     } else {
 
       res <- repeatFun(1:R, function(i) {
@@ -179,11 +175,11 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
       }, mc.cores = mc.cores)
 
-      res <- do.call(rbind, res)
-
     }
 
   }
+
+  res <- do.call(rbind, res)
 
   structure(list(
     orig.stat   = orig.stat,
