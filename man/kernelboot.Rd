@@ -43,6 +43,21 @@ elements as there are observations in \code{data}.}
 \description{
 Kernel density bootstrap
 }
+\details{
+Samples are drawn from kernel density using the following procedure (Silverman, 1986):
+
+\emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
+
+\emph{Step 2} Generate \eqn{\varepsilon}{\epsilon} to have probability density \eqn{K}.
+
+\emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
+
+If samples are required to have the same variance as \code{data}
+ (\code{preserve.var} is set to \code{TRUE}), then \emph{Step 3} is modified
+as following:
+
+\emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
+}
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
 Chapman and Hall/CRC.
