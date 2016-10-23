@@ -106,7 +106,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
     if (preserve.var) {
 
-      mx <- apply(data, 2, mean)
+      mx <- colMeans(data)
       sx <- diag(cov(data))
 
       res <- repeatFun(1:R, function(i) {
