@@ -2,9 +2,30 @@
 
 #' Bandwidth Selectors for Multivariate Kernel Density Estimation
 #'
-#' Bandwidth selectors for Gaussian kernels
+#' Rule of thumb bandwidth selectors for Gaussian kernels as described by
+#' Silverman (1986) and Scott (1992).
 #'
 #' @param x numeric vector.
+#'
+#' @details
+#'
+#' Scott's rule is defined as
+#'
+#' \deqn{
+#' h_i = n^{-1/(d+4)} \sigma_i
+#' }{
+#' h[i] = n^(-1/(d+4)) * \sigma[i]
+#' }
+#'
+#' Silverman's rule is defined as
+#'
+#' \deqn{
+#' h_i = \left(\frac{4}{d+2}\right)^{1/(d+4)} n^{-1/(d+4)} \sigma_i
+#' }{
+#' h[i] = (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * \sigma[i]
+#' }
+#'
+#' where \eqn{d} is number of variables and \eqn{n} is sampel size.
 #'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.

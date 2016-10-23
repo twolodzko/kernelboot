@@ -202,7 +202,7 @@ NumericMatrix add_noise(
 
     for (int j = 0; j < k; j++) {
       bw[j] = bandwidth[j % bn];
-      if (bw[j] < 0)
+      if (bw[j] < 0.0)
         Rcpp::stop("bandwidth < 0");
     }
 
@@ -222,11 +222,11 @@ NumericMatrix add_noise(
 
     for (int j = 0; j < k; j++) {
       bw[j] = bandwidth[j % bn];
-      if (bw[j] < 0)
+      if (bw[j] < 0.0)
         Rcpp::stop("bandwidth < 0");
       m[j] = mean[j % mn];
       s[j] = var[j % sn];
-      if (s[j] < 0)
+      if (s[j] < 0.0)
         Rcpp::stop("variance < 0");
       norm_const[j] = sqrt(1.0 + pow(bw[j], 2.0)/s[j]);
     }
