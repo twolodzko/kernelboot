@@ -179,11 +179,9 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
   }
 
-  res <- do.call(rbind, res)
-
   structure(list(
     orig.stat   = orig.stat,
-    boot.sample = res,
+    boot.sample = do.call(rbind, res),
     call        = call,
     statistic   = statistic,
     param = list(
