@@ -10,7 +10,7 @@
 #' @param bw           the smoothing bandwidth to be used. The kernels are scaled such that
 #'                     this is the standard deviation, or covariance matrix of the smoothing kernel.
 #'                     If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
-#'                     and \code{\link{bw.silv86}} is used for multivariate data.
+#'                     and \code{\link{bw.scott}} is used for multivariate data.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
 #' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
@@ -48,15 +48,15 @@
 #' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
 #'
-#' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
+#' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
 #'          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 #'
 #' @export
 
 kernelboot <- function(data, statistic, R = 500, bw,
-                       kernel = c("epanechnikov", "gaussian", "rectangular",
+                       kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
-                                  "cosine", "optcosine"), preserve.var = TRUE,
+                                  "cosine", "optcosine", "mvn"), preserve.var = TRUE,
                        adjust = 1, weights = NULL,
                        parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
                        ...) {
@@ -64,7 +64,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
   call <- match.call()
   kernel <- match.arg(kernel)
   n <- NROW(data)
-  d <- NCOL(data)
+  k <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("'data' must be a vector, data.frame, or matrix.")
@@ -75,15 +75,24 @@ kernelboot <- function(data, statistic, R = 500, bw,
         stop("need at least 2 points to select a bandwidth automatically")
       bw <- bw.nrd0(data)
     } else {
-      bw <- bw.silv86(data)
+      bw <- bw.scott(data)
     }
   }
   if (!is.numeric(bw))
     stop("non-numeric 'bw' value")
 
-  if (length(bw) > d) {
-    bw <- bw[1:d]
-    warning("'bw' has length > number of dimensions of the data")
+  if (is.vector(bw)) {
+    if (length(bw) > k) {
+      bw <- bw[1:k]
+      warning("'bw' has length > number of dimensions of the data")
+    }
+  } else if (is.matrix(bw)) {
+    if (!is.square(bw) || ncol(bw) != k)
+      stop("'bw' needs to be a square matrix with dimensions equal to number of columns in data")
+    if (kernel != 'mvn')
+      bw <- diag(bw)
+  } else {
+    stop("'bw' must be a vector or square matrix")
   }
 
   if (!all(is.finite(bw)))
@@ -120,7 +129,60 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
     num_cols <- apply(data, 2, is.numeric)
 
-    if (preserve.var) {
+    if (kernel == "mvn") {
+
+      ev <- eigen(bw, symmetric = TRUE)
+
+      if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
+        warning("bw is numerically not positive definite")
+
+      R <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
+
+      if (preserve.var) {
+
+        if (is.vector(bw)) {
+          if (length(bw) > 1) {
+            warning("'bw' has length > 1 and only the first element will be used")
+            bw <- bw[1]
+          }
+        } else {
+          stop("with 'mvn' kernel, and preserve.var = TRUE 'bw' must be a vector of size 1")
+        }
+
+        mx <- colMeans(data)
+        mx <- matrix(rep(mx, n), n, k, byrow = TRUE)
+        sx <- cov(data)
+
+        res <- repeatFun(1:R, function(i) {
+
+          idx <- sample.int(n, n, replace = TRUE, prob = weights)
+          boot.data <- data[idx, ]
+          eps <- (matrix(rnorm(n * k), ncol = k) %*% R)
+          boot.data[, num_cols] <- mx + (boot.data[, num_cols] - mx + eps)/sqrt(1 + adjust^2)
+
+          statistic(boot.data, ...)
+
+        }, mc.cores = mc.cores)
+
+      } else {
+
+        if (is.vector(bw))
+          bw <- diag(k) * bw
+
+        res <- repeatFun(1:R, function(i) {
+
+          idx <- sample.int(n, n, replace = TRUE, prob = weights)
+          boot.data <- data[idx, ]
+          eps <- (matrix(rnorm(n * k), ncol = k) %*% R)
+          boot.data[, num_cols] <- boot.data[, num_cols] + eps
+
+          statistic(boot.data, ...)
+
+        }, mc.cores = mc.cores)
+
+      }
+
+    } else if (preserve.var) {
 
       mx <- colMeans(data)
       sx <- diag(cov(data))

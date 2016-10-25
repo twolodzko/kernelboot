@@ -4,10 +4,11 @@
 \alias{kernelboot}
 \title{Kernel density bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500, bw, kernel = c("epanechnikov",
-  "gaussian", "rectangular", "triangular", "biweight", "triweight", "cosine",
-  "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
-  parallel = FALSE, mc.cores = getOption("mc.cores", 2L), ...)
+kernelboot(data, statistic, R = 500, bw, kernel = c("gaussian",
+  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
+  "cosine", "optcosine", "mvn"), preserve.var = TRUE, adjust = 1,
+  weights = NULL, parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
+  ...)
 }
 \arguments{
 \item{data}{Data.}
@@ -22,7 +23,7 @@ be the original data. Any further arguments can be passed to
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that
 this is the standard deviation, or covariance matrix of the smoothing kernel.
 If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
-and \code{\link{bw.silv86}} is used for multivariate data.}
+and \code{\link{bw.scott}} is used for multivariate data.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.}
 
@@ -68,7 +69,7 @@ Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 }
 \seealso{
-\code{\link{bandwidth}}, \code{\link[stats]{density}},
+\code{\link{bw.scott}}, \code{\link[stats]{density}},
          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 }
 

@@ -1,9 +1,9 @@
 
 
-#' Bandwidth Selectors for Multivariate Kernel Density Estimation
+#' Bandwidth Selector for Multivariate Kernel Density Estimation
 #'
-#' Rule of thumb bandwidth selectors for Gaussian kernels as described by
-#' Silverman (1986) and Scott (1992).
+#' Rule of thumb bandwidth selector for Gaussian kernels as described by
+#' Scott (1992).
 #'
 #' @param x numeric vector.
 #'
@@ -12,17 +12,9 @@
 #' Scott's rule is defined as
 #'
 #' \deqn{
-#' h_i = n^{-1/(d+4)} \sigma_i
+#' h_i = n^{-1/(d+4)} \hat\Sigma
 #' }{
-#' h[i] = n^(-1/(d+4)) * \sigma[i]
-#' }
-#'
-#' Silverman's rule is defined as
-#'
-#' \deqn{
-#' h_i = \left(\frac{4}{d+2}\right)^{1/(d+4)} n^{-1/(d+4)} \sigma_i
-#' }{
-#' h[i] = (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * \sigma[i]
+#' h[i] = n^(-1/(d+4)) * \Sigma
 #' }
 #'
 #' where \eqn{d} is number of variables and \eqn{n} is sampel size.
@@ -39,29 +31,34 @@
 #'
 #' @seealso \code{\link[stats]{bw.nrd}}
 #'
-#' @name bandwidth
-#' @aliases bw.silv86
-#' @aliases bw.scott
-#' @export
-
-bw.silv86 <- function(x) {
-  if (!(is.matrix(x) || is.data.frame(x)))
-    stop("this method works only for matrix, or data.frame objects")
-  S <- diag(cov(x))
-  d <- ncol(x)
-  n <- nrow(x)
-  (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * S
-}
-
-
-#' @rdname bandwidth
 #' @export
 
 bw.scott <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
-  S <- diag(cov(x))
   d <- ncol(x)
   n <- nrow(x)
-  n^(-1/(d+4)) * S
+  n^(-1/(d+4)) * cov(x)
 }
+
+#
+# bw.wand1994
+#
+# n^(min(8, d+4)/(2*d+12)) * I
+#
+# bw.sain1994
+#
+# n^(-d/(2*d+8)) * I
+
+
+
+#
+# #' @aliases bw.silv86
+# bw.silv86 <- function(x) {
+#   if (!(is.matrix(x) || is.data.frame(x)))
+#     stop("this method works only for matrix, or data.frame objects")
+#   S <- diag(cov(x))
+#   d <- ncol(x)
+#   n <- nrow(x)
+#   (4/(d+2))^(1/(d+4)) * n^(-1/(d+4)) * S
+# }
