@@ -81,12 +81,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
   if (!is.numeric(bw))
     stop("non-numeric 'bw' value")
 
-  if (is.vector(bw)) {
-    if (length(bw) > k) {
-      bw <- bw[1:k]
-      warning("'bw' has length > number of dimensions of the data")
-    }
-  } else if (is.matrix(bw)) {
+  if (is.matrix(bw)) {
     if (!is.square(bw) || ncol(bw) != k)
       stop("'bw' needs to be a square matrix with dimensions equal to number of columns in data")
     if (kernel != 'mvn')
@@ -95,10 +90,17 @@ kernelboot <- function(data, statistic, R = 500, bw,
     stop("'bw' must be a vector or square matrix")
   }
 
+  if (is.vector(bw)) {
+    if (length(bw) > k) {
+      bw <- bw[1:k]
+      warning("'bw' has length > number of dimensions of the data")
+    }
+    if (any(bw <= 0))
+      stop("'bw' is not positive.")
+  }
+
   if (!all(is.finite(bw)))
     stop("non-finite 'bw'")
-  if (any(bw <= 0))
-    stop("'bw' is not positive.")
 
   bw <- bw * adjust
 
@@ -131,13 +133,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
     if (kernel == "mvn") {
 
-      ev <- eigen(bw, symmetric = TRUE)
-
-      if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
-        warning("bw is numerically not positive definite")
-
-      R <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
-
       if (preserve.var) {
 
         if (is.vector(bw)) {
@@ -153,12 +148,19 @@ kernelboot <- function(data, statistic, R = 500, bw,
         mx <- matrix(rep(mx, n), n, k, byrow = TRUE)
         sx <- cov(data)
 
+        ev <- eigen(sx, symmetric = TRUE)
+
+        if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
+          warning("bw is numerically not positive definite")
+
+        evvmtx <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
+
         res <- repeatFun(1:R, function(i) {
 
           idx <- sample.int(n, n, replace = TRUE, prob = weights)
           boot.data <- data[idx, ]
-          eps <- (matrix(rnorm(n * k), ncol = k) %*% R)
-          boot.data[, num_cols] <- mx + (boot.data[, num_cols] - mx + eps)/sqrt(1 + adjust^2)
+          eps <- (matrix(rnorm(n * k), ncol = k) %*% evvmtx)
+          boot.data[, num_cols] <- mx + (boot.data[, num_cols] - mx + bw*eps)/sqrt(1 + bw^2)
 
           statistic(boot.data, ...)
 
@@ -169,12 +171,19 @@ kernelboot <- function(data, statistic, R = 500, bw,
         if (is.vector(bw))
           bw <- diag(k) * bw
 
+        ev <- eigen(bw, symmetric = TRUE)
+
+        if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
+          warning("bw is numerically not positive definite")
+
+        evvmtx <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
+
         res <- repeatFun(1:R, function(i) {
 
           idx <- sample.int(n, n, replace = TRUE, prob = weights)
           boot.data <- data[idx, ]
-          eps <- (matrix(rnorm(n * k), ncol = k) %*% R)
-          boot.data[, num_cols] <- boot.data[, num_cols] + eps
+          eps <- (matrix(rnorm(n * k), ncol = k) %*% evvmtx)
+          boot.data[, num_cols] <- boot.data[, num_cols] + bw*eps
 
           statistic(boot.data, ...)
 
