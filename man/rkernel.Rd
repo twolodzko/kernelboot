@@ -59,7 +59,7 @@ Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 
-Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S.
+Venables, W. N. and Ripley, B. D. (2002). Modern Applied Statistics with S.
 New York: Springer.
 }
 \seealso{

@@ -5,83 +5,6 @@
 
 using namespace Rcpp;
 
-// rempan
-NumericVector rempan(int n);
-RcppExport SEXP kernelboot_rempan(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rempan(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcosine
-NumericVector rcosine(int n);
-RcppExport SEXP kernelboot_rcosine(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcosine(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// roptcos
-NumericVector roptcos(int n);
-RcppExport SEXP kernelboot_roptcos(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(roptcos(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rtriang
-NumericVector rtriang(int n);
-RcppExport SEXP kernelboot_rtriang(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtriang(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rrect
-NumericVector rrect(int n);
-RcppExport SEXP kernelboot_rrect(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rrect(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rbiweight
-NumericVector rbiweight(int n);
-RcppExport SEXP kernelboot_rbiweight(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rbiweight(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rtriweight
-NumericVector rtriweight(int n);
-RcppExport SEXP kernelboot_rtriweight(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtriweight(n));
-    return rcpp_result_gen;
-END_RCPP
-}
 // add_noise
 NumericMatrix add_noise(const NumericMatrix& x, const std::string& kernel, const NumericVector& bandwidth, const NumericVector& mean, const NumericVector& var, const bool& preserve_var);
 RcppExport SEXP kernelboot_add_noise(SEXP xSEXP, SEXP kernelSEXP, SEXP bandwidthSEXP, SEXP meanSEXP, SEXP varSEXP, SEXP preserve_varSEXP) {
@@ -95,6 +18,49 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type var(varSEXP);
     Rcpp::traits::input_parameter< const bool& >::type preserve_var(preserve_varSEXP);
     rcpp_result_gen = Rcpp::wrap(add_noise(x, kernel, bandwidth, mean, var, preserve_var));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rng_kern
+NumericVector rng_kern(int n, const std::string& kernel);
+RcppExport SEXP kernelboot_rng_kern(SEXP nSEXP, SEXP kernelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    rcpp_result_gen = Rcpp::wrap(rng_kern(n, kernel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_rkernel
+NumericVector cpp_rkernel(int n, const NumericVector& data, const std::string& kernel, const NumericVector& bw, const NumericVector& adjust);
+RcppExport SEXP kernelboot_cpp_rkernel(SEXP nSEXP, SEXP dataSEXP, SEXP kernelSEXP, SEXP bwSEXP, SEXP adjustSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type adjust(adjustSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rkernel(n, data, kernel, bw, adjust));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_dkernel
+NumericVector cpp_dkernel(const NumericVector& x, const NumericVector& data, const std::string& kernel, const NumericVector& bw, const NumericVector& adjust, bool log_prob);
+RcppExport SEXP kernelboot_cpp_dkernel(SEXP xSEXP, SEXP dataSEXP, SEXP kernelSEXP, SEXP bwSEXP, SEXP adjustSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type adjust(adjustSEXP);
+    Rcpp::traits::input_parameter< bool >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_dkernel(x, data, kernel, bw, adjust, log_prob));
     return rcpp_result_gen;
 END_RCPP
 }

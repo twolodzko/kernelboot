@@ -40,7 +40,7 @@
 #' and visualization. John Wiley & Sons.
 #'
 #' @references
-#' Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S.
+#' Venables, W. N. and Ripley, B. D. (2002). Modern Applied Statistics with S.
 #' New York: Springer.
 #'
 #' @examples
@@ -59,22 +59,12 @@ rkernel <- function(n, x, bw = "nrd0",
 
   kernel <- match.arg(kernel)
 
-  rng_kern <- switch(kernel,
-                     epanechnikov = rempan,
-                     rectangular = rrect,
-                     triangular = rtriang,
-                     biweight = rbiweight,
-                     triweight = rtriweight,
-                     cosine = rcosine,
-                     optcosine = roptcos,
-                     rnorm)
-
   if (missing(x)) {
     if (!is.numeric(bw)) {
       warning(paste0("missing x, not using '", bw, "' bandwidth"))
       bw <- 1
     }
-    return(rng_kern(n) * bw*adjust)
+    return(rng_kern(n, kernel) * bw*adjust)
   }
 
   x <- as.vector(x)
@@ -140,7 +130,7 @@ rkernel <- function(n, x, bw = "nrd0",
   idx <- sample.int(nx, n, replace = TRUE, prob = weights)
 
   bw <- adjust * bw
-  eps <- rng_kern(n) * bw
+  eps <- rng_kern(n, kernel) * bw
 
   if (preserve.var) {
     mx <- mean(x)
