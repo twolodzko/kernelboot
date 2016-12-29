@@ -225,16 +225,6 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
   } else {
 
-    rng_kern <- switch(kernel,
-                       epanechnikov = rempan,
-                       rectangular = rrect,
-                       triangular = rtriang,
-                       biweight = rbiweight,
-                       triweight = rtriweight,
-                       cosine = rcosine,
-                       optcosine = roptcos,
-                       rnorm)
-
     if (preserve.var) {
 
       mx <- mean(data)
@@ -243,7 +233,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
       res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        eps <- rng_kern(n) * bw
+        eps <- rng_kern(n, kernel) * bw
         boot.data <- mx + (data[idx]-mx+eps)/sqrt(1 + bw^2/sx)
 
         statistic(boot.data, ...)
@@ -255,7 +245,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
       res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        eps <- rng_kern(n) * bw
+        eps <- rng_kern(n, kernel) * bw
         boot.data <- data[idx] + eps
 
         statistic(boot.data, ...)
