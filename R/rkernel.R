@@ -15,9 +15,9 @@
 #'                     and compatibility reasons, rather than as a general recommendation, where e.g., \code{"SJ"}
 #'                     would rather fit, see also Venables and Ripley (2002).
 #' @param kernel       a character string giving the smoothing kernel to be used.
-#' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
+#' @param preserve_var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
 #'                     \emph{Warning:} this leads to samples that differ from \code{\link[stats]{density}}
-#'                     estimates, so for samples consistent with it \code{preserve.var} should be set to \code{FALSE}.
+#'                     estimates, so for samples consistent with it \code{preserve_var} should be set to \code{FALSE}.
 #' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify values like
 #'                     'half the default' bandwidth.
 #' @param weights      numeric vector of non-negative observation weights, hence of same length as \code{x}.
@@ -45,7 +45,7 @@
 #'
 #' @examples
 #'
-#' hist(rkernel(1e5, mtcars$disp, preserve.var = FALSE, kernel = "gaussian"), 100, freq = FALSE)
+#' hist(ruvkern(1e5, mtcars$disp, preserve_var = FALSE, kernel = "gaussian"), 100, freq = FALSE)
 #' lines(density(mtcars$disp), col = "red")
 #' rug(mtcars$disp, lwd = 2)
 #'
@@ -54,7 +54,7 @@
 rkernel <- function(n, x, bw = "nrd0",
                     kernel = c("gaussian", "epanechnikov", "rectangular",
                                "triangular", "biweight", "triweight",
-                               "cosine", "optcosine"), preserve.var = TRUE,
+                               "cosine", "optcosine"), preserve_var = TRUE,
                     adjust = 1, weights = NULL, na.rm = FALSE) {
 
   kernel <- match.arg(kernel)
@@ -64,14 +64,14 @@ rkernel <- function(n, x, bw = "nrd0",
       warning(paste0("missing x, not using '", bw, "' bandwidth"))
       bw <- 1
     }
-    return(rng_kern(n, kernel) * bw*adjust)
+    return(cpp_rkernel(n, 0, kernel, bw, adjust, preserve_var))
   }
 
   x <- as.vector(x)
 
   if (length(x) == 1 || isTRUE(all.equal(var(x), 0))) {
-    preserve.var <- FALSE
-    warning("var(x) is 0: preserve.var was changed to FALSE")
+    preserve_var <- FALSE
+    warning("var(x) is 0: preserve_var was changed to FALSE")
   }
 
   x.na <- is.na(x)
@@ -127,18 +127,7 @@ rkernel <- function(n, x, bw = "nrd0",
       weights <- weights[x.finite]
   }
 
-  idx <- sample.int(nx, n, replace = TRUE, prob = weights)
-
-  bw <- adjust * bw
-  eps <- rng_kern(n, kernel) * bw
-
-  if (preserve.var) {
-    mx <- mean(x)
-    sx <- var(x)
-    mx + (x[idx]-mx+eps)/sqrt(1 + bw^2/sx)
-  } else {
-    x[idx]+eps
-  }
+  cpp_ruvkern(n, x, kernel, bw, adjust, preserve_var)
 
 }
 

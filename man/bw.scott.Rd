@@ -35,4 +35,3 @@ and visualization. John Wiley & Sons.
 \seealso{
 \code{\link[stats]{bw.nrd}}
 }
-

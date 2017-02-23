@@ -6,7 +6,7 @@
 \usage{
 rkernel(n, x, bw = "nrd0", kernel = c("gaussian", "epanechnikov",
   "rectangular", "triangular", "biweight", "triweight", "cosine", "optcosine"),
-  preserve.var = TRUE, adjust = 1, weights = NULL, na.rm = FALSE)
+  preserve_var = TRUE, adjust = 1, weights = NULL, na.rm = FALSE)
 }
 \arguments{
 \item{n}{number of observations to be drawn. If \code{length(n) > 1}, the length is taken to be the number required.
@@ -26,9 +26,9 @@ would rather fit, see also Venables and Ripley (2002).}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.}
 
-\item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
+\item{preserve_var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
 \emph{Warning:} this leads to samples that differ from \code{\link[stats]{density}}
-estimates, so for samples consistent with it \code{preserve.var} should be set to \code{FALSE}.}
+estimates, so for samples consistent with it \code{preserve_var} should be set to \code{FALSE}.}
 
 \item{adjust}{the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify values like
 'half the default' bandwidth.}
@@ -45,7 +45,7 @@ Draw samples from kernel density
 }
 \examples{
 
-hist(rkernel(1e5, mtcars$disp, preserve.var = FALSE, kernel = "gaussian"), 100, freq = FALSE)
+hist(ruvkern(1e5, mtcars$disp, preserve_var = FALSE, kernel = "gaussian"), 100, freq = FALSE)
 lines(density(mtcars$disp), col = "red")
 rug(mtcars$disp, lwd = 2)
 
@@ -65,4 +65,3 @@ New York: Springer.
 \seealso{
 \code{\link[stats]{density}}
 }
-

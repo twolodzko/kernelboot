@@ -72,4 +72,3 @@ and visualization. John Wiley & Sons.
 \code{\link{bw.scott}}, \code{\link[stats]{density}},
          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 }
-

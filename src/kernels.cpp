@@ -1,3 +1,4 @@
+#include "kernels.h"
 #include <Rcpp.h>
 
 
@@ -125,4 +126,55 @@ double dens_gauss(double x, double bw) {
   return R::dnorm(x, 0.0, bw, false);
 }
 
+
+DfptrV get_rng_fun(std::string kernel) {
+
+  double (*rng_kern)();
+
+  if (kernel == "rectangular") {
+    rng_kern = rng_rect;
+  } else if (kernel == "triangular") {
+    rng_kern = rng_triang;
+  } else if (kernel == "biweight") {
+    rng_kern = rng_biweight;
+  } else if (kernel == "triweight") {
+    rng_kern = rng_triweight;
+  } else if (kernel == "cosine") {
+    rng_kern = rng_cosine;
+  } else if (kernel == "optcosine") {
+    rng_kern = rng_optcos;
+  } else if (kernel == "epanechnikov") {
+    rng_kern = rng_epan;
+  } else {
+    rng_kern = R::norm_rand;
+  }
+
+  return rng_kern;
+}
+
+DfptrDD get_pdf_fun(std::string kernel) {
+
+  double (*dens_kern)(double, double);
+
+  if (kernel == "rectangular") {
+    dens_kern = dens_rect;
+  } else if (kernel == "triangular") {
+    dens_kern = dens_triang;
+  } else if (kernel == "biweight") {
+    dens_kern = dens_biweight;
+  } else if (kernel == "triweight") {
+    dens_kern = dens_triweight;
+  } else if (kernel == "cosine") {
+    dens_kern = dens_cosine;
+  } else if (kernel == "optcosine") {
+    dens_kern = dens_optcos;
+  } else if (kernel == "epanechnikov") {
+    dens_kern = dens_epan;
+  } else {
+    dens_kern = dens_gauss;
+  }
+
+  return dens_kern;
+
+}
 
