@@ -3,7 +3,19 @@
 #ifndef KERNELS_H
 #define KERNELS_H
 
-#include "shared.h"
+#include <Rcpp.h>
+
+// functions from names
+
+typedef double(*DfptrV)(void);
+typedef double(*DfptrDD)(double, double);
+
+DfptrV get_rng_fun(std::string kernel);
+DfptrDD get_pdf_fun(std::string kernel);
+
+// general
+
+double rng_unif();
 
 // kernel RNGs
 
