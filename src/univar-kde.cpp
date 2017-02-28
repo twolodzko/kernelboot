@@ -34,8 +34,8 @@ Rcpp::List cpp_duvkde(
     dens_kern = dens_gauss;
   }
 
-  const int k = x.size();
-  const int n = y.size();
+  const unsigned int k = x.size();
+  const unsigned int n = y.size();
   arma::vec p(n), c_weights(k);
 
   if (bandwidth < 0.0)
