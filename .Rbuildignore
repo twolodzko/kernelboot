@@ -3,3 +3,6 @@
 working/.*$
 Readme.rmd
 Todo.txt
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$

@@ -14,3 +14,4 @@ Imports: Rcpp, RcppArmadillo, parallel
 SystemRequirements: C++11
 LazyData: TRUE
 RoxygenNote: 6.0.1
+Suggests: covr
