@@ -28,7 +28,7 @@ arma::vec cpp_dmvn(
     arma::mat x,
     arma::rowvec mu,
     arma::mat sigma,
-    bool log_prob
+    bool log_prob = false
   ) {
 
   int n = x.n_rows;
@@ -41,7 +41,7 @@ arma::vec cpp_dmvn(
   arma::vec z;
   for (int i = 0; i < n; i++) {
     z = rooti * arma::trans( x.row(i) - mu ) ;
-    p(i) = constants - 0.5 * arma::sum(z % z) + rootisum;
+    p[i] = constants - 0.5 * arma::sum(z % z) + rootisum;
   }
 
   if (!log_prob)
