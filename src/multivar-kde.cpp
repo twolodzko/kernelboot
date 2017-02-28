@@ -14,9 +14,9 @@ Rcpp::List cpp_dmvkde(
     const bool& is_chol = false
   ) {
 
-  const int n = y.n_rows;
-  const int m = x.n_cols;
-  const int k = x.n_rows;
+  const unsigned int n = y.n_rows;
+  const unsigned int m = x.n_cols;
+  const unsigned int k = x.n_rows;
   arma::vec p(n), c_weights(k);
 
   if (y.n_cols != m)
