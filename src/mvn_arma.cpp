@@ -29,8 +29,8 @@ arma::vec cpp_dmvn(
     bool log_prob = false
   ) {
 
-  int n = x.n_rows;
-  int k = x.n_cols;
+  unsigned int n = x.n_rows;
+  unsigned int k = x.n_cols;
   arma::vec p(n);
 
   try {
@@ -69,7 +69,7 @@ arma::mat cpp_rmvn(
     arma::mat sigma
   ) {
 
-  int k = sigma.n_cols;
+  unsigned int k = sigma.n_cols;
   arma::mat res(n, k);
 
   try {
