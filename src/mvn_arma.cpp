@@ -2,8 +2,6 @@
 #include <RcppArmadillo.h>
 // [[Rcpp::depends("RcppArmadillo")]]
 
-#include "mvn_arma.h"
-
 /*
  * The following code comes from Rcpp Gallery articles:
  *
@@ -34,20 +32,33 @@ arma::vec cpp_dmvn(
   int n = x.n_rows;
   int k = x.n_cols;
   arma::vec p(n);
-  arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
-  double rootisum = arma::sum(log(rooti.diag()));
-  double constants = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
 
-  arma::vec z;
-  for (int i = 0; i < n; i++) {
-    z = rooti * arma::trans( x.row(i) - mu ) ;
-    p[i] = constants - 0.5 * arma::sum(z % z) + rootisum;
+  try {
+
+    arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
+    double rootisum = arma::sum(log(rooti.diag()));
+    double constants = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
+
+    arma::vec z;
+    for (int i = 0; i < n; i++) {
+      z = rooti * arma::trans( x.row(i) - mu ) ;
+      p[i] = constants - 0.5 * arma::sum(z % z) + rootisum;
+    }
+
+    if (!log_prob)
+      p = exp(p);
+
+    return p;
+
+  } catch ( std::exception& __ex__ ) {
+    forward_exception_to_r(__ex__);
+  } catch (...) {
+    ::Rf_error( "c++ exception (unknown reason)" );
   }
 
-  if (!log_prob)
-    p = exp(p);
-
+  p.fill(NAN);
   return p;
+
 }
 
 
@@ -59,7 +70,21 @@ arma::mat cpp_rmvn(
   ) {
 
   int k = sigma.n_cols;
-  arma::mat Y = arma::randn(n, k);
-  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+  arma::mat res(n, k);
+
+  try {
+
+    arma::mat Y = arma::randn(n, k);
+    return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+
+  } catch ( std::exception& __ex__ ) {
+    forward_exception_to_r(__ex__);
+  } catch (...) {
+    ::Rf_error( "c++ exception (unknown reason)" );
+  }
+
+  res.fill(NA_REAL);
+  return res;
+
 }
 

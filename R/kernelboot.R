@@ -51,12 +51,14 @@
 #' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
 #'          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 #'
+#' @importFrom stats bw.nrd0
+#' @importFrom parallel mclapply
 #' @export
 
-kernelboot <- function(data, statistic, R = 500, bw,
+kernelboot <- function(data, statistic, R = 500L, bw,
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
-                                  "cosine", "optcosine", "mvn"), preserve.var = TRUE,
+                                  "cosine", "optcosine"), preserve.var = TRUE,
                        adjust = 1, weights = NULL,
                        parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
                        ...) {
@@ -67,7 +69,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
   k <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
-    stop("'data' must be a vector, data.frame, or matrix.")
+    stop("data must be a vector, data.frame, or matrix.")
 
   if (missing(bw)) {
     if (is.vector(data)) {
@@ -79,38 +81,29 @@ kernelboot <- function(data, statistic, R = 500, bw,
     }
   }
   if (!is.numeric(bw))
-    stop("non-numeric 'bw' value")
+    stop("non-numeric bw value")
 
-  if (is.matrix(bw)) {
-    if (!is.square(bw) || ncol(bw) != k)
-      stop("'bw' needs to be a square matrix with dimensions equal to number of columns in data")
-    if (kernel != 'mvn')
-      bw <- diag(bw)
-  } else {
-    stop("'bw' must be a vector or square matrix")
-  }
+  bw <- bw * adjust
 
   if (is.vector(bw)) {
     if (length(bw) > k) {
       bw <- bw[1:k]
-      warning("'bw' has length > number of dimensions of the data")
+      warning("bw has length > number of dimensions of the data")
     }
     if (any(bw <= 0))
-      stop("'bw' is not positive.")
+      stop("bw is not positive.")
   }
 
   if (!all(is.finite(bw)))
-    stop("non-finite 'bw'")
-
-  bw <- bw * adjust
+    stop("non-finite bw")
 
   if (!is.null(weights)) {
     if (length(weights) != n)
-      stop("'data' and 'weights' have unequal sizes")
+      stop("data and weights have unequal sizes")
     if (!all(is.finite(weights)))
-      stop("'weights' must all be finite")
+      stop("weights must all be finite")
     if (any(weights < 0))
-      stop("'weights' must not be negative")
+      stop("weights must not be negative")
   }
 
   tryCatch(
@@ -129,94 +122,68 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
   if (is.data.frame(data) || is.matrix(data)) {
 
-    num_cols <- apply(data, 2, is.numeric)
+    num_cols <- is_numeric(data)
 
-    if (kernel == "mvn") {
-
-      if (preserve.var) {
-
-        if (is.vector(bw)) {
-          if (length(bw) > 1) {
-            warning("'bw' has length > 1 and only the first element will be used")
-            bw <- bw[1]
-          }
-        } else {
-          stop("with 'mvn' kernel, and preserve.var = TRUE 'bw' must be a vector of size 1")
-        }
-
-        mx <- colMeans(data)
-        mx <- matrix(rep(mx, n), n, k, byrow = TRUE)
-        sx <- cov(data)
-
-        ev <- eigen(sx, symmetric = TRUE)
-
-        if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
-          warning("bw is numerically not positive definite")
-
-        evvmtx <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
-
-        res <- repeatFun(1:R, function(i) {
-
-          idx <- sample.int(n, n, replace = TRUE, prob = weights)
-          boot.data <- data[idx, ]
-          eps <- (matrix(rnorm(n * k), ncol = k) %*% evvmtx)
-          boot.data[, num_cols] <- mx + (boot.data[, num_cols] - mx + bw*eps)/sqrt(1 + bw^2)
-
-          statistic(boot.data, ...)
-
-        }, mc.cores = mc.cores)
-
-      } else {
-
-        if (is.vector(bw))
-          bw <- diag(k) * bw
-
-        ev <- eigen(bw, symmetric = TRUE)
-
-        if (!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1])))
-          warning("bw is numerically not positive definite")
-
-        evvmtx <- t(ev$vectors %*% (t(ev$vectors) * sqrt(ev$values)))
-
-        res <- repeatFun(1:R, function(i) {
-
-          idx <- sample.int(n, n, replace = TRUE, prob = weights)
-          boot.data <- data[idx, ]
-          eps <- (matrix(rnorm(n * k), ncol = k) %*% evvmtx)
-          boot.data[, num_cols] <- boot.data[, num_cols] + bw*eps
-
-          statistic(boot.data, ...)
-
-        }, mc.cores = mc.cores)
-
-      }
-
-    } else if (preserve.var) {
-
-      mx <- colMeans(data)
-      sx <- diag(cov(data))
+    if (length(num_cols) == 0) {
 
       res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx, ]
-        boot.data[, num_cols] <- add_noise(as.matrix(boot.data[, num_cols]),
-                                           kernel, bw, mean = mx, var = sx,
-                                           preserve_var = preserve.var)
-
         statistic(boot.data, ...)
 
       }, mc.cores = mc.cores)
 
     } else {
 
+      if (is.null(weights))
+        weights <- rep(1/n, n)
+
+      if (kernel != "gaussian") {
+        kernel <- "gaussian"
+        warning("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
+      }
+
+      data_mtx <- as.matrix(data[, num_cols])
+      if (mtxrank(data_mtx) < min(n, k))
+        warning("x is rank deficient")
+
+      bw <- bw[num_cols, num_cols]
+      bw_chol <- chol(bw)
+
+      res <- repeatFun(1:R, function(i) {
+
+        samp <- cpp_rmvkde(n, data_mtx, bw_chol, weights, is_chol = TRUE)
+        idx <- samp$boot_index
+        boot.data <- data[idx, ]
+        boot.data[, num_cols] <- samp$sample
+        statistic(boot.data, ...)
+
+      }, mc.cores = mc.cores)
+
+    }
+
+  } else if (is.vector(data)) {
+
+    if (is.numeric(data)) {
+
       res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        boot.data <- data[idx, ]
-        boot.data[, num_cols] <- add_noise(as.matrix(boot.data[, num_cols]),
-                                           kernel, bw, preserve_var = FALSE)
+        boot.data <- data[idx]
+        statistic(boot.data, ...)
 
+      }, mc.cores = mc.cores)
+
+    } else {
+
+      if (is.null(weights))
+        weights <- rep(1/n, n)
+
+      res <- repeatFun(1:R, function(i) {
+
+        samp <- cpp_ruvkde(n, data, bw, weights, kernel, preserve.var)
+        boot.data <- drop(samp$sample)
         statistic(boot.data, ...)
 
       }, mc.cores = mc.cores)
@@ -225,34 +192,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
 
   } else {
 
-    if (preserve.var) {
-
-      mx <- mean(data)
-      sx <- var(data)
-
-      res <- repeatFun(1:R, function(i) {
-
-        idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        eps <- rng_kern(n, kernel) * bw
-        boot.data <- mx + (data[idx]-mx+eps)/sqrt(1 + bw^2/sx)
-
-        statistic(boot.data, ...)
-
-      }, mc.cores = mc.cores)
-
-    } else {
-
-      res <- repeatFun(1:R, function(i) {
-
-        idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        eps <- rng_kern(n, kernel) * bw
-        boot.data <- data[idx] + eps
-
-        statistic(boot.data, ...)
-
-      }, mc.cores = mc.cores)
-
-    }
+    stop("unsupported data type")
 
   }
 
@@ -267,7 +207,7 @@ kernelboot <- function(data, statistic, R = 500, bw,
       adjust       = adjust,
       kernel       = kernel,
       preserve.var = preserve.var,
-      weights      = if (missing(weights)) "uniform" else weights,
+      weights      = weights,
       parallel     = parallel
     )
   ), class = "kernelboot")

@@ -5,7 +5,7 @@ library(Rcpp)
 library(ggplot2)
 
 sourceCpp("src/multivar-kde.cpp")
-
+sourceCpp("src/univar-kde.cpp")
 
 vars <- c("mpg", "disp")
 X <- as.matrix(mtcars[, vars])
@@ -87,5 +87,32 @@ ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
   #            aes_string(x = vars[1], y = vars[2]),
   #            color = "red") +
   theme_minimal()
+
+
+
+
+
+X <- as.matrix(mtcars[vars])
+(bw <- matrix(c(50, 10, 10, 50), 2, 2))
+samp <- cpp_rmvkde(5000, X, bw, 1)
+Y <- as.data.frame(samp$sample)
+colnames(X) <- colnames(Y) <- vars
+Y$p <- drop(cpp_dmvkde(as.matrix(Y[,1:2]), X, bw, 1)$density)
+
+
+
+ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
+  geom_density2d(color = "lightgray") +
+  geom_jitter(data = Y, aes_string(x = vars[1], y = vars[2], colour = "p"),
+              alpha = 0.5) +
+  scale_colour_gradientn(colours = terrain.colors(10)) +
+  geom_density2d(color = "lightgray") +
+  geom_point(shape = 2) +
+  # geom_point(data = as.data.frame(t(colMeans(X))),
+  #            aes_string(x = vars[1], y = vars[2]),
+  #            color = "red") +
+  theme_minimal()
+
+
 
 

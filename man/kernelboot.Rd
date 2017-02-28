@@ -4,11 +4,10 @@
 \alias{kernelboot}
 \title{Kernel density bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500, bw, kernel = c("gaussian",
+kernelboot(data, statistic, R = 500L, bw, kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine", "mvn"), preserve.var = TRUE, adjust = 1,
-  weights = NULL, parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
-  ...)
+  "cosine", "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
+  parallel = FALSE, mc.cores = getOption("mc.cores", 2L), ...)
 }
 \arguments{
 \item{data}{Data.}
