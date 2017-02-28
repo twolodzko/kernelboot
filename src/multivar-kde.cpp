@@ -30,10 +30,10 @@ Rcpp::List cpp_dmvkde(
 
   try {
 
-    if (weights.size() == 1) {
+    if (weights.n_elem == 1) {
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
-      if (weights.size() != k)
+      if (weights.n_elem != k)
         Rcpp::stop("length(weights) != nrow(x)");
       c_weights = weights;
     }
@@ -106,10 +106,10 @@ Rcpp::List cpp_rmvkde(
 
   try {
 
-    if (weights.size() == 1) {
+    if (weights.n_elem == 1) {
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
-      if (weights.size() != k)
+      if (weights.n_elem != k)
         Rcpp::stop("length(weights) != nrow(x)");
       c_weights = weights;
     }

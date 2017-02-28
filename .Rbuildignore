@@ -2,7 +2,6 @@
 ^\.Rproj\.user$
 working/.*$
 Readme.rmd
-Todo.txt
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$

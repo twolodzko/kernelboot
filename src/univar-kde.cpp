@@ -34,8 +34,8 @@ Rcpp::List cpp_duvkde(
     dens_kern = dens_gauss;
   }
 
-  const unsigned int k = x.size();
-  const unsigned int n = y.size();
+  const unsigned int k = x.n_elem;
+  const unsigned int n = y.n_elem;
   arma::vec p(n), c_weights(k);
 
   if (bandwidth < 0.0)
@@ -44,10 +44,10 @@ Rcpp::List cpp_duvkde(
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
-  if (weights.size() == 1) {
+  if (weights.n_elem == 1) {
     c_weights.fill( 1.0/static_cast<double>(k) );
   } else {
-    if (weights.size() != k)
+    if (weights.n_elem != k)
       Rcpp::stop("length(weights) != length(x)");
     c_weights = weights;
   }
@@ -109,7 +109,7 @@ Rcpp::List cpp_ruvkde(
     rng_kern = R::norm_rand;
   }
 
-  const int k = x.size();
+  const int k = x.n_elem;
   arma::vec samp(n);
   arma::vec c_weights(k);
   std::vector<int> idx(n);
@@ -120,10 +120,10 @@ Rcpp::List cpp_ruvkde(
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
-  if (weights.size() == 1) {
+  if (weights.n_elem == 1) {
     c_weights.fill( 1.0/static_cast<double>(k) );
   } else {
-    if (weights.size() != k)
+    if (weights.n_elem != k)
       Rcpp::stop("length(weights) != length(x)");
     c_weights = weights;
   }
