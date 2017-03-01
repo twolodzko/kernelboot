@@ -23,10 +23,10 @@
 
 // [[Rcpp::export]]
 arma::vec cpp_dmvn(
-    arma::mat x,
-    arma::rowvec mu,
-    arma::mat sigma,
-    bool log_prob = false
+    const arma::mat& x,
+    const arma::rowvec& mu,
+    const arma::mat& sigma,
+    const bool& log_prob = false
   ) {
 
   const unsigned int n = x.n_rows;
@@ -64,9 +64,9 @@ arma::vec cpp_dmvn(
 
 // [[Rcpp::export]]
 arma::mat cpp_rmvn(
-    int n,
-    arma::vec mu,
-    arma::mat sigma
+    const unsigned int& n,
+    const arma::vec& mu,
+    const arma::mat& sigma
   ) {
 
   const unsigned int k = sigma.n_cols;

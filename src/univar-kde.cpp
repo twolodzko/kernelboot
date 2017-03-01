@@ -81,7 +81,7 @@ Rcpp::List cpp_duvkde(
 
 // [[Rcpp::export]]
 Rcpp::List cpp_ruvkde(
-    const int& n,
+    const unsigned int& n,
     const arma::vec& x,
     const double& bandwidth,
     const arma::vec& weights,
@@ -112,7 +112,7 @@ Rcpp::List cpp_ruvkde(
   const unsigned int k = x.n_elem;
   arma::vec samp(n);
   arma::vec c_weights(k);
-  std::vector<int> idx(n);
+  std::vector<unsigned int> idx(n);
 
   if (bandwidth < 0.0)
     Rcpp::stop("bandwidth needs to be non-negative");

@@ -85,7 +85,7 @@ Rcpp::List cpp_dmvkde(
 
 // [[Rcpp::export]]
 Rcpp::List cpp_rmvkde(
-    const int& n,
+    const unsigned int& n,
     const arma::mat& x,
     const arma::mat& bandwidth,
     const arma::vec& weights,
@@ -96,7 +96,7 @@ Rcpp::List cpp_rmvkde(
   const unsigned int k = x.n_rows;
   arma::mat samp(n, m);
   arma::vec c_weights(k);
-  std::vector<int> idx(n);
+  std::vector<unsigned int> idx(n);
 
   if (bandwidth.n_cols != bandwidth.n_rows || bandwidth.n_cols != m)
     Rcpp::stop("wrong dimmensions of bandwidth");
