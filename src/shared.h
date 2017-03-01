@@ -1,11 +1,10 @@
 
-#ifndef SHARED_H
-#define SHARED_H
+#ifndef KB_SHARED_H
+#define KB_SHARED_H
 
 #include <RcppArmadillo.h>
 
 double rng_unif();
-
-unsigned int sample_int(arma::vec cumul_weights);
+unsigned int sample_int(const arma::vec& cumul_weights);
 
 #endif

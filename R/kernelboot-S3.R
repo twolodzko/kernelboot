@@ -1,5 +1,5 @@
 
-#' @importFrom stats quantile
+#' @importFrom stats quantile sd
 #' @export
 
 print.kernelboot <- function(x, ...) {

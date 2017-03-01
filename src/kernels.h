@@ -1,6 +1,6 @@
 
-#ifndef KERNELS_H
-#define KERNELS_H
+#ifndef KB_KERNELS_H
+#define KB_KERNELS_H
 
 #include "shared.h"
 

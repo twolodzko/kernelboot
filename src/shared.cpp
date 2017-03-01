@@ -1,5 +1,4 @@
 
-
 #include <RcppArmadillo.h>
 #include "shared.h"
 
@@ -13,7 +12,10 @@ double rng_unif() {
   return u;
 }
 
-unsigned int sample_int(arma::vec cumul_weights) {
+// sample integers from discrete distribution
+// cumul_weights is a vector of cumulative weights
+
+unsigned int sample_int(const arma::vec& cumul_weights) {
   unsigned int j;
   double u = rng_unif();
   for (j = 0; j < cumul_weights.n_elem; j++) {

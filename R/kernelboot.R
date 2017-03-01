@@ -10,20 +10,23 @@
 #' @param bw           the smoothing bandwidth to be used. The kernels are scaled such that
 #'                     this is the standard deviation, or covariance matrix of the smoothing kernel.
 #'                     If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
-#'                     and \code{\link{bw.scott}} is used for multivariate data.
+#'                     and \code{\link{bw.silv}} is used for multivariate data.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
-#' @param adjust       the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
-#'                     values like 'half the default' bandwidth.
+#' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}. This makes it easy
+#'                     to specify values like 'half the default' bandwidth.
 #' @param weights      Vector of importance weights. It should have as many
 #'                     elements as there are observations in \code{data}.
 #' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
 #' @param mc.cores     number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
 #' @param \dots        further arguments passed to \code{statistic}.
 #'
+#'
 #' @details
 #'
-#' Samples are drawn from kernel density using the following procedure (Silverman, 1986):
+#' \strong{Univariate kernel densities}
+#'
+#' Samples are drawn from univariate kernel density using the following procedure (Silverman, 1986):
 #'
 #' \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
 #'
@@ -32,10 +35,17 @@
 #' \emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
 #'
 #' If samples are required to have the same variance as \code{data}
-#'  (\code{preserve.var} is set to \code{TRUE}), then \emph{Step 3} is modified
+#' (i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
 #' as following:
 #'
 #' \emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
+#'
+#'
+#' \strong{Multivariate kernel densities}
+#'
+#' In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
+#' (see \code{\link{rmvn}}).
+#'
 #'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -48,14 +58,18 @@
 #' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
 #'
-#' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
-#'          \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
 #'
-#' @importFrom stats bw.nrd0
+#' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
+#'          \code{\link[stats]{bandwidth}}, \code{\link{dmvn}},
+#'          \code{\link{duvkd}}, \code{\link{dmvkd}}
+#'
+#'
+#' @importFrom stats bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom parallel mclapply
+#'
 #' @export
 
-kernelboot <- function(data, statistic, R = 500L, bw,
+kernelboot <- function(data, statistic, R = 500L, bw = "default",
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"), preserve.var = TRUE,
@@ -71,19 +85,29 @@ kernelboot <- function(data, statistic, R = 500L, bw,
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("data must be a vector, data.frame, or matrix.")
 
-  if (missing(bw)) {
-    if (is.vector(data)) {
-      if (n < 2)
-        stop("need at least 2 points to select a bandwidth automatically")
-      bw <- bw.nrd0(data)
+  if (is.character(bw)) {
+    bw <- tolower(bw)
+    if (bw == "default") {
+      if (is.vector(data)) {
+        if (n < 2)
+          stop("need at least 2 points to select a bandwidth automatically")
+        bw <- bw.nrd0(data)
+      } else {
+        bw <- bw.silv(data)
+      }
     } else {
-      bw <- bw.scott(data)
+      bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
+                   ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
+                   `sj-ste` = bw.SJ(data, method = "ste"),
+                   `sj-dpi` = bw.SJ(data, method = "dpi"),
+                   `silv` = bw.silv(data), `scott` = bw.scott(data),
+                   stop("unknown bandwidth rule"))
     }
   }
   if (!is.numeric(bw))
     stop("non-numeric bw value")
 
-  bw <- bw * adjust
+  bw <- bw * adjust[1L]
 
   if (!all(is.finite(bw)))
     stop("non-finite bw")
@@ -136,18 +160,23 @@ kernelboot <- function(data, statistic, R = 500L, bw,
       }
 
       data_mtx <- as.matrix(data[, num_cols])
-      if (qr(x)$rank < min(n, k))
-        warning("x is rank deficient")
+      if (qr(data)$rank < min(n, k))
+        warning("data matrix is rank deficient")
+
+      if (!(is.matrix(bw) || is.data.frame(bw)))
+        stop("bw is not a matrix, or data.frame")
+      if (ncol(data) != k || nrow(bw) != k)
+        stop("bw has wrong dimmensions")
 
       bw <- bw[num_cols, num_cols]
       bw_chol <- chol(bw)
 
       res <- repeatFun(1:R, function(i) {
 
-        samp <- cpp_rmvkde(n, data_mtx, bw_chol, weights, is_chol = TRUE)
+        samp <- cpp_rmvkd(n, data_mtx, bw_chol, weights, is_chol = TRUE)
         idx <- samp$boot_index
         boot.data <- data[idx, ]
-        boot.data[, num_cols] <- samp$sample
+        boot.data[, num_cols] <- samp$samples
         statistic(boot.data, ...)
 
       }, mc.cores = mc.cores)
@@ -156,14 +185,7 @@ kernelboot <- function(data, statistic, R = 500L, bw,
 
   } else if (is.vector(data)) {
 
-    if (length(bw) > k) {
-      bw <- bw[1:k]
-      warning("bw has length > number of dimensions of the data")
-    }
-    if (any(bw <= 0))
-      stop("bw is not positive.")
-
-    if (is.numeric(data)) {
+    if (!is.numeric(data)) {
 
       res <- repeatFun(1:R, function(i) {
 
@@ -175,13 +197,22 @@ kernelboot <- function(data, statistic, R = 500L, bw,
 
     } else {
 
+      if (!is.vector(bw))
+        stop("bw is not a scalar")
+      if (length(bw) != 1L) {
+        bw <- bw[1L]
+        warning("bw has length > 1 and only the first element will be used")
+      }
+      if (any(bw <= 0))
+        stop("bw is not positive.")
+
       if (is.null(weights))
         weights <- rep(1/n, n)
 
       res <- repeatFun(1:R, function(i) {
 
-        samp <- cpp_ruvkde(n, data, bw, weights, kernel, preserve.var)
-        boot.data <- drop(samp$sample)
+        samp <- cpp_ruvkd(n, data, bw, weights, kernel, preserve.var)
+        boot.data <- drop(samp$samples)
         statistic(boot.data, ...)
 
       }, mc.cores = mc.cores)

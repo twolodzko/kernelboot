@@ -36,12 +36,12 @@ arma::vec cpp_dmvn(
 
     arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
     double rootisum = arma::sum(log(rooti.diag()));
-    double constants = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
+    double c = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
 
     arma::vec z;
     for (unsigned int i = 0; i < n; i++) {
       z = rooti * arma::trans( x.row(i) - mu ) ;
-      p[i] = constants - 0.5 * arma::sum(z % z) + rootisum;
+      p[i] = c - 0.5 * arma::sum(z % z) + rootisum;
     }
 
     if (!log_prob)

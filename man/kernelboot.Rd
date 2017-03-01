@@ -4,10 +4,11 @@
 \alias{kernelboot}
 \title{Kernel density bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500L, bw, kernel = c("gaussian",
-  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), preserve.var = TRUE, adjust = 1, weights = NULL,
-  parallel = FALSE, mc.cores = getOption("mc.cores", 2L), ...)
+kernelboot(data, statistic, R = 500L, bw = "default",
+  kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
+  "biweight", "triweight", "cosine", "optcosine"), preserve.var = TRUE,
+  adjust = 1, weights = NULL, parallel = FALSE,
+  mc.cores = getOption("mc.cores", 2L), ...)
 }
 \arguments{
 \item{data}{Data.}
@@ -22,14 +23,14 @@ be the original data. Any further arguments can be passed to
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that
 this is the standard deviation, or covariance matrix of the smoothing kernel.
 If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
-and \code{\link{bw.scott}} is used for multivariate data.}
+and \code{\link{bw.silv}} is used for multivariate data.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.}
 
 \item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.}
 
-\item{adjust}{the bandwidth used is actually \code{adjust*bw}. This makes it easy to specify
-values like 'half the default' bandwidth.}
+\item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes it easy
+to specify values like 'half the default' bandwidth.}
 
 \item{weights}{Vector of importance weights. It should have as many
 elements as there are observations in \code{data}.}
@@ -44,7 +45,9 @@ elements as there are observations in \code{data}.}
 Kernel density bootstrap
 }
 \details{
-Samples are drawn from kernel density using the following procedure (Silverman, 1986):
+\strong{Univariate kernel densities}
+
+Samples are drawn from univariate kernel density using the following procedure (Silverman, 1986):
 
 \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
 
@@ -53,10 +56,16 @@ Samples are drawn from kernel density using the following procedure (Silverman, 
 \emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
 
 If samples are required to have the same variance as \code{data}
- (\code{preserve.var} is set to \code{TRUE}), then \emph{Step 3} is modified
+(i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
 as following:
 
 \emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
+
+
+\strong{Multivariate kernel densities}
+
+In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
+(see \code{\link{rmvn}}).
 }
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -69,5 +78,6 @@ and visualization. John Wiley & Sons.
 }
 \seealso{
 \code{\link{bw.scott}}, \code{\link[stats]{density}},
-         \code{\link[stats]{bw.nrd}}, \code{\link[boot]{boot}}
+         \code{\link[stats]{bandwidth}}, \code{\link{dmvn}},
+         \code{\link{duvkd}}, \code{\link{dmvkd}}
 }

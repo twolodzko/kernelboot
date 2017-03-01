@@ -2,27 +2,39 @@
 % Please edit documentation in R/bandwidth.R
 \name{bw.scott}
 \alias{bw.scott}
+\alias{bw.silv}
 \title{Bandwidth Selector for Multivariate Kernel Density Estimation}
 \usage{
 bw.scott(x)
+
+bw.silv(x)
 }
 \arguments{
-\item{x}{numeric vector.}
+\item{x}{numeric matrix or data.frame.}
 }
 \description{
-Rule of thumb bandwidth selector for Gaussian kernels as described by
-Scott (1992).
+Rule of thumb bandwidth selectors for Gaussian kernels as described by
+Scott (1992) and Silverman (1986).
 }
 \details{
-Scott's rule is defined as
+Scott's (1992) rule is defined as
 
 \deqn{
-h_i = n^{-1/(d+4)} \hat\Sigma
+H = \left(n^{-1/(k+4)})^2 \mathrm{diag}(S)
 }{
-h[i] = n^(-1/(d+4)) * \Sigma
+H = [n^(-1/(k+4))]^2 * diag(S)
 }
 
-where \eqn{d} is number of variables and \eqn{n} is sampel size.
+Silverman's (1986) rule is defined as
+
+\deqn{
+H = \left(\left(\frac{4}{(k+2)n}\right)^{1/(k+4)}\right)^2 \mathrm{diag}(S)
+}{
+H = [(4/((k+2)*n))^(1/(k+4))]^2 * diag(S)
+}
+
+where \eqn{k} is number of variables, \eqn{n} is sampel size and \eqn{S}
+is an empirical  covariance matrix.
 }
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
@@ -33,5 +45,5 @@ Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 }
 \seealso{
-\code{\link[stats]{bw.nrd}}
+\code{\link[stats]{bandwidth}}
 }
