@@ -1,6 +1,5 @@
 
 #include <RcppArmadillo.h>
-// [[Rcpp::depends("RcppArmadillo")]]
 
 /*
  * The following code comes from Rcpp Gallery articles:

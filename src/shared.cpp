@@ -1,7 +1,6 @@
 
 
 #include <RcppArmadillo.h>
-// [[Rcpp::depends("RcppArmadillo")]]
 #include "shared.h"
 
 

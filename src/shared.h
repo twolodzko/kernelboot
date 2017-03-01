@@ -3,7 +3,6 @@
 #define SHARED_H
 
 #include <RcppArmadillo.h>
-// [[Rcpp::depends("RcppArmadillo")]]
 
 double rng_unif();
 
