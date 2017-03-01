@@ -1,6 +1,11 @@
 
+#ifndef SHARED_H
+#define SHARED_H
+
 #include <RcppArmadillo.h>
 
 double rng_unif();
 
-int sampleIndex(arma::vec cumul_weights);
+unsigned int sample_int(arma::vec cumul_weights);
+
+#endif

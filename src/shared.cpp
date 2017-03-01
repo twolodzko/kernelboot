@@ -12,10 +12,10 @@ double rng_unif() {
   return u;
 }
 
-int sampleIndex(arma::vec cumul_weights) {
-  int j;
+unsigned int sample_int(arma::vec cumul_weights) {
+  unsigned int j;
   double u = rng_unif();
-  for (j = 0; j < cumul_weights.size(); j++) {
+  for (j = 0; j < cumul_weights.n_elem; j++) {
     if (cumul_weights[j] >= u)
       break;
   }

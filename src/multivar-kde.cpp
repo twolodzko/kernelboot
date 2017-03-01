@@ -2,6 +2,7 @@
 #include <RcppArmadillo.h>
 // [[Rcpp::depends("RcppArmadillo")]]
 #include "kernels.h"
+#include "shared.h"
 
 
 // [[Rcpp::export]]
@@ -128,9 +129,9 @@ Rcpp::List cpp_rmvkde(
     samp = arma::randn(n, m) * bw_chol;
     arma::mat means(n, m);
 
-    int j;
+    unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
-      j = sampleIndex(c_weights);
+      j = sample_int(c_weights);
       idx[i] = j + 1;
       means.row(i) = x.row(j);
     }

@@ -2,6 +2,7 @@
 #include <RcppArmadillo.h>
 // [[Rcpp::depends("RcppArmadillo")]]
 #include "kernels.h"
+#include "shared.h"
 
 
 // [[Rcpp::export]]
@@ -134,9 +135,9 @@ Rcpp::List cpp_ruvkde(
 
   if (preserve_var) {
 
-    int j;
+    unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
-      j = sampleIndex(c_weights);
+      j = sample_int(c_weights);
       idx[i] = j + 1;
       samp[i] = x[j] + rng_kern() * bandwidth;
     }
@@ -148,9 +149,9 @@ Rcpp::List cpp_ruvkde(
     vx = var(x);
     c = sqrt(1.0 + pow(bandwidth, 2.0)/vx);
 
-    int j;
+    unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
-      j = sampleIndex(c_weights);
+      j = sample_int(c_weights);
       idx[i] = j + 1;
       samp[i] = mx + (x[j] - mx + rng_kern() * bandwidth) / c;
     }
