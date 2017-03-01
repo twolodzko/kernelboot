@@ -35,7 +35,7 @@ arma::vec cpp_dmvn(
   try {
 
     arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
-    double rootisum = arma::sum(log(rooti.diag()));
+    double rootisum = arma::sum(arma::log(rooti.diag()));
     double c = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
 
     arma::vec z;
@@ -45,7 +45,7 @@ arma::vec cpp_dmvn(
     }
 
     if (!log_prob)
-      p = exp(p);
+      p = arma::exp(p);
 
     return p;
 

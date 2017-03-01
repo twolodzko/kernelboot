@@ -65,7 +65,7 @@ Rcpp::List cpp_duvkd(
   }
 
   if (log_prob)
-    p = log(p);
+    p = arma::log(p);
 
   return Rcpp::List::create(
     Rcpp::Named("density") = p,
@@ -144,9 +144,9 @@ Rcpp::List cpp_ruvkd(
   } else {
 
     double my, sy, c;
-    my = mean(y);
-    sy = var(y);
-    c = sqrt(1.0 + pow(bandwidth, 2.0)/sy);
+    my = arma::mean(y);
+    sy = arma::var(y);
+    c = std::sqrt(1.0 + std::pow(bandwidth, 2.0)/sy);
 
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {

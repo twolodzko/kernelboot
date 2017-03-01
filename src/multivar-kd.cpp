@@ -48,7 +48,7 @@ Rcpp::List cpp_dmvkd(
     }
 
     arma::mat rooti = arma::trans(arma::inv(arma::trimatu(bw_chol)));
-    double rootisum = arma::sum(log(rooti.diag()));
+    double rootisum = arma::sum(arma::log(rooti.diag()));
     double c = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
 
     arma::vec z;
@@ -58,13 +58,13 @@ Rcpp::List cpp_dmvkd(
       for (unsigned int j = 0; j < k; j++) {
         z = rooti * arma::trans( x.row(i) - y.row(j) ) ;
         tmp = c - 0.5 * arma::sum(z % z) + rootisum;
-        tmp += log(c_weights[j]);
-        p[i] += exp(tmp);
+        tmp += std::log(c_weights[j]);
+        p[i] += std::exp(tmp);
       }
     }
 
     if (log_prob)
-      p = log(p);
+      p = arma::log(p);
 
   } catch ( std::exception& __ex__ ) {
     forward_exception_to_r(__ex__);

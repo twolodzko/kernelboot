@@ -11,8 +11,7 @@ URL: https://github.com/twolodzko/kernelboot
 BugReports: https://github.com/twolodzko/kernelboot/issues
 Depends: R (>= 3.1.0)
 Imports: Rcpp, RcppArmadillo, parallel
-LinkingTo: Rcpp (>= 0.12.9), RcppArmadillo (>= 0.7.700.0.0)
+LinkingTo: Rcpp, RcppArmadillo
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Suggests: covr,
-    testthat
+Suggests: covr, testthat

@@ -28,7 +28,7 @@ Multivariate normal distribution
 Multivariate normal probability density function is
 
 \deqn{
-f(x_1,\dots,x_n) = \frac{1}{ (2\pi)^{k/2} \sqrt{\mathrm{det}(\Sigma)} }
+f(x_1,\dots,x_n) = \frac{1}{ (2\pi)^{k/2} \sqrt{\mathrm{det}(\Sigma)} } \,
 \exp\left\{ -\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})' \Sigma^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right\}
 }{
 f(x) = 1/[(2\pi)^(k/2) * sqrt(det(\Sigma))] * exp( -1/2 (x-\mu)' inv(\Sigma) (x-\mu) )
