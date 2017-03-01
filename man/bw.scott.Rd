@@ -20,7 +20,7 @@ Scott (1992) and Silverman (1986).
 Scott's (1992) rule is defined as
 
 \deqn{
-H = \left(n^{-1/(k+4)})^2 \mathrm{diag}(S)
+H = \left(n^{-1/(k+4)}\right)^2 \mathrm{diag}(S)
 }{
 H = [n^(-1/(k+4))]^2 * diag(S)
 }

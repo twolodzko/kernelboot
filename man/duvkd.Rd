@@ -7,11 +7,11 @@
 \usage{
 duvkd(x, y, bw = bw.nrd0(y), weights = NULL, kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), log.prob = FALSE)
+  "cosine", "optcosine"), adjust = 1, log.prob = FALSE)
 
 ruvkd(n, y, bw = bw.nrd0(y), weights = NULL, kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), preserve.var = FALSE)
+  "cosine", "optcosine"), adjust = 1, preserve.var = FALSE)
 }
 \arguments{
 \item{x}{numeric vector; kernel density is evaluated on those values.}
@@ -28,15 +28,18 @@ This must partially match one of "gaussian", "rectangular",
 "optcosine", with default "gaussian", and may be abbreviated
 to a unique prefix (single letter).}
 
-\item{log.prob}{logical; if TRUE, probabilities p are given as log(p).}
+\item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
+This makes it easy to specify values like 'half the default'
+bandwidth.}
+
+\item{log.prob}{logical; if \code{TRUE}, probabilities p are given as log(p).}
 
 \item{n}{number of observations. If length(n) > 1,
 the length is taken to be the number required.}
 
-\item{preserve.var}{logical;}
-
-\item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes it easy
-to specify values like 'half the default' bandwidth.}
+\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
+mean and variance of the original sample (see
+\code{\link{kernelboot}} for details).}
 }
 \description{
 Univariate kernel density
@@ -45,12 +48,12 @@ Univariate kernel density
 Univariate kernel density estimator is defined as
 
 \deqn{
-\hat{f_h}(x) = \sum_{i=1}^n w_i K_h\left(\frac{x-y_i}{h}\right)
+\hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
 }{
 f(x) = sum[i](w[i] * Kh((x-y[i])/h))
 }
 
-where \eqn{w} is a vector of weithts such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
+where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
 (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 data points used for estimating the kernel density.

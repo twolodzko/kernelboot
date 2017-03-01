@@ -4,9 +4,9 @@
 #' @param x        n*k numeric matrix.
 #' @param n        number of observations. If length(n) > 1,
 #'                 the length is taken to be the number required.
-#' @param mu       vector of length k.
+#' @param mu       numeric vector of length k.
 #' @param sigma    k*k numeric matrix.
-#' @param log.prob logical; if TRUE, probabilities p are given as log(p).
+#' @param log.prob logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
 #' @details
@@ -14,10 +14,10 @@
 #' Multivariate normal probability density function is
 #'
 #' \deqn{
-#' f(x_1,\dots,x_n) = \frac{1}{(2\pi)^{k/2} \sqrt{{\mathrm{det}(\Sigma)}}}
-#' \exp{\left{ -\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})' \Sigma^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right}}
+#' f(x_1,\dots,x_n) = \frac{1}{ (2\pi)^{k/2} \sqrt{\mathrm{det}(\Sigma)} }
+#' \exp\left\{ -\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})' \Sigma^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right\}
 #' }{
-#' f(x) = 1/[(2\pi)^(k/2) * sqrt(det(\Sigma)] * exp( -1/2 (x-\mu)' inv(\Sigma) (x-\mu) )
+#' f(x) = 1/[(2\pi)^(k/2) * sqrt(det(\Sigma))] * exp( -1/2 (x-\mu)' inv(\Sigma) (x-\mu) )
 #' }
 #'
 #' Random generation from this distribution is possible by taking
@@ -34,7 +34,7 @@
 #' factor of \eqn{\Sigma}).
 #'
 #' RcppArmadillo implementation of probability density function and random generation
-#' is based on examples from the papers by Nino Hardt, Dicko Ahmadou.
+#' is based on examples from the papers by Nino Hardt and Dicko Ahmadou.
 #'
 #'
 #' @references
