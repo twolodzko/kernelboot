@@ -16,12 +16,6 @@ is_numeric.data.frame <- function(x) {
   unlist(lapply(x, is.numeric))
 }
 
-# matrix rank
-
-mtxrank <- function(x) {
-  sum(svd(x)$d > 1e-12)
-}
-
 # check for square matrix
 
 is.square <- function(x) {

@@ -85,15 +85,6 @@ kernelboot <- function(data, statistic, R = 500L, bw,
 
   bw <- bw * adjust
 
-  if (is.vector(bw)) {
-    if (length(bw) > k) {
-      bw <- bw[1:k]
-      warning("bw has length > number of dimensions of the data")
-    }
-    if (any(bw <= 0))
-      stop("bw is not positive.")
-  }
-
   if (!all(is.finite(bw)))
     stop("non-finite bw")
 
@@ -109,7 +100,7 @@ kernelboot <- function(data, statistic, R = 500L, bw,
   tryCatch(
     orig.stat <- statistic(data, ...),
     error = function(e) {
-      message("Applying the statistic on the original data resulted in an error")
+      message("applying the statistic on the original data resulted in an error")
       stop(e)
     }
   )
@@ -145,7 +136,7 @@ kernelboot <- function(data, statistic, R = 500L, bw,
       }
 
       data_mtx <- as.matrix(data[, num_cols])
-      if (mtxrank(data_mtx) < min(n, k))
+      if (qr(x)$rank < min(n, k))
         warning("x is rank deficient")
 
       bw <- bw[num_cols, num_cols]
@@ -164,6 +155,13 @@ kernelboot <- function(data, statistic, R = 500L, bw,
     }
 
   } else if (is.vector(data)) {
+
+    if (length(bw) > k) {
+      bw <- bw[1:k]
+      warning("bw has length > number of dimensions of the data")
+    }
+    if (any(bw <= 0))
+      stop("bw is not positive.")
 
     if (is.numeric(data)) {
 
@@ -205,9 +203,9 @@ kernelboot <- function(data, statistic, R = 500L, bw,
       R            = R,
       bw           = bw,
       adjust       = adjust,
+      weights      = weights,
       kernel       = kernel,
       preserve.var = preserve.var,
-      weights      = weights,
       parallel     = parallel
     )
   ), class = "kernelboot")

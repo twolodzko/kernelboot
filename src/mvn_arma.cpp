@@ -40,7 +40,7 @@ arma::vec cpp_dmvn(
     double constants = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
 
     arma::vec z;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
       z = rooti * arma::trans( x.row(i) - mu ) ;
       p[i] = constants - 0.5 * arma::sum(z % z) + rootisum;
     }
