@@ -27,10 +27,6 @@ bandwidth.}
 
 \item{n}{number of observations. If length(n) > 1,
 the length is taken to be the number required.}
-
-\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
-mean and variance of the original sample (see
-\code{\link{kernelboot}} for details).}
 }
 \description{
 Multivariate kernel density

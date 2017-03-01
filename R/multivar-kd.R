@@ -10,9 +10,6 @@
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
-#' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     mean and variance of the original sample (see
-#'                     \code{\link{kernelboot}} for details).
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
