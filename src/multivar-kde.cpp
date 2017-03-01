@@ -53,9 +53,9 @@ Rcpp::List cpp_dmvkde(
 
     arma::vec z;
     double tmp;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
       p[i] = 0.0;
-      for (int j = 0; j < k; j++) {
+      for (unsigned int j = 0; j < k; j++) {
         z = rooti * arma::trans( y.row(i) - x.row(j) ) ;
         tmp = constants - 0.5 * arma::sum(z % z) + rootisum;
         tmp += log(c_weights[j]);
@@ -92,8 +92,8 @@ Rcpp::List cpp_rmvkde(
     const bool& is_chol = false
   ) {
 
-  const int m = x.n_cols;
-  const int k = x.n_rows;
+  const unsigned int m = x.n_cols;
+  const unsigned int k = x.n_rows;
   arma::mat samp(n, m);
   arma::vec c_weights(k);
   std::vector<int> idx(n);
@@ -114,7 +114,7 @@ Rcpp::List cpp_rmvkde(
       c_weights = weights;
     }
 
-    for (int i = 1; i < k; i++)
+    for (unsigned int i = 1; i < k; i++)
       c_weights[i] += c_weights[i-1];
     c_weights /= c_weights[k-1];
 
@@ -129,7 +129,7 @@ Rcpp::List cpp_rmvkde(
     arma::mat means(n, m);
 
     int j;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
       j = sampleIndex(c_weights);
       idx[i] = j + 1;
       means.row(i) = x.row(j);
@@ -137,7 +137,7 @@ Rcpp::List cpp_rmvkde(
 
     samp += means;
 
-    for (int i = k; i > 0; i--)
+    for (unsigned int i = k; i > 0; i--)
       c_weights[i] -= c_weights[i-1];
 
   } catch ( std::exception& __ex__ ) {

@@ -54,13 +54,13 @@ Rcpp::List cpp_duvkde(
 
   c_weights /= sum(c_weights);
 
-  for (int i = 0; i < n; i++) {
+  for (unsigned int i = 0; i < n; i++) {
     if (ISNAN(x[i])) {
       p[i] = x[i];
       continue;
     }
     p[i] = 0.0;
-    for (int j = 0; j < k; j++)
+    for (unsigned int j = 0; j < k; j++)
       p[i] += dens_kern(y[i] - x[j], bandwidth) * c_weights[j];
   }
 
@@ -109,7 +109,7 @@ Rcpp::List cpp_ruvkde(
     rng_kern = R::norm_rand;
   }
 
-  const int k = x.n_elem;
+  const unsigned int k = x.n_elem;
   arma::vec samp(n);
   arma::vec c_weights(k);
   std::vector<int> idx(n);
@@ -128,14 +128,14 @@ Rcpp::List cpp_ruvkde(
     c_weights = weights;
   }
 
-  for (int i = 1; i < k; i++)
+  for (unsigned int i = 1; i < k; i++)
     c_weights[i] += c_weights[i-1];
   c_weights /= c_weights[k-1];
 
   if (preserve_var) {
 
     int j;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
       j = sampleIndex(c_weights);
       idx[i] = j + 1;
       samp[i] = x[j] + rng_kern() * bandwidth;
@@ -149,7 +149,7 @@ Rcpp::List cpp_ruvkde(
     c = sqrt(1.0 + pow(bandwidth, 2.0)/vx);
 
     int j;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
       j = sampleIndex(c_weights);
       idx[i] = j + 1;
       samp[i] = mx + (x[j] - mx + rng_kern() * bandwidth) / c;
@@ -157,7 +157,7 @@ Rcpp::List cpp_ruvkde(
 
   }
 
-  for (int i = k; i > 0; i--)
+  for (unsigned int i = k; i > 0; i--)
     c_weights[i] -= c_weights[i-1];
 
   return Rcpp::List::create(
