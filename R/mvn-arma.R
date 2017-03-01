@@ -1,11 +1,11 @@
 
 #' Multivariate normal distribution
 #'
-#' @param x        n*k numeric matrix.
+#' @param x        \eqn{n \times m}{n*m} numeric matrix.
 #' @param n        number of observations. If length(n) > 1,
 #'                 the length is taken to be the number required.
-#' @param mu       numeric vector of length k.
-#' @param sigma    k*k numeric matrix.
+#' @param mu       numeric vector of length \eqn{m}.
+#' @param sigma    \eqn{m \times m}{m*m} numeric matrix.
 #' @param log.prob logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -14,10 +14,10 @@
 #' Multivariate normal probability density function is
 #'
 #' \deqn{
-#' f(x_1,\dots,x_n) = \frac{1}{ (2\pi)^{k/2} \sqrt{\mathrm{det}(\Sigma)} } \,
+#' f(x_1,\dots,x_n) = \frac{1}{ (2\pi)^{m/2} \sqrt{\mathrm{det}(\Sigma)} } \,
 #' \exp\left\{ -\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})' \Sigma^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right\}
 #' }{
-#' f(x) = 1/[(2\pi)^(k/2) * sqrt(det(\Sigma))] * exp( -1/2 (x-\mu)' inv(\Sigma) (x-\mu) )
+#' f(x) = 1/[(2\pi)^(m/2) * sqrt(det(\Sigma))] * exp( -1/2 (x-\mu)' inv(\Sigma) (x-\mu) )
 #' }
 #'
 #' Random generation from this distribution is possible by taking
@@ -28,8 +28,8 @@
 #' x = A' z + \mu
 #' }
 #'
-#' where \eqn{z} is a vector of \eqn{k} i.i.d. standard normal deviates,
-#' \eqn{\mu} is a vector of means and \eqn{A} is a \eqn{k \times k}{k*k}
+#' where \eqn{z} is a vector of \eqn{m} i.i.d. standard normal deviates,
+#' \eqn{\mu} is a vector of means and \eqn{A} is a \eqn{m \times m}{m*m}
 #' matrix such that \eqn{A'A=\Sigma}{A'A=\Sigma} (\eqn{A} is a Cholesky
 #' factor of \eqn{\Sigma}).
 #'
