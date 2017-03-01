@@ -2,9 +2,13 @@
 
 S3method(print,kernelboot)
 export(bw.scott)
+export(dmvkde)
 export(dmvn)
+export(duvkde)
 export(kernelboot)
+export(rmvkde)
 export(rmvn)
+export(ruvkde)
 importFrom(Rcpp,sourceCpp)
 importFrom(parallel,mclapply)
 importFrom(stats,bw.SJ)

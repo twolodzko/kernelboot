@@ -4,8 +4,10 @@ rm(list = ls())
 library(Rcpp)
 library(ggplot2)
 
-sourceCpp("src/multivar-kde.cpp")
-sourceCpp("src/univar-kde.cpp")
+library(kernelboot)
+
+# sourceCpp("src/multivar-kde.cpp")
+# sourceCpp("src/univar-kde.cpp")
 
 vars <- c("mpg", "disp")
 X <- as.matrix(mtcars[, vars])
@@ -18,8 +20,8 @@ cov(X)
 kernelboot::bw.scott(X)
 
 
-samp <- cpp_rmvkde(5000, X, kernelboot::bw.scott(X), 1)
-Y <- as.data.frame(samp$sample)
+samp <- rmvkde(5000, X, kernelboot::bw.scott(X), 1)
+Y <- as.data.frame(samp)
 colnames(Y) <- vars
 
 ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
@@ -30,7 +32,7 @@ ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
   theme_minimal()
 
 
-Y$p <- drop(cpp_dmvkde(as.matrix(Y[,1:2]), X, kernelboot::bw.scott(X), 1)$density)
+Y$p <- drop(dmvkde(as.matrix(Y[,1:2]), X, kernelboot::bw.scott(X), 1))
 
 ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
   geom_density2d(color = "lightgray") +
@@ -49,8 +51,8 @@ ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
 #
 #
 #
-# samp <- cpp_rmvkde(1000, X, cov(X)*0.1, 1)
-# Y <- as.data.frame(samp$sample)
+# samp <- rmvkde(1000, X, cov(X)*0.1, 1)
+# Y <- as.data.frame(samp)
 # colnames(Y) <- vars
 #
 # ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
@@ -69,12 +71,12 @@ bw <- kernelboot::bw.scott(X)
 #bw[1,2] <- bw[2,1] <- 0.1
 diag(bw) <- 0
 #bw <- matrix(0.001, 2, 2)
-samp <- cpp_rmvkde(5000, X, bw, 1)
-Y <- as.data.frame(samp$sample)
+samp <- rmvkde(5000, X, bw, 1)
+Y <- as.data.frame(samp)
 colnames(Y) <- vars
 
 
-Y$p <- drop(cpp_dmvkde(as.matrix(Y[,1:2]), X, bw, 1)$density)
+Y$p <- drop(dmvkde(as.matrix(Y[,1:2]), X, bw, 1))
 
 ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
   geom_density2d(color = "lightgray") +
@@ -94,10 +96,10 @@ ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
 
 X <- as.matrix(mtcars[vars])
 (bw <- matrix(c(50, 10, 10, 50), 2, 2))
-samp <- cpp_rmvkde(5000, X, bw, 1)
-Y <- as.data.frame(samp$sample)
+samp <- rmvkde(5000, X, bw, 1)
+Y <- as.data.frame(samp)
 colnames(X) <- colnames(Y) <- vars
-Y$p <- drop(cpp_dmvkde(as.matrix(Y[,1:2]), X, bw, 1)$density)
+Y$p <- drop(dmvkde(as.matrix(Y[,1:2]), X, bw, 1))
 
 
 
@@ -113,6 +115,28 @@ ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
   #            color = "red") +
   theme_minimal()
 
+
+
+
+X <- as.matrix(mtcars[vars])
+samp <- rmvkde(5000, X)
+Y <- as.data.frame(samp)
+colnames(X) <- colnames(Y) <- vars
+Y$p <- drop(dmvkde(as.matrix(Y[,1:2]), X))
+
+
+
+ggplot(as.data.frame(X), aes_string(x = vars[1], y = vars[2])) +
+  geom_density2d(color = "lightgray") +
+  geom_jitter(data = Y, aes_string(x = vars[1], y = vars[2], colour = "p"),
+              alpha = 0.5) +
+  scale_colour_gradientn(colours = terrain.colors(10)) +
+  geom_density2d(color = "lightgray") +
+  geom_point(shape = 2) +
+  # geom_point(data = as.data.frame(t(colMeans(X))),
+  #            aes_string(x = vars[1], y = vars[2]),
+  #            color = "red") +
+  theme_minimal()
 
 
 
