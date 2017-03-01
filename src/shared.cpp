@@ -1,7 +1,9 @@
 
 
 #include <RcppArmadillo.h>
+// [[Rcpp::depends("RcppArmadillo")]]
 #include "shared.h"
+
 
 double rng_unif() {
   double u;
