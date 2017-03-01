@@ -9,7 +9,7 @@ Description: Kernel density bootstrap
 License: GPL-2
 URL: https://github.com/twolodzko/kernelboot
 BugReports: https://github.com/twolodzko/kernelboot/issues
-LinkingTo: Rcpp, RcppArmadillo
+LinkingTo: Rcpp
 Imports: Rcpp, RcppArmadillo, parallel
 SystemRequirements: C++11
 LazyData: TRUE
