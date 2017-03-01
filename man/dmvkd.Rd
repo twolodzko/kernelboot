@@ -8,8 +8,7 @@
 dmvkd(x, y, bw = bw.silv(y), weights = NULL, adjust = 1,
   log.prob = FALSE)
 
-rmvkd(n, y, bw = bw.silv(y), weights = NULL, adjust = 1,
-  preserve.var = FALSE)
+rmvkd(n, y, bw = bw.silv(y), weights = NULL, adjust = 1)
 }
 \arguments{
 \item{x}{numeric vector; kernel density is evaluated on those values.}

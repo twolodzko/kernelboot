@@ -52,7 +52,7 @@ Rcpp::List cpp_duvkd(
     c_weights = weights;
   }
 
-  c_weights /= sum(c_weights);
+  c_weights /= arma::sum(c_weights);
 
   for (unsigned int i = 0; i < n; i++) {
     if (ISNAN(y[i])) {

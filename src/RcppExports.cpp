@@ -37,6 +37,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_dmvpkd
+Rcpp::List cpp_dmvpkd(const arma::mat& x, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& log_prob);
+RcppExport SEXP kernelboot_cpp_dmvpkd(SEXP xSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type bandwidth(bandwidthSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_dmvpkd(x, y, bandwidth, weights, kernel, log_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_rmvpkd
+Rcpp::List cpp_rmvpkd(const unsigned int& n, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel);
+RcppExport SEXP kernelboot_cpp_rmvpkd(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const unsigned int& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type bandwidth(bandwidthSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rmvpkd(n, y, bandwidth, weights, kernel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_dmvn
 arma::vec cpp_dmvn(const arma::mat& x, const arma::rowvec& mu, const arma::mat& sigma, const bool& log_prob);
 RcppExport SEXP kernelboot_cpp_dmvn(SEXP xSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP log_probSEXP) {

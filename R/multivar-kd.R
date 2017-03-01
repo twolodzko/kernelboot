@@ -60,10 +60,10 @@ dmvkd <- function(x, y, bw = bw.silv(y), weights = NULL,
 #' @export
 
 rmvkd <- function(n, y, bw = bw.silv(y), weights = NULL,
-                  adjust = 1, preserve.var = FALSE) {
+                  adjust = 1) {
   if (length(n) > 1) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  cpp_rmvkd(n, y, bw, weights, preserve.var)$samples
+  cpp_rmvkd(n, y, bw, weights, FALSE)$samples
 }
 

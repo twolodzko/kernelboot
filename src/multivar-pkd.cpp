@@ -5,14 +5,34 @@
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_dmvkd(
+Rcpp::List cpp_dmvpkd(
     const arma::mat& x,
     const arma::mat& y,
-    const arma::mat& bandwidth,
+    const arma::vec& bandwidth,
     const arma::vec& weights,
-    const bool& log_prob = false,
-    const bool& is_chol = false    // bw is passed as Cholesky decomposition
+    const std::string& kernel = "gaussian",
+    const bool& log_prob = false
   ) {
+
+  double (*dens_kern)(double, double);
+
+  if (kernel == "rectangular") {
+    dens_kern = dens_rect;
+  } else if (kernel == "triangular") {
+    dens_kern = dens_triang;
+  } else if (kernel == "biweight") {
+    dens_kern = dens_biweight;
+  } else if (kernel == "triweight") {
+    dens_kern = dens_triweight;
+  } else if (kernel == "cosine") {
+    dens_kern = dens_cosine;
+  } else if (kernel == "optcosine") {
+    dens_kern = dens_optcos;
+  } else if (kernel == "epanechnikov") {
+    dens_kern = dens_epan;
+  } else {
+    dens_kern = dens_gauss;
+  }
 
   const unsigned int n = x.n_rows;
   const unsigned int m = y.n_cols;
@@ -22,8 +42,8 @@ Rcpp::List cpp_dmvkd(
   if (x.n_cols != m)
     Rcpp::stop("wrong dimmensions of x");
 
-  if (bandwidth.n_cols != bandwidth.n_rows || bandwidth.n_cols != m)
-    Rcpp::stop("wrong dimmensions of bandwidth");
+  if (bandwidth.n_elem != m)
+    Rcpp::stop("wrong size of bandwidth");
 
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -40,24 +60,13 @@ Rcpp::List cpp_dmvkd(
 
     c_weights /= arma::sum(c_weights);
 
-    arma::mat bw_chol;
-    if (is_chol) {
-      bw_chol = bandwidth;
-    } else {
-      bw_chol = arma::chol(bandwidth);
-    }
-
-    const arma::mat rooti = arma::trans(arma::inv(arma::trimatu(bw_chol)));
-    const double rootisum = arma::sum(arma::log(rooti.diag()));
-    const double c = -(static_cast<double>(m) / 2.0) * M_LN_2PI;
-
-    arma::vec z;
     double tmp;
     for (unsigned int i = 0; i < n; i++) {
       p[i] = 0.0;
       for (unsigned int j = 0; j < k; j++) {
-        z = rooti * arma::trans( x.row(i) - y.row(j) ) ;
-        tmp = c - 0.5 * arma::sum(z % z) + rootisum;
+        tmp = 0.0;
+        for (unsigned int l = 0; l < m; l++)
+          tmp += std::log(dens_kern(x(i, l) - y(j, l), bandwidth[l]));
         p[i] += std::exp(tmp) * c_weights[j];
       }
     }
@@ -76,6 +85,7 @@ Rcpp::List cpp_dmvkd(
     Rcpp::Named("data") = y,
     Rcpp::Named("bandwidth") = bandwidth,
     Rcpp::Named("weights") = c_weights,
+    Rcpp::Named("kernel") = kernel,
     Rcpp::Named("log_prob") = log_prob
   );
 
@@ -83,22 +93,39 @@ Rcpp::List cpp_dmvkd(
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_rmvkd(
+Rcpp::List cpp_rmvpkd(
     const unsigned int& n,
     const arma::mat& y,
-    const arma::mat& bandwidth,
+    const arma::vec& bandwidth,
     const arma::vec& weights,
-    const bool& is_chol = false    // bw is passed as Cholesky decomposition
+    const std::string& kernel = "gaussian"
   ) {
+
+  double (*rng_kern)();
+
+  if (kernel == "rectangular") {
+    rng_kern = rng_rect;
+  } else if (kernel == "triangular") {
+    rng_kern = rng_triang;
+  } else if (kernel == "biweight") {
+    rng_kern = rng_biweight;
+  } else if (kernel == "triweight") {
+    rng_kern = rng_triweight;
+  } else if (kernel == "cosine") {
+    rng_kern = rng_cosine;
+  } else if (kernel == "optcosine") {
+    rng_kern = rng_optcos;
+  } else if (kernel == "epanechnikov") {
+    rng_kern = rng_epan;
+  } else {
+    rng_kern = R::norm_rand;
+  }
 
   const unsigned int m = y.n_cols;
   const unsigned int k = y.n_rows;
   arma::mat samp(n, m);
   arma::vec c_weights(k);
   std::vector<unsigned int> idx(n);
-
-  if (bandwidth.n_cols != bandwidth.n_rows || bandwidth.n_cols != m)
-    Rcpp::stop("wrong dimmensions of bandwidth");
 
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -117,24 +144,13 @@ Rcpp::List cpp_rmvkd(
       c_weights[i] += c_weights[i-1];
     c_weights /= c_weights[k-1];
 
-    arma::mat bw_chol;
-    if (is_chol) {
-      bw_chol = bandwidth;
-    } else {
-      bw_chol = arma::chol(bandwidth);
-    }
-
-    samp = arma::randn(n, m) * bw_chol;
-    arma::mat means(n, m);
-
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
       j = sample_int(c_weights);
       idx[i] = j + 1;
-      means.row(i) = y.row(j);
+      for (unsigned int l = 0; l < m; l++)
+        samp(i, l) = y(j, l) + rng_kern() * bandwidth[l];
     }
-
-    samp += means;
 
     for (unsigned int i = k; i > 0; i--)
       c_weights[i] -= c_weights[i-1];
@@ -150,7 +166,8 @@ Rcpp::List cpp_rmvkd(
     Rcpp::Named("boot_index") = idx,
     Rcpp::Named("data") = y,
     Rcpp::Named("bandwidth") = bandwidth,
-    Rcpp::Named("weights") = c_weights
+    Rcpp::Named("weights") = c_weights,
+    Rcpp::Named("kernel") = kernel
   );
 
 }

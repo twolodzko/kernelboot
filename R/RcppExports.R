@@ -9,6 +9,14 @@ cpp_rmvkd <- function(n, y, bandwidth, weights, is_chol = FALSE) {
     .Call('kernelboot_cpp_rmvkd', PACKAGE = 'kernelboot', n, y, bandwidth, weights, is_chol)
 }
 
+cpp_dmvpkd <- function(x, y, bandwidth, weights, kernel = "gaussian", log_prob = FALSE) {
+    .Call('kernelboot_cpp_dmvpkd', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, log_prob)
+}
+
+cpp_rmvpkd <- function(n, y, bandwidth, weights, kernel = "gaussian") {
+    .Call('kernelboot_cpp_rmvpkd', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel)
+}
+
 cpp_dmvn <- function(x, mu, sigma, log_prob = FALSE) {
     .Call('kernelboot_cpp_dmvn', PACKAGE = 'kernelboot', x, mu, sigma, log_prob)
 }

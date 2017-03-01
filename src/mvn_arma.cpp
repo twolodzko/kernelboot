@@ -29,14 +29,14 @@ arma::vec cpp_dmvn(
   ) {
 
   const unsigned int n = x.n_rows;
-  const unsigned int k = x.n_cols;
+  const unsigned int m = x.n_cols;
   arma::vec p(n);
 
   try {
 
     arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
     double rootisum = arma::sum(arma::log(rooti.diag()));
-    double c = -(static_cast<double>(k) / 2.0) * M_LN_2PI;
+    double c = -(static_cast<double>(m) / 2.0) * M_LN_2PI;
 
     arma::vec z;
     for (unsigned int i = 0; i < n; i++) {
@@ -68,12 +68,12 @@ arma::mat cpp_rmvn(
     const arma::mat& sigma
   ) {
 
-  const unsigned int k = sigma.n_cols;
-  arma::mat res(n, k);
+  const unsigned int m = sigma.n_cols;
+  arma::mat res(n, m);
 
   try {
 
-    arma::mat Y = arma::randn(n, k);
+    arma::mat Y = arma::randn(n, m);
     return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
 
   } catch ( std::exception& __ex__ ) {

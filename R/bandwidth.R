@@ -26,7 +26,7 @@
 #' }
 #'
 #' where \eqn{k} is number of variables, \eqn{n} is sampel size and \eqn{S}
-#' is an empirical  covariance matrix.
+#' is the empirical covariance matrix.
 #'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
@@ -54,6 +54,7 @@ bw.scott <- function(x) {
 
 
 #' @rdname bw.scott
+#' @export
 
 bw.silv <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
