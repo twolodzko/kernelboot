@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernelboot.R
 \name{kernelboot}
 \alias{kernelboot}
-\title{Kernel density bootstrap}
+\title{Smoothed bootstrap}
 \usage{
 kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
@@ -42,12 +42,16 @@ elements as there are observations in \code{data}.}
 \item{\dots}{further arguments passed to \code{statistic}.}
 }
 \description{
-Kernel density bootstrap
+Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 }
 \details{
+\emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986) is an extension of standard bootstrap
+procedure, where instead of drawing samples with replacement from unknown empirical distribution,
+samples are drawn from kernel density estimate of the distribution.
+
 \strong{Univariate kernel densities}
 
-Samples are drawn from univariate kernel density using the following procedure (Silverman, 1986):
+For univariate kernel density, samples are drawn using the following procedure (Silverman, 1986):
 
 \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
 
@@ -61,11 +65,83 @@ as following:
 
 \emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
 
+\emph{\strong{Available univariate kernels}}
+
+This package offers the following univariate kernels:
+
+\emph{Gaussian}
+\deqn{
+K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
+}{
+K(u) 1/sqrt(2\pi) exp(-(u^2)/2)
+}
+
+\emph{Rectangular}
+\deqn{
+K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = 1/2
+}
+
+\emph{Triangular}
+\deqn{
+K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = (1 - |u|)
+}
+
+\emph{Epanchenikov}
+\deqn{
+K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) 3/4 (1 - u^2)
+}
+
+\emph{Biweight}
+\deqn{
+K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = 15/16 (1 - u^2)^2
+}
+
+\emph{Triweight}
+\deqn{
+K(u) = \frac{35}{32}(1-u^2)^3 \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = 35/32 (1 - u^2)^3
+}
+
+\emph{Cosine}
+\deqn{
+K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = 1/2 (1 + cos(\pi u))
+}
+
+\emph{Optcosine}
+\deqn{
+K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
+}{
+K(u) = \pi/4 cos(\pi/2 u)
+}
+
+Sampling from Epachenikov kernel is done using algorithm described
+by Devoye (1986). For optcosine kernel inverse transform sampling
+is used. For biweight kernel sampling is done from
+\eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution, for triweight
+kernel from \eqn{\mathrm{Beta}(4, 4)}{Beta(4, 4)} distribution,
+and for cosine kernel \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
+distribution serves as a close approximation. Random generation
+for triangular kernel is done by taking difference of two i.i.d.
+uniform random variates. To sample from rectangular and Gaussian
+kernels standard random generation algorithms are used
+(see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
+
 
 \strong{Multivariate kernel densities}
 
 In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
-(see \code{\link{rmvn}}).
+(see \code{\link{rmvn}}) or from product kernels (see \code{\link{rmvpkd}}).
 }
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -75,6 +151,11 @@ Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 
 Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
+
+Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+
+Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
+the bootstrap and other methods. Biometrika, 589-599.
 }
 \seealso{
 \code{\link{bw.scott}}, \code{\link[stats]{density}},

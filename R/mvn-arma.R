@@ -61,7 +61,7 @@ dmvn <- function(x, mu, sigma, log.prob = FALSE) {
 #' @export
 
 rmvn <- function(n, mu, sigma) {
-  if (length(n) > 1) n <- length(n)
+  if (length(n) > 1L) n <- length(n)
   cpp_rmvn(n, mu, sigma)
 }
 

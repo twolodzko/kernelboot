@@ -14,13 +14,15 @@ ruvkd(n, y, bw = bw.nrd0(y), weights = NULL, kernel = c("gaussian",
   "cosine", "optcosine"), adjust = 1, preserve.var = FALSE)
 }
 \arguments{
-\item{x}{numeric vector; kernel density is evaluated on those values.}
+\item{x}{numeric vector of length \eqn{k}; kernel density is
+evaluated on those values.}
 
-\item{y}{numeric vector; kernel density is evaluated on those values.}
+\item{y}{numeric vector of length \eqn{n}; kernel density is
+evaluated on those values.}
 
-\item{bw}{numeric value.}
+\item{bw}{scalar; must be greater than zero.}
 
-\item{weights}{numeric vector.}
+\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",

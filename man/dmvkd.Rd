@@ -3,7 +3,7 @@
 \name{dmvkd}
 \alias{dmvkd}
 \alias{rmvkd}
-\title{Multivariate kernel density}
+\title{Multivariate kernel density with Gaussian kernel}
 \usage{
 dmvkd(x, y, bw = bw.silv(y), weights = NULL, adjust = 1,
   log.prob = FALSE)
@@ -11,13 +11,20 @@ dmvkd(x, y, bw = bw.silv(y), weights = NULL, adjust = 1,
 rmvkd(n, y, bw = bw.silv(y), weights = NULL, adjust = 1)
 }
 \arguments{
-\item{x}{numeric vector; kernel density is evaluated on those values.}
+\item{x}{\eqn{k \times m}{k*m} numeric matrix; kernel density
+is evaluated on those values.}
 
-\item{y}{numeric vector; kernel density is estimated using those values.}
+\item{y}{\eqn{n \times m}{n*m} numeric matrix; kernel density
+is estimated using those values.}
 
-\item{bw}{numeric matrix}
+\item{bw}{\eqn{m \times m}{m*m} numeric matrix.
+\emph{Notice:} this is a \emph{covariance} matrix of
+multivariate normal distribution (see \code{\link{dmvn}}),
+while the \code{\link{duvkd}} and \code{\link{dmvpkd}}
+functions are parametrized with standard deviations
+as in \code{\link{density}}.}
 
-\item{weights}{numeric vector}
+\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'
@@ -29,7 +36,7 @@ bandwidth.}
 the length is taken to be the number required.}
 }
 \description{
-Multivariate kernel density
+Multivariate kernel density with Gaussian kernel
 }
 \details{
 Multivariate kernel density estimator is defined as
@@ -44,6 +51,8 @@ where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
 (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_H}{KH} is
 kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y}
 is a matrix of data points used for estimating the kernel density.
+
+This function uses Gaussian (multiariate normal) kernel (see \code{\link{dmvn}}).
 }
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -55,5 +64,5 @@ Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 }
 \seealso{
-\code{\link{kernelboot}}
+\code{\link{kernelboot}}, \code{\link{dmvn}}
 }

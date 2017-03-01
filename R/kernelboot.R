@@ -1,5 +1,7 @@
 
-#' Kernel density bootstrap
+#' Smoothed bootstrap
+#'
+#' Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 #'
 #' @param data         Data.
 #' @param statistic    A function which when applied to data returns a vector containing
@@ -24,9 +26,13 @@
 #'
 #' @details
 #'
+#' \emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986) is an extension of standard bootstrap
+#' procedure, where instead of drawing samples with replacement from unknown empirical distribution,
+#' samples are drawn from kernel density estimate of the distribution.
+#'
 #' \strong{Univariate kernel densities}
 #'
-#' Samples are drawn from univariate kernel density using the following procedure (Silverman, 1986):
+#' For univariate kernel density, samples are drawn using the following procedure (Silverman, 1986):
 #'
 #' \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
 #'
@@ -40,11 +46,83 @@
 #'
 #' \emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
 #'
+#' \emph{\strong{Available univariate kernels}}
+#'
+#' This package offers the following univariate kernels:
+#'
+#' \emph{Gaussian}
+#' \deqn{
+#' K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
+#' }{
+#' K(u) 1/sqrt(2\pi) exp(-(u^2)/2)
+#' }
+#'
+#' \emph{Rectangular}
+#' \deqn{
+#' K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 1/2
+#' }
+#'
+#' \emph{Triangular}
+#' \deqn{
+#' K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = (1 - |u|)
+#' }
+#'
+#' \emph{Epanchenikov}
+#' \deqn{
+#' K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) 3/4 (1 - u^2)
+#' }
+#'
+#' \emph{Biweight}
+#' \deqn{
+#' K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 15/16 (1 - u^2)^2
+#' }
+#'
+#' \emph{Triweight}
+#' \deqn{
+#' K(u) = \frac{35}{32}(1-u^2)^3 \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 35/32 (1 - u^2)^3
+#' }
+#'
+#' \emph{Cosine}
+#' \deqn{
+#' K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 1/2 (1 + cos(\pi u))
+#' }
+#'
+#' \emph{Optcosine}
+#' \deqn{
+#' K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = \pi/4 cos(\pi/2 u)
+#' }
+#'
+#' Sampling from Epachenikov kernel is done using algorithm described
+#' by Devoye (1986). For optcosine kernel inverse transform sampling
+#' is used. For biweight kernel sampling is done from
+#' \eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution, for triweight
+#' kernel from \eqn{\mathrm{Beta}(4, 4)}{Beta(4, 4)} distribution,
+#' and for cosine kernel \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
+#' distribution serves as a close approximation. Random generation
+#' for triangular kernel is done by taking difference of two i.i.d.
+#' uniform random variates. To sample from rectangular and Gaussian
+#' kernels standard random generation algorithms are used
+#' (see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
+#'
 #'
 #' \strong{Multivariate kernel densities}
 #'
 #' In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
-#' (see \code{\link{rmvn}}).
+#' (see \code{\link{rmvn}}) or from product kernels (see \code{\link{rmvpkd}}).
 #'
 #'
 #' @references
@@ -57,6 +135,13 @@
 #' @references
 #' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
+#'
+#' @references
+#' Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+#'
+#' @references
+#' Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
+#' the bootstrap and other methods. Biometrika, 589-599.
 #'
 #'
 #' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
@@ -89,7 +174,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     bw <- tolower(bw)
     if (bw == "default") {
       if (is.vector(data)) {
-        if (n < 2)
+        if (n < 2L)
           stop("need at least 2 points to select a bandwidth automatically")
         bw <- bw.nrd0(data)
       } else {
@@ -129,7 +214,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     }
   )
 
-  if (mc.cores > 1 && parallel) {
+  if (parallel && mc.cores > 1L) {
     repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
   } else {
     repeatFun <- function(i, FUN, mc.cores) lapply(i, FUN)
@@ -139,7 +224,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     num_cols <- is_numeric(data)
 
-    if (length(num_cols) == 0) {
+    if (length(num_cols) == 0L) {
 
       res <- repeatFun(1:R, function(i) {
 
@@ -151,36 +236,60 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     } else {
 
-      if (is.null(weights))
-        weights <- rep(1/n, n)
-
-      if (kernel != "gaussian") {
-        kernel <- "gaussian"
-        warning("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
-      }
-
       data_mtx <- as.matrix(data[, num_cols])
       if (qr(data)$rank < min(n, k))
         warning("data matrix is rank deficient")
 
-      if (!(is.matrix(bw) || is.data.frame(bw)))
-        stop("bw is not a matrix, or data.frame")
-      if (ncol(data) != k || nrow(bw) != k)
-        stop("bw has wrong dimmensions")
+      if (is.null(weights))
+        weights <- rep(1/n, n)
 
-      bw <- bw[num_cols, num_cols]
-      bw_chol <- chol(bw)
+      if (kernel != "gaussian" || is.vector(bw) || is.diag(bw)) {
 
-      res <- repeatFun(1:R, function(i) {
+        if (is.vector(bw)) {
+          if (length(bw) != ncol(data))
+            stop("length(bw) != ncol(data)")
+        } else {
+          bw <- diag(bw)
+        }
 
-        samp <- cpp_rmvkd(n, data_mtx, bw_chol, weights, is_chol = TRUE)
-        idx <- samp$boot_index
-        boot.data <- data[idx, ]
-        boot.data[, num_cols] <- samp$samples
-        statistic(boot.data, ...)
+        bw <- bw[num_cols]
 
-      }, mc.cores = mc.cores)
+        res <- repeatFun(1:R, function(i) {
 
+          samp <- cpp_rmvpkd(n, data_mtx, bw, weights, kernel)
+          idx <- samp$boot_index
+          boot.data <- data[idx, ]
+          boot.data[, num_cols] <- samp$samples
+          statistic(boot.data, ...)
+
+        }, mc.cores = mc.cores)
+
+      } else {
+
+        if (kernel != "gaussian") {
+          kernel <- "gaussian"
+          warning("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
+        }
+
+        if (!(is.matrix(bw) || is.data.frame(bw)))
+          stop("bw is not a matrix, or data.frame")
+        if (ncol(data) != k || nrow(bw) != k)
+          stop("bw has wrong dimmensions")
+
+        bw <- bw[num_cols, num_cols]
+        bw_chol <- chol(bw)
+
+        res <- repeatFun(1:R, function(i) {
+
+          samp <- cpp_rmvkd(n, data_mtx, bw_chol, weights, is_chol = TRUE)
+          idx <- samp$boot_index
+          boot.data <- data[idx, ]
+          boot.data[, num_cols] <- samp$samples
+          statistic(boot.data, ...)
+
+        }, mc.cores = mc.cores)
+
+      }
     }
 
   } else if (is.vector(data)) {

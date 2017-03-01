@@ -15,13 +15,15 @@ rmvpkd(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
   "biweight", "triweight", "cosine", "optcosine"), adjust = 1)
 }
 \arguments{
-\item{x}{numeric vector; kernel density is evaluated on those values.}
+\item{x}{\eqn{k \times m}{k*m} numeric matrix; kernel density
+is evaluated on those values.}
 
-\item{y}{numeric vector; kernel density is estimated using those values.}
+\item{y}{\eqn{n \times m}{n*m} numeric matrix; kernel density
+is estimated using those values.}
 
-\item{bw}{numeric matrix}
+\item{bw}{numeric vector of length \eqn{m}; must be greater than zero.}
 
-\item{weights}{numeric vector}
+\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
@@ -66,5 +68,5 @@ Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 }
 \seealso{
-\code{\link{kernelboot}}
+\code{\link{kernelboot}}, \code{\link{duvkd}}, \code{\link{dmvkd}}
 }

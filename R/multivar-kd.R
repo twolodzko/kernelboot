@@ -1,12 +1,19 @@
 
-#' Multivariate kernel density
+#' Multivariate kernel density with Gaussian kernel
 #'
-#' @param x            numeric vector; kernel density is evaluated on those values.
-#' @param y            numeric vector; kernel density is estimated using those values.
+#' @param x            \eqn{k \times m}{k*m} numeric matrix; kernel density
+#'                     is evaluated on those values.
+#' @param y            \eqn{n \times m}{n*m} numeric matrix; kernel density
+#'                     is estimated using those values.
 #' @param n            number of observations. If length(n) > 1,
 #'                     the length is taken to be the number required.
-#' @param bw           numeric matrix
-#' @param weights      numeric vector
+#' @param bw           \eqn{m \times m}{m*m} numeric matrix.
+#'                     \emph{Notice:} this is a \emph{covariance} matrix of
+#'                     multivariate normal distribution (see \code{\link{dmvn}}),
+#'                     while the \code{\link{duvkd}} and \code{\link{dmvpkd}}
+#'                     functions are parametrized with standard deviations
+#'                     as in \code{\link{density}}.
+#' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
@@ -28,6 +35,8 @@
 #' kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y}
 #' is a matrix of data points used for estimating the kernel density.
 #'
+#' This function uses Gaussian (multiariate normal) kernel (see \code{\link{dmvn}}).
+#'
 #'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -41,7 +50,7 @@
 #' and visualization. John Wiley & Sons.
 #'
 #'
-#' @seealso \code{\link{kernelboot}}
+#' @seealso \code{\link{kernelboot}}, \code{\link{dmvn}}
 #'
 #'
 #' @export
@@ -58,7 +67,7 @@ dmvkd <- function(x, y, bw = bw.silv(y), weights = NULL,
 
 rmvkd <- function(n, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1) {
-  if (length(n) > 1) n <- length(n)
+  if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
   cpp_rmvkd(n, y, bw, weights, FALSE)$samples

@@ -1,12 +1,14 @@
 
 #' Univariate kernel density
 #'
-#' @param x            numeric vector; kernel density is evaluated on those values.
-#' @param y            numeric vector; kernel density is evaluated on those values.
+#' @param x            numeric vector of length \eqn{k}; kernel density is
+#'                     evaluated on those values.
+#' @param y            numeric vector of length \eqn{n}; kernel density is
+#'                     evaluated on those values.
 #' @param n            number of observations. If length(n) > 1,
 #'                     the length is taken to be the number required.
-#' @param bw           numeric value.
-#' @param weights      numeric vector.
+#' @param bw           scalar; must be greater than zero.
+#' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #'                     This must partially match one of "gaussian", "rectangular",
 #'                     "triangular", "epanechnikov", "biweight", "cosine" or
@@ -83,7 +85,7 @@ ruvkd <- function(n, y, bw = bw.nrd0(y), weights = NULL,
                              "cosine", "optcosine"),
                   adjust = 1, preserve.var = FALSE) {
   kernel <- match.arg(kernel)
-  if (length(n) > 1) n <- length(n)
+  if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
   drop(cpp_ruvkd(n, y, bw, weights, kernel, preserve.var)$samples)

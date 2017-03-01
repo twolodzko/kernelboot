@@ -1,12 +1,14 @@
 
 #' Multivariate product kernel density
 #'
-#' @param x            numeric vector; kernel density is evaluated on those values.
-#' @param y            numeric vector; kernel density is estimated using those values.
+#' @param x            \eqn{k \times m}{k*m} numeric matrix; kernel density
+#'                     is evaluated on those values.
+#' @param y            \eqn{n \times m}{n*m} numeric matrix; kernel density
+#'                     is estimated using those values.
 #' @param n            number of observations. If length(n) > 1,
 #'                     the length is taken to be the number required.
-#' @param bw           numeric matrix
-#' @param weights      numeric vector
+#' @param bw           numeric vector of length \eqn{m}; must be greater than zero.
+#' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
@@ -47,7 +49,7 @@
 #' and visualization. John Wiley & Sons.
 #'
 #'
-#' @seealso \code{\link{kernelboot}}
+#' @seealso \code{\link{kernelboot}}, \code{\link{duvkd}}, \code{\link{dmvkd}}
 #'
 #'
 #' @export
@@ -71,7 +73,7 @@ rmvpkd <- function(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
                               "triangular", "biweight", "triweight",
                               "cosine", "optcosine"), adjust = 1) {
   kernel <- match.arg(kernel)
-  if (length(n) > 1) n <- length(n)
+  if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
   cpp_rmvpkd(n, y, bw, weights, kernel)$samples
