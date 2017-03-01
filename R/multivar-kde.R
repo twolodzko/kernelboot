@@ -11,14 +11,14 @@
 #'
 #' @export
 
-dmvkde <- function(y, x, bw = bw.scott(x), weights = rep(1, nrow(x)), log.prob = FALSE) {
+dmvkd <- function(y, x, bw = bw.scott(x), weights = rep(1, nrow(x)), log.prob = FALSE) {
   drop(cpp_dmvkde(y, x, bw, weights, log.prob, FALSE)$density)
 }
 
-#' @rdname dmvkde
+#' @rdname dmvkd
 #' @export
 
-rmvkde <- function(n, x, bw = bw.scott(x), weights = rep(1, nrow(x)), preserve.var = FALSE) {
+rmvkd <- function(n, x, bw = bw.scott(x), weights = rep(1, nrow(x)), preserve.var = FALSE) {
   if (length(n) > 1) n <- length(n)
   cpp_rmvkde(n, x, bw, weights, preserve.var)$sample
 }
