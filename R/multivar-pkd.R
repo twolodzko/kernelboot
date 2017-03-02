@@ -17,8 +17,8 @@
 #'                     bandwidth.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #'                     This must partially match one of "gaussian", "rectangular",
-#'                     "triangular", "epanechnikov", "biweight", "cosine" or
-#'                     "optcosine", with default "gaussian", and may be abbreviated.
+#'                     "triangular", "epanechnikov", "biweight", "triweight", "cosine"
+#'                     or "optcosine", with default "gaussian", and may be abbreviated.
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'

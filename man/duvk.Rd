@@ -28,8 +28,8 @@ kernel (see \code{\link[stats]{density}} for details).}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
-"triangular", "epanechnikov", "biweight", "cosine" or
-"optcosine", with default "gaussian", and may be abbreviated.}
+"triangular", "epanechnikov", "biweight", "triweight", "cosine"
+or "optcosine", with default "gaussian", and may be abbreviated.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'

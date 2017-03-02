@@ -16,8 +16,8 @@
 #'                     and \code{\link{bw.silv}} is used for multivariate data.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #'                     This must partially match one of "gaussian", "rectangular",
-#'                     "triangular", "epanechnikov", "biweight", "cosine" or
-#'                     "optcosine", with default "gaussian", and may be abbreviated.
+#'                     "triangular", "epanechnikov", "biweight", "triweight", "cosine"
+#'                     or "optcosine", with default "gaussian", and may be abbreviated.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}. This makes
 #'                     it easy to specify values like 'half the default' bandwidth.
 #' @param weights      vector of importance weights. It should have as many elements
@@ -36,9 +36,10 @@
 #'
 #' @details
 #'
-#' \emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986) is an extension of standard bootstrap
-#' procedure, where instead of drawing samples with replacement from the empirical distribution,
-#' they are drawn from kernel density estimate of the distribution.
+#' \emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986; Scott, 1992; Hall, DiCiccio
+#' and Romano, 1989) is an extension of standard bootstrap procedure, where instead
+#' of drawing samples with replacement from the empirical distribution, they are drawn
+#' from kernel density estimate of the distribution.
 #'
 #' For smoothed bootstrap, points (in univariate case), or rows (in multivariate case), are drawn with
 #' replacement, to obtain samples of size \eqn{n} from the initial dataset of size \eqn{n}, as with
@@ -94,6 +95,10 @@
 #' @references
 #' Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
 #' the bootstrap and other methods. Biometrika, 589-599.
+#'
+#' @references
+#' Hall, P., DiCiccio, T.J., and Romano, J.P. (1989). On smoothing and the bootstrap.
+#' The Annals of Statistics, 692-704. \url{http://projecteuclid.org/euclid.aos/1176347135}
 #'
 #'
 #' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
