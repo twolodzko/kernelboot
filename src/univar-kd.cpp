@@ -143,10 +143,9 @@ Rcpp::List cpp_ruvkd(
 
   } else {
 
-    double my, sy, c;
-    my = arma::mean(y);
-    sy = arma::var(y);
-    c = std::sqrt(1.0 + std::pow(bandwidth, 2.0)/sy);
+    const double my = arma::mean(y);
+    const double sy = arma::var(y);
+    const double c = std::sqrt(1.0 + std::pow(bandwidth, 2.0)/sy);
 
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
