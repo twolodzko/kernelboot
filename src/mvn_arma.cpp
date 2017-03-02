@@ -34,9 +34,10 @@ arma::vec cpp_dmvn(
 
   try {
 
-    arma::mat rooti = arma::trans(arma::inv(arma::trimatu(arma::chol(sigma))));
-    double rootisum = arma::sum(arma::log(rooti.diag()));
-    double c = -(static_cast<double>(m) / 2.0) * M_LN_2PI;
+    const arma::mat chol_sigma = arma::chol(sigma);
+    const arma::mat rooti = arma::trans(arma::inv(arma::trimatu(chol_sigma)));
+    const double rootisum = arma::sum(arma::log(rooti.diag()));
+    const double c = -(static_cast<double>(m) / 2.0) * M_LN_2PI;
 
     arma::vec z;
     for (unsigned int i = 0; i < n; i++) {
@@ -73,7 +74,7 @@ arma::mat cpp_rmvn(
 
   try {
 
-    arma::mat Y = arma::randn(n, m);
+    const arma::mat Y = arma::randn(n, m);
     return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
 
   } catch ( std::exception& __ex__ ) {
