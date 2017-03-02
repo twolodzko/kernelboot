@@ -10,9 +10,9 @@
 #' @param bw           \eqn{m \times m}{m*m} numeric matrix.
 #'                     \emph{Notice:} this is a \emph{covariance} matrix of
 #'                     multivariate normal distribution (see \code{\link{dmvn}}),
-#'                     while the \code{\link{duvkd}} and \code{\link{dmvpkd}}
-#'                     functions are parametrized with standard deviations
-#'                     as in \code{\link{density}}.
+#'                     while the univariate (\code{\link{duvk}}) and product
+#'                     kernels (\code{\link{dmvpk}}) are parametrized in terms
+#'                     of standard deviations as in \code{\link{density}} function.
 #' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
@@ -22,7 +22,7 @@
 #'
 #' @details
 #'
-#' Multivariate kernel density estimator is defined as
+#' Multivariate Gaussian kernel density estimator is defined as
 #'
 #' \deqn{
 #' \hat{f_H}(x_1,\dots,x_n) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
@@ -39,37 +39,72 @@
 #'
 #'
 #' @references
-#' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
-#' Chapman and Hall/CRC.
+#' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 #'
 #' @references
-#' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+#' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
+#'
+#'
+#' @examples
+#'
+#' # Comparison of multivariate and product kernels
+#'
+#' dat <- as.matrix(mtcars[, c("mpg", "disp")])
+#' pal <- colorRampPalette(c("chartreuse4", "yellow", "orange", "brown"))
+#'
+#' partmp <- par(mfrow = c(1, 2), mar = c(3,3,3,3))
+#'
+#' samp1 <- rmvpk(5000, dat)
+#' col1 <- pal(10)[cut(dmvpk(samp1, dat), breaks = 10)]
+#'
+#' plot(samp1, col = col1, pch = 16, axes = FALSE)
+#' points(dat, pch = 2, lwd = 2)
+#' axis(1); axis(2)
+#' title("Independent gaussian kernels", cex.sub = 0.5)
+#' legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
+#'        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
+#'
+#'
+#' samp2 <- rmvk(5000, dat)
+#' col2 <- pal(10)[cut(dmvk(samp2, dat), breaks = 10)]
+#'
+#' plot(samp2, col = col2, pch = 16, axes = FALSE)
+#' points(dat, pch = 2, lwd = 2)
+#' axis(1); axis(2)
+#' title("Multivariate Gaussian kernel", cex.sub = 0.5)
+#' legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
+#'        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
+#'
+#' par(partmp)
 #'
 #'
 #' @seealso \code{\link{kernelboot}}, \code{\link{dmvn}}
 #'
-#'
+#' @importFrom grDevices colorRampPalette
 #' @export
 
-dmvkd <- function(x, y, bw = bw.silv(y), weights = NULL,
+dmvk <- function(x, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1, log.prob = FALSE) {
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  drop(cpp_dmvkd(x, y, bw, weights, log.prob, FALSE)$density)
+  x <- as.matrix(x)
+  y <- as.matrix(y)
+  drop(cpp_dmvk(x, y, bw, weights, log.prob, FALSE)$density)
 }
 
-#' @rdname dmvkd
+#' @rdname dmvk
 #' @export
 
-rmvkd <- function(n, y, bw = bw.silv(y), weights = NULL,
+rmvk <- function(n, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1) {
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  cpp_rmvkd(n, y, bw, weights, FALSE)$samples
+  y <- as.matrix(y)
+  cpp_rmvk(n, y, bw, weights, FALSE)$samples
 }
 

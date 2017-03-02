@@ -4,8 +4,8 @@
 #' @param x        \eqn{n \times m}{n*m} numeric matrix.
 #' @param n        number of observations. If length(n) > 1,
 #'                 the length is taken to be the number required.
-#' @param mu       numeric vector of length \eqn{m}.
-#' @param sigma    \eqn{m \times m}{m*m} numeric matrix.
+#' @param mu       vector of means of length \eqn{m}.
+#' @param sigma    \eqn{m \times m}{m*m} covariance matrix.
 #' @param log.prob logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -54,7 +54,7 @@
 #' @export
 
 dmvn <- function(x, mu, sigma, log.prob = FALSE) {
-  cpp_dmvn(x, mu, sigma, log.prob)
+  cpp_dmvn(as.matrix(x), mu, as.matrix(sigma), log.prob)
 }
 
 #' @rdname dmvn
@@ -62,6 +62,6 @@ dmvn <- function(x, mu, sigma, log.prob = FALSE) {
 
 rmvn <- function(n, mu, sigma) {
   if (length(n) > 1L) n <- length(n)
-  cpp_rmvn(n, mu, sigma)
+  cpp_rmvn(n, mu, as.matrix(sigma))
 }
 

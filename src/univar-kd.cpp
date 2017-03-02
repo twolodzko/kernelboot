@@ -1,11 +1,12 @@
 
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
 #include "kernels.h"
 #include "shared.h"
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_duvkd(
+Rcpp::List cpp_duvk(
     const arma::vec& x,
     const arma::vec& y,
     const double& bandwidth,
@@ -80,7 +81,7 @@ Rcpp::List cpp_duvkd(
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_ruvkd(
+Rcpp::List cpp_ruvk(
     const unsigned int& n,
     const arma::vec& y,
     const double& bandwidth,
@@ -145,7 +146,7 @@ Rcpp::List cpp_ruvkd(
 
     const double my = arma::mean(y);
     const double sy = arma::var(y);
-    const double c = std::sqrt(1.0 + std::pow(bandwidth, 2.0)/sy);
+    const double c = std::sqrt(1.0 + (bandwidth*bandwidth)/sy);
 
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {

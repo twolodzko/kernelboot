@@ -7,7 +7,7 @@ print.kernelboot <- function(x, ...) {
   if (!is.null(x$call))
     cat("Call:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n")
 
-  cat("\nSummary Statistics:\n")
+  cat("\nSummary Statistics:\n\n")
 
   prc <- c(0.025, 0.5, 0.975)
 

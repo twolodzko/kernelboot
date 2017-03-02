@@ -1,8 +1,9 @@
 
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
 
 /*
- * The following code comes from Rcpp Gallery articles:
+ * The following code is adapted from Rcpp Gallery articles:
  *
  * Nino Hardt, Dicko Ahmadou (Jul 13, 2013).
  * Faster Multivariate Normal densities with RcppArmadillo and OpenMP.
@@ -14,7 +15,7 @@
  * Generating a multivariate gaussian distribution using RcppArmadillo.
  * http://gallery.rcpp.org/articles/simulate-multivariate-normal/
  *
- * The code comes under GPLv2 License
+ * The original code come under GPLv2 License
  * (https://www.gnu.org/licenses/gpl-2.0.html)
  *
  */
@@ -33,6 +34,15 @@ arma::vec cpp_dmvn(
   arma::vec p(n);
 
   try {
+
+    if (mu.n_elem != m || sigma.n_cols != m)
+      Rcpp::stop("dimansions of parameters do not match the data");
+
+    if (mu.n_elem != sigma.n_cols)
+      Rcpp::stop("dimensions of mu and sigma do not match");
+
+    if (sigma.n_cols != sigma.n_rows)
+      Rcpp::stop("sigma is not a square matrix");
 
     const arma::mat chol_sigma = arma::chol(sigma);
     const arma::mat rooti = arma::trans(arma::inv(arma::trimatu(chol_sigma)));
@@ -73,6 +83,12 @@ arma::mat cpp_rmvn(
   arma::mat res(n, m);
 
   try {
+
+    if (mu.n_elem != sigma.n_cols)
+      Rcpp::stop("dimensions of mu and sigma do not match");
+
+    if (sigma.n_cols != sigma.n_rows)
+      Rcpp::stop("sigma is not a square matrix");
 
     const arma::mat Y = arma::randn(n, m);
     return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);

@@ -1,11 +1,12 @@
 
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
 #include "kernels.h"
 #include "shared.h"
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_dmvkd(
+Rcpp::List cpp_dmvk(
     const arma::mat& x,
     const arma::mat& y,
     const arma::mat& bandwidth,
@@ -19,11 +20,11 @@ Rcpp::List cpp_dmvkd(
   const unsigned int k = y.n_rows;
   arma::vec p(n), c_weights(k);
 
-  if (x.n_cols != m)
-    Rcpp::stop("wrong dimmensions of x");
+  if (x.n_cols != m || bandwidth.n_cols != m)
+    Rcpp::stop("dimmensions of x, y and bandwidth do not match");
 
-  if (bandwidth.n_cols != bandwidth.n_rows || bandwidth.n_cols != m)
-    Rcpp::stop("wrong dimmensions of bandwidth");
+  if (bandwidth.n_cols != bandwidth.n_rows)
+    Rcpp::stop("bandwidth is not a square matrix");
 
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -34,7 +35,7 @@ Rcpp::List cpp_dmvkd(
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
       if (weights.n_elem != k)
-        Rcpp::stop("length(weights) != nrow(y)");
+        Rcpp::stop("dimmensions of weights and y do not match");
       c_weights = weights;
     }
 
@@ -83,7 +84,7 @@ Rcpp::List cpp_dmvkd(
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_rmvkd(
+Rcpp::List cpp_rmvk(
     const unsigned int& n,
     const arma::mat& y,
     const arma::mat& bandwidth,
@@ -97,8 +98,11 @@ Rcpp::List cpp_rmvkd(
   arma::vec c_weights(k);
   std::vector<unsigned int> idx(n);
 
-  if (bandwidth.n_cols != bandwidth.n_rows || bandwidth.n_cols != m)
-    Rcpp::stop("wrong dimmensions of bandwidth");
+  if (bandwidth.n_cols != m)
+    Rcpp::stop("dimmensions of y and bandwidth do not match");
+
+  if (bandwidth.n_cols != bandwidth.n_rows)
+    Rcpp::stop("bandwidth is not a square matrix");
 
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -109,7 +113,7 @@ Rcpp::List cpp_rmvkd(
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
       if (weights.n_elem != k)
-        Rcpp::stop("length(weights) != nrow(y)");
+        Rcpp::stop("dimmensions of weights and y do not match");
       c_weights = weights;
     }
 

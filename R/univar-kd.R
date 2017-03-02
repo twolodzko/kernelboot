@@ -7,19 +7,19 @@
 #'                     evaluated on those values.
 #' @param n            number of observations. If length(n) > 1,
 #'                     the length is taken to be the number required.
-#' @param bw           scalar; must be greater than zero.
+#' @param bw           the smoothing bandwidth to be used. The kernels are scaled
+#'                     such that this is the standard deviation of the smoothing
+#'                     kernel (see \code{\link[stats]{density}} for details).
 #' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #'                     This must partially match one of "gaussian", "rectangular",
 #'                     "triangular", "epanechnikov", "biweight", "cosine" or
-#'                     "optcosine", with default "gaussian", and may be abbreviated
-#'                     to a unique prefix (single letter).
+#'                     "optcosine", with default "gaussian", and may be abbreviated.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
 #' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     mean and variance of the original sample (see
-#'                     \code{\link{kernelboot}} for details).
+#'                     mean and variance of the original sample.
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -38,34 +38,128 @@
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
+#' To draw samples from univariate kernel density, the following procedure can be applied (Silverman, 1986):
+#'
+#' \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
+#'
+#' \emph{Step 2} Generate \eqn{\varepsilon}{\epsilon} to have probability density \eqn{K}.
+#'
+#' \emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
+#'
+#' If samples are required to have the same variance as \code{data}
+#' (i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
+#' as following:
+#'
+#' \emph{Step 3'} \eqn{
+#' Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}
+#' }{
+#' Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)
+#' }
+#'
+#'
+#' \strong{Available univariate kernels}
+#'
+#' This package offers the following univariate kernels:
+#'
+#' \emph{Gaussian}
+#' \deqn{
+#' K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
+#' }{
+#' K(u) = 1/sqrt(2\pi) exp(-(u^2)/2)
+#' }
+#'
+#' \emph{Rectangular}
+#' \deqn{
+#' K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 1/2
+#' }
+#'
+#' \emph{Triangular}
+#' \deqn{
+#' K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = (1 - |u|)
+#' }
+#'
+#' \emph{Epanchenikov}
+#' \deqn{
+#' K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 3/4 (1 - u^2)
+#' }
+#'
+#' \emph{Biweight}
+#' \deqn{
+#' K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 15/16 (1 - u^2)^2
+#' }
+#'
+#' \emph{Triweight}
+#' \deqn{
+#' K(u) = \frac{35}{32}(1-u^2)^3 \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 35/32 (1 - u^2)^3
+#' }
+#'
+#' \emph{Cosine}
+#' \deqn{
+#' K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = 1/2 (1 + cos(\pi u))
+#' }
+#'
+#' \emph{Optcosine}
+#' \deqn{
+#' K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
+#' }{
+#' K(u) = \pi/4 cos(\pi/2 u)
+#' }
+#'
+#' Random generation from Epachenikov kernel is done using algorithm
+#' described by Devoye (1986). For optcosine kernel inverse transform
+#' sampling is used. For biweight kernel random values are drawn from
+#' \eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution, for triweight
+#' kernel from \eqn{\mathrm{Beta}(4, 4)}{Beta(4, 4)} distribution,
+#' and \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
+#' distribution serves as a close approximation of cosine kernel.
+#' Random generation for triangular kernel is done by taking difference
+#' of two i.i.d. uniform random variates. To sample from rectangular
+#' and Gaussian kernels standard random generation algorithms are used
+#' (see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
+#'
 #'
 #' @references
-#' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
-#' Chapman and Hall/CRC.
+#' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 #'
 #' @references
-#' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+#' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
+#'
+#' @references
+#' Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+#'
 #'
 #' @seealso \code{\link[stats]{density}}, \code{\link{kernelboot}}
 #'
 #'
 #' @examples
 #'
-#' hist(ruvkd(1e5, mtcars$mpg), 100, freq = FALSE)
-#' curve(duvkd(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
+#' hist(ruvk(1e5, mtcars$mpg), 100, freq = FALSE)
+#' curve(duvk(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
 #'
-#' hist(ruvkd(1e5, mtcars$mpg, preserve.var = TRUE), 100, freq = FALSE)
-#' curve(duvkd(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
+#' hist(ruvk(1e5, mtcars$mpg, preserve.var = TRUE), 100, freq = FALSE)
+#' curve(duvk(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
 #'
 #'
 #' @importFrom stats bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @export
 
-duvkd <- function(x, y, bw = bw.nrd0(y), weights = NULL,
+duvk <- function(x, y, bw = bw.nrd0(y), weights = NULL,
                   kernel = c("gaussian", "epanechnikov", "rectangular",
                               "triangular", "biweight", "triweight",
                               "cosine", "optcosine"),
@@ -73,13 +167,13 @@ duvkd <- function(x, y, bw = bw.nrd0(y), weights = NULL,
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  drop(cpp_duvkd(x, y, bw, weights, kernel, log.prob)$density)
+  drop(cpp_duvk(x, y, bw, weights, kernel, log.prob)$density)
 }
 
-#' @rdname duvkd
+#' @rdname duvk
 #' @export
 
-ruvkd <- function(n, y, bw = bw.nrd0(y), weights = NULL,
+ruvk <- function(n, y, bw = bw.nrd0(y), weights = NULL,
                   kernel = c("gaussian", "epanechnikov", "rectangular",
                              "triangular", "biweight", "triweight",
                              "cosine", "optcosine"),
@@ -88,6 +182,6 @@ ruvkd <- function(n, y, bw = bw.nrd0(y), weights = NULL,
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  drop(cpp_ruvkd(n, y, bw, weights, kernel, preserve.var)$samples)
+  drop(cpp_ruvk(n, y, bw, weights, kernel, preserve.var)$samples)
 }
 

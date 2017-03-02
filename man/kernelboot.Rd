@@ -6,142 +6,105 @@
 \usage{
 kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), preserve.var = TRUE,
-  adjust = 1, weights = NULL, parallel = FALSE,
-  mc.cores = getOption("mc.cores", 2L), ...)
+  "biweight", "triweight", "cosine", "optcosine"), weights = NULL, ...,
+  adjust = 1, preserve.var = TRUE, ignore = NULL, parallel = FALSE,
+  mc.cores = getOption("mc.cores", 2L))
 }
 \arguments{
-\item{data}{Data.}
+\item{data}{vector, matrix, or data.frame. For non-numeric values standard bootstrap
+is applied (see below).}
 
-\item{statistic}{A function which when applied to data returns a vector containing
-the statistic(s) of interest. The first argument passed will always
-be the original data. Any further arguments can be passed to
-\code{statistic} through the \code{...} argument.}
+\item{statistic}{a function that is applied to the \code{data}. The first argument of
+the function will always be the original data. Any further arguments
+can be passed to \code{statistic} through \dots argument.}
 
-\item{R}{The number of bootstrap replicates.}
+\item{R}{the number of bootstrap replicates.}
 
-\item{bw}{the smoothing bandwidth to be used. The kernels are scaled such that
-this is the standard deviation, or covariance matrix of the smoothing kernel.
-If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
+\item{bw}{the smoothing bandwidth to be used (see \code{\link[stats]{density}}).
+The kernels are scaled such that this is the standard deviation,
+or covariance matrix of the smoothing kernel. By default
+\code{\link[stats]{bw.nrd0}} is used for univariate data,
 and \code{\link{bw.silv}} is used for multivariate data.}
 
-\item{kernel}{a character string giving the smoothing kernel to be used.}
+\item{kernel}{a character string giving the smoothing kernel to be used.
+This must partially match one of "gaussian", "rectangular",
+"triangular", "epanechnikov", "biweight", "cosine" or
+"optcosine", with default "gaussian", and may be abbreviated.}
 
-\item{preserve.var}{logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.}
+\item{weights}{vector of importance weights. It should have as many elements
+as there are observations in \code{data}. It defaults to uniform
+weights.}
 
-\item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes it easy
-to specify values like 'half the default' bandwidth.}
+\item{\dots}{optional arguments to to \code{statistic}.}
 
-\item{weights}{Vector of importance weights. It should have as many
-elements as there are observations in \code{data}.}
+\item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes
+it easy to specify values like 'half the default' bandwidth.}
+
+\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
+mean and variance of the original sample (see
+\code{\link{ruvk}} for details). This parameter is used only for univariate
+kernels.}
+
+\item{ignore}{vector of names of columns to be ignored during the smoothing phase of
+bootstrap procedure (their values are not altered using random noise).}
 
 \item{parallel}{if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).}
 
 \item{mc.cores}{number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).}
+}
+\value{
+An object of class \code{"kernelboot"}, i.e., a list with components including
 
-\item{\dots}{further arguments passed to \code{statistic}.}
+\tabular{ll}{
+\code{orig.stat}    \tab  estimates from \code{statistic} on the original data, \cr
+\code{boot.sample}  \tab  samples drawn, \cr
+\code{call}         \tab  function call, \cr
+\code{statistic}    \tab  actual \code{statistic} function that was used, \cr
+\code{param}        \tab  list of parameters that were used. \cr
+}
+
+\code{param} section contains:
+
+\tabular{ll}{
+\code{R}            \tab  number of bootstrap iterations, \cr
+\code{bw}           \tab  the bandwidth that was used, \cr
+\code{weights}      \tab  vector of the weights that were applied, \cr
+\code{kernel}       \tab  name of the kernel that was used, \cr
+\code{preserve.var} \tab  logical; value of \code{preserve.var} parameter, \cr
+\code{parallel}     \tab  logical; states if parallel computation was used.
+}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 }
 \details{
 \emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986) is an extension of standard bootstrap
-procedure, where instead of drawing samples with replacement from unknown empirical distribution,
-samples are drawn from kernel density estimate of the distribution.
+procedure, where instead of drawing samples with replacement from the empirical distribution,
+they are drawn from kernel density estimate of the distribution.
 
-\strong{Univariate kernel densities}
+For smoothed bootstrap, points (in univariate case), or rows (in multivariate case), are drawn with
+replacement, to obtain samples of size \eqn{n} from the initial dataset of size \eqn{n}, as with
+standard bootstrap. Next, random noise from kernel density \eqn{K} is added to each of the drawn
+values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
+samples.
 
-For univariate kernel density, samples are drawn using the following procedure (Silverman, 1986):
+The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
+\code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
+non-numeric columns and columns listed in \code{ignore} standard bootstrap procedure
+is applied.
 
-\emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
-
-\emph{Step 2} Generate \eqn{\varepsilon}{\epsilon} to have probability density \eqn{K}.
-
-\emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
-
-If samples are required to have the same variance as \code{data}
-(i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
-as following:
-
-\emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
-
-\emph{\strong{Available univariate kernels}}
-
-This package offers the following univariate kernels:
-
-\emph{Gaussian}
-\deqn{
-K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
-}{
-K(u) 1/sqrt(2\pi) exp(-(u^2)/2)
+With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a non-diagonal
+matrix, multivariate Gaussian kernel is applied (see \code{\link{rmvn}} and \code{\link{rmvk}}).
+When \code{kernel = "gaussian"} and \code{bw} is a diagonal matrix, or a vector, product kernel
+is used (see \code{\link{rmvpk}}). In other cases, depending on the data, univariate, or product
+kernels, are used.
 }
+\examples{
 
-\emph{Rectangular}
-\deqn{
-K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = 1/2
-}
-
-\emph{Triangular}
-\deqn{
-K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = (1 - |u|)
-}
-
-\emph{Epanchenikov}
-\deqn{
-K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) 3/4 (1 - u^2)
-}
-
-\emph{Biweight}
-\deqn{
-K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = 15/16 (1 - u^2)^2
-}
-
-\emph{Triweight}
-\deqn{
-K(u) = \frac{35}{32}(1-u^2)^3 \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = 35/32 (1 - u^2)^3
-}
-
-\emph{Cosine}
-\deqn{
-K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = 1/2 (1 + cos(\pi u))
-}
-
-\emph{Optcosine}
-\deqn{
-K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
-}{
-K(u) = \pi/4 cos(\pi/2 u)
-}
-
-Sampling from Epachenikov kernel is done using algorithm described
-by Devoye (1986). For optcosine kernel inverse transform sampling
-is used. For biweight kernel sampling is done from
-\eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution, for triweight
-kernel from \eqn{\mathrm{Beta}(4, 4)}{Beta(4, 4)} distribution,
-and for cosine kernel \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
-distribution serves as a close approximation. Random generation
-for triangular kernel is done by taking difference of two i.i.d.
-uniform random variates. To sample from rectangular and Gaussian
-kernels standard random generation algorithms are used
-(see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
+kernelboot(mtcars, function(data) coef(lm(mpg ~., data = data)) , R = 250)
+kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
 
 
-\strong{Multivariate kernel densities}
-
-In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
-(see \code{\link{rmvn}}) or from product kernels (see \code{\link{rmvpkd}}).
 }
 \references{
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
@@ -152,13 +115,11 @@ Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 
-Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
-
 Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
 the bootstrap and other methods. Biometrika, 589-599.
 }
 \seealso{
-\code{\link{bw.scott}}, \code{\link[stats]{density}},
+\code{\link{bandwidth}}, \code{\link[stats]{density}},
          \code{\link[stats]{bandwidth}}, \code{\link{dmvn}},
-         \code{\link{duvkd}}, \code{\link{dmvkd}}
+         \code{\link{duvk}}, \code{\link{dmvk}}, \code{\link{dmvpk}}
 }

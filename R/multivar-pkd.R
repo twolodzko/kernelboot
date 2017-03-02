@@ -1,5 +1,5 @@
 
-#' Multivariate product kernel density
+#' Multivariate product kernel
 #'
 #' @param x            \eqn{k \times m}{k*m} numeric matrix; kernel density
 #'                     is evaluated on those values.
@@ -7,7 +7,10 @@
 #'                     is estimated using those values.
 #' @param n            number of observations. If length(n) > 1,
 #'                     the length is taken to be the number required.
-#' @param bw           numeric vector of length \eqn{m}; must be greater than zero.
+#' @param bw           numeric vector of length \eqn{m}; the smoothing bandwidth
+#'                     to be used. The kernels are scaled such that this is the
+#'                     standard deviation of the smoothing kernel
+#'                     (see \code{\link[stats]{density}} for details).
 #' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
@@ -15,8 +18,7 @@
 #' @param kernel       a character string giving the smoothing kernel to be used.
 #'                     This must partially match one of "gaussian", "rectangular",
 #'                     "triangular", "epanechnikov", "biweight", "cosine" or
-#'                     "optcosine", with default "gaussian", and may be abbreviated
-#'                     to a unique prefix (single letter).
+#'                     "optcosine", with default "gaussian", and may be abbreviated.
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -36,46 +38,67 @@
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h_j} and \eqn{\boldsymbol{y}}{y}
 #' is a matrix of data points used for estimating the kernel density.
 #'
+#' Random generation from product kernel is done by drawing with replacement
+#' rows of \code{y}, and then adding random noise from univariate kernel \eqn{K}
+#' (see \code{\link{duvk}}), parametrized by corresponding bandwidth parameter
+#' \eqn{h}, to the sampled values.
+#'
 #'
 #' @references
-#' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
-#' Chapman and Hall/CRC.
+#' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 #'
 #' @references
-#' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
+#' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
 #'
 #'
-#' @seealso \code{\link{kernelboot}}, \code{\link{duvkd}}, \code{\link{dmvkd}}
+#' @seealso \code{\link{kernelboot}}, \code{\link{duvk}}, \code{\link{dmvk}}
 #'
 #'
 #' @export
 
-dmvpkd <- function(x, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
+dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
                    kernel = c("gaussian", "epanechnikov", "rectangular",
                               "triangular", "biweight", "triweight",
                               "cosine", "optcosine"),
                    adjust = 1, log.prob = FALSE) {
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
+  if (is.matrix(bw) || is.data.frame(bw)) {
+    if (ncol(bw) != ncol(y))
+      stop("dimmensions of bw and y do not match")
+    if (!is.square(bw))
+      stop("bw is not a square matrix")
+    bw <- diag(bw)
+  }
   bw <- bw * adjust[1L]
-  drop(cpp_dmvpkd(x, y, bw, weights, kernel, log.prob)$density)
+  x <- as.matrix(x)
+  y <- as.matrix(y)
+  drop(cpp_dmvpk(x, y, bw, weights, kernel, log.prob)$density)
 }
 
-#' @rdname dmvpkd
+#' @rdname dmvpk
 #' @export
 
-rmvpkd <- function(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
+rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
                    kernel = c("gaussian", "epanechnikov", "rectangular",
                               "triangular", "biweight", "triweight",
                               "cosine", "optcosine"), adjust = 1) {
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
+  if (is.matrix(bw) || is.data.frame(bw)) {
+    if (ncol(bw) != ncol(y))
+      stop("dimmensions of bw and y do not match")
+    if (!is.square(bw))
+      stop("bw is not a square matrix")
+    bw <- diag(bw)
+  }
   bw <- bw * adjust[1L]
-  cpp_rmvpkd(n, y, bw, weights, kernel)$samples
+  y <- as.matrix(y)
+  cpp_rmvpk(n, y, bw, weights, kernel)$samples
 }
 

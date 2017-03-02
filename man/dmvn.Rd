@@ -12,9 +12,9 @@ rmvn(n, mu, sigma)
 \arguments{
 \item{x}{\eqn{n \times m}{n*m} numeric matrix.}
 
-\item{mu}{numeric vector of length \eqn{m}.}
+\item{mu}{vector of means of length \eqn{m}.}
 
-\item{sigma}{\eqn{m \times m}{m*m} numeric matrix.}
+\item{sigma}{\eqn{m \times m}{m*m} covariance matrix.}
 
 \item{log.prob}{logical; if \code{TRUE}, probabilities p are given as log(p).}
 

@@ -3,126 +3,81 @@
 #'
 #' Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 #'
-#' @param data         Data.
-#' @param statistic    A function which when applied to data returns a vector containing
-#'                     the statistic(s) of interest. The first argument passed will always
-#'                     be the original data. Any further arguments can be passed to
-#'                     \code{statistic} through the \code{...} argument.
-#' @param R            The number of bootstrap replicates.
-#' @param bw           the smoothing bandwidth to be used. The kernels are scaled such that
-#'                     this is the standard deviation, or covariance matrix of the smoothing kernel.
-#'                     If missing, by default \code{\link[stats]{bw.nrd0}} is used for univariate data,
+#' @param data         vector, matrix, or data.frame. For non-numeric values standard bootstrap
+#'                     is applied (see below).
+#' @param statistic    a function that is applied to the \code{data}. The first argument of
+#'                     the function will always be the original data. Any further arguments
+#'                     can be passed to \code{statistic} through \dots argument.
+#' @param R            the number of bootstrap replicates.
+#' @param bw           the smoothing bandwidth to be used (see \code{\link[stats]{density}}).
+#'                     The kernels are scaled such that this is the standard deviation,
+#'                     or covariance matrix of the smoothing kernel. By default
+#'                     \code{\link[stats]{bw.nrd0}} is used for univariate data,
 #'                     and \code{\link{bw.silv}} is used for multivariate data.
 #' @param kernel       a character string giving the smoothing kernel to be used.
-#' @param preserve.var logical, if \code{TRUE}, then the bootstrap samples preserve sample variance.
-#' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}. This makes it easy
-#'                     to specify values like 'half the default' bandwidth.
-#' @param weights      Vector of importance weights. It should have as many
-#'                     elements as there are observations in \code{data}.
+#'                     This must partially match one of "gaussian", "rectangular",
+#'                     "triangular", "epanechnikov", "biweight", "cosine" or
+#'                     "optcosine", with default "gaussian", and may be abbreviated.
+#' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}. This makes
+#'                     it easy to specify values like 'half the default' bandwidth.
+#' @param weights      vector of importance weights. It should have as many elements
+#'                     as there are observations in \code{data}. It defaults to uniform
+#'                     weights.
+#' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
+#'                     mean and variance of the original sample (see
+#'                     \code{\link{ruvk}} for details). This parameter is used only for univariate
+#'                     kernels.
+#' @param ignore       vector of names of columns to be ignored during the smoothing phase of
+#'                     bootstrap procedure (their values are not altered using random noise).
 #' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
 #' @param mc.cores     number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
-#' @param \dots        further arguments passed to \code{statistic}.
+#' @param \dots        optional arguments to to \code{statistic}.
 #'
 #'
 #' @details
 #'
 #' \emph{Smoothed bootstrap} (Efron, 1981; Silverman, 1986) is an extension of standard bootstrap
-#' procedure, where instead of drawing samples with replacement from unknown empirical distribution,
-#' samples are drawn from kernel density estimate of the distribution.
+#' procedure, where instead of drawing samples with replacement from the empirical distribution,
+#' they are drawn from kernel density estimate of the distribution.
 #'
-#' \strong{Univariate kernel densities}
+#' For smoothed bootstrap, points (in univariate case), or rows (in multivariate case), are drawn with
+#' replacement, to obtain samples of size \eqn{n} from the initial dataset of size \eqn{n}, as with
+#' standard bootstrap. Next, random noise from kernel density \eqn{K} is added to each of the drawn
+#' values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
+#' samples.
 #'
-#' For univariate kernel density, samples are drawn using the following procedure (Silverman, 1986):
+#' The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
+#' \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
+#' non-numeric columns and columns listed in \code{ignore} standard bootstrap procedure
+#' is applied.
 #'
-#' \emph{Step 1} Sample \eqn{i} uniformly with replacement from \eqn{1,\dots,n}.
+#' With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a non-diagonal
+#' matrix, multivariate Gaussian kernel is applied (see \code{\link{rmvn}} and \code{\link{rmvk}}).
+#' When \code{kernel = "gaussian"} and \code{bw} is a diagonal matrix, or a vector, product kernel
+#' is used (see \code{\link{rmvpk}}). In other cases, depending on the data, univariate, or product
+#' kernels, are used.
 #'
-#' \emph{Step 2} Generate \eqn{\varepsilon}{\epsilon} to have probability density \eqn{K}.
+#' @return
+#' An object of class \code{"kernelboot"}, i.e., a list with components including
 #'
-#' \emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
-#'
-#' If samples are required to have the same variance as \code{data}
-#' (i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
-#' as following:
-#'
-#' \emph{Step 3'} \eqn{Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}}{Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)}
-#'
-#' \emph{\strong{Available univariate kernels}}
-#'
-#' This package offers the following univariate kernels:
-#'
-#' \emph{Gaussian}
-#' \deqn{
-#' K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
-#' }{
-#' K(u) 1/sqrt(2\pi) exp(-(u^2)/2)
+#' \tabular{ll}{
+#' \code{orig.stat}    \tab  estimates from \code{statistic} on the original data, \cr
+#' \code{boot.sample}  \tab  samples drawn, \cr
+#' \code{call}         \tab  function call, \cr
+#' \code{statistic}    \tab  actual \code{statistic} function that was used, \cr
+#' \code{param}        \tab  list of parameters that were used. \cr
 #' }
 #'
-#' \emph{Rectangular}
-#' \deqn{
-#' K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 1/2
+#' \code{param} section contains:
+#'
+#' \tabular{ll}{
+#' \code{R}            \tab  number of bootstrap iterations, \cr
+#' \code{bw}           \tab  the bandwidth that was used, \cr
+#' \code{weights}      \tab  vector of the weights that were applied, \cr
+#' \code{kernel}       \tab  name of the kernel that was used, \cr
+#' \code{preserve.var} \tab  logical; value of \code{preserve.var} parameter, \cr
+#' \code{parallel}     \tab  logical; states if parallel computation was used.
 #' }
-#'
-#' \emph{Triangular}
-#' \deqn{
-#' K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = (1 - |u|)
-#' }
-#'
-#' \emph{Epanchenikov}
-#' \deqn{
-#' K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) 3/4 (1 - u^2)
-#' }
-#'
-#' \emph{Biweight}
-#' \deqn{
-#' K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 15/16 (1 - u^2)^2
-#' }
-#'
-#' \emph{Triweight}
-#' \deqn{
-#' K(u) = \frac{35}{32}(1-u^2)^3 \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 35/32 (1 - u^2)^3
-#' }
-#'
-#' \emph{Cosine}
-#' \deqn{
-#' K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 1/2 (1 + cos(\pi u))
-#' }
-#'
-#' \emph{Optcosine}
-#' \deqn{
-#' K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = \pi/4 cos(\pi/2 u)
-#' }
-#'
-#' Sampling from Epachenikov kernel is done using algorithm described
-#' by Devoye (1986). For optcosine kernel inverse transform sampling
-#' is used. For biweight kernel sampling is done from
-#' \eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution, for triweight
-#' kernel from \eqn{\mathrm{Beta}(4, 4)}{Beta(4, 4)} distribution,
-#' and for cosine kernel \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
-#' distribution serves as a close approximation. Random generation
-#' for triangular kernel is done by taking difference of two i.i.d.
-#' uniform random variates. To sample from rectangular and Gaussian
-#' kernels standard random generation algorithms are used
-#' (see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
-#'
-#'
-#' \strong{Multivariate kernel densities}
-#'
-#' In the case of multivariate kernel densities, samples are drawn from multivariate normal distribution
-#' (see \code{\link{rmvn}}) or from product kernels (see \code{\link{rmvpkd}}).
 #'
 #'
 #' @references
@@ -137,16 +92,19 @@
 #' and visualization. John Wiley & Sons.
 #'
 #' @references
-#' Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
-#'
-#' @references
 #' Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
 #' the bootstrap and other methods. Biometrika, 589-599.
 #'
 #'
-#' @seealso \code{\link{bw.scott}}, \code{\link[stats]{density}},
+#' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
 #'          \code{\link[stats]{bandwidth}}, \code{\link{dmvn}},
-#'          \code{\link{duvkd}}, \code{\link{dmvkd}}
+#'          \code{\link{duvk}}, \code{\link{dmvk}}, \code{\link{dmvpk}}
+#'
+#'
+#' @examples
+#'
+#' kernelboot(mtcars, function(data) coef(lm(mpg ~., data = data)) , R = 250)
+#' kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
 #'
 #'
 #' @importFrom stats bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
@@ -157,15 +115,15 @@
 kernelboot <- function(data, statistic, R = 500L, bw = "default",
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
-                                  "cosine", "optcosine"), preserve.var = TRUE,
-                       adjust = 1, weights = NULL,
-                       parallel = FALSE, mc.cores = getOption("mc.cores", 2L),
-                       ...) {
+                                  "cosine", "optcosine"),
+                       weights = NULL, ..., adjust = 1,
+                       preserve.var = TRUE, ignore = NULL,
+                       parallel = FALSE, mc.cores = getOption("mc.cores", 2L)) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
   n <- NROW(data)
-  k <- NCOL(data)
+  m <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("data must be a vector, data.frame, or matrix.")
@@ -185,7 +143,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                    ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
                    `sj-ste` = bw.SJ(data, method = "ste"),
                    `sj-dpi` = bw.SJ(data, method = "dpi"),
-                   `silv` = bw.silv(data), `scott` = bw.scott(data),
+                   ns = bw.ns(data), `silv` = bw.silv(data),
+                   `scott` = bw.scott(data),
                    stop("unknown bandwidth rule"))
     }
   }
@@ -206,6 +165,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       stop("weights must not be negative")
   }
 
+  # try evaluating statistic() on the original data
+
   tryCatch(
     orig.stat <- statistic(data, ...),
     error = function(e) {
@@ -213,6 +174,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       stop(e)
     }
   )
+
+  # looping functions - paralell or lapply
 
   if (parallel && mc.cores > 1L) {
     repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
@@ -222,9 +185,24 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
   if (is.data.frame(data) || is.matrix(data)) {
 
-    num_cols <- is_numeric(data)
+    # data is data.frame or matrix
 
-    if (length(num_cols) == 0L) {
+    num_cols <- is_numeric(data)
+    ignored_cols <- FALSE
+
+    if (!is.null(ignore)) {
+      ignored_cols <- colnames(data) %in% ignore
+      if (any(ignored_cols)) {
+        msg <- paste(colnames(data)[ignored_cols | !num_cols], collapse = ", ")
+        message(paste0("the following columns are ignored during smoothing phase: ", msg))
+      }
+    }
+
+    incl_cols <- num_cols & !ignored_cols
+
+    if (!any(incl_cols)) {
+
+      # standard bootstrap
 
       res <- repeatFun(1:R, function(i) {
 
@@ -236,8 +214,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     } else {
 
-      data_mtx <- as.matrix(data[, num_cols])
-      if (qr(data)$rank < min(n, k))
+      # smoothed bootstrap
+
+      data_mtx <- as.matrix(data[, incl_cols])
+      if (qr(data)$rank < min(n, m))
         warning("data matrix is rank deficient")
 
       if (is.null(weights))
@@ -245,26 +225,36 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
       if (kernel != "gaussian" || is.vector(bw) || is.diag(bw)) {
 
+        # product kernel
+
         if (is.vector(bw)) {
-          if (length(bw) != ncol(data))
-            stop("length(bw) != ncol(data)")
+          if (length(bw) == 1L)
+            bw <- rep(bw, m)
+          else if (length(bw) != ncol(data))
+            stop("dimmensions of bw and data do not match")
         } else {
+          if (ncol(bw) != ncol(data))
+            stop("dimmensions of bw and data do not match")
+          if (!is.square(bw))
+            stop("bw is not a square matrix")
           bw <- diag(bw)
         }
 
-        bw <- bw[num_cols]
+        bw <- bw[incl_cols]
 
         res <- repeatFun(1:R, function(i) {
 
-          samp <- cpp_rmvpkd(n, data_mtx, bw, weights, kernel)
+          samp <- cpp_rmvpk(n, data_mtx, bw, weights, kernel)
           idx <- samp$boot_index
           boot.data <- data[idx, ]
-          boot.data[, num_cols] <- samp$samples
+          boot.data[, incl_cols] <- samp$samples
           statistic(boot.data, ...)
 
         }, mc.cores = mc.cores)
 
       } else {
+
+        # MVN kernel
 
         if (kernel != "gaussian") {
           kernel <- "gaussian"
@@ -273,18 +263,18 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
         if (!(is.matrix(bw) || is.data.frame(bw)))
           stop("bw is not a matrix, or data.frame")
-        if (ncol(data) != k || nrow(bw) != k)
-          stop("bw has wrong dimmensions")
+        if (ncol(data) != m || nrow(bw) != m)
+          stop("dimmensions of bw and data do not match")
 
-        bw <- bw[num_cols, num_cols]
+        bw <- bw[incl_cols, incl_cols]
         bw_chol <- chol(bw)
 
         res <- repeatFun(1:R, function(i) {
 
-          samp <- cpp_rmvkd(n, data_mtx, bw_chol, weights, is_chol = TRUE)
+          samp <- cpp_rmvk(n, data_mtx, bw_chol, weights, is_chol = TRUE)
           idx <- samp$boot_index
           boot.data <- data[idx, ]
-          boot.data[, num_cols] <- samp$samples
+          boot.data[, incl_cols] <- samp$samples
           statistic(boot.data, ...)
 
         }, mc.cores = mc.cores)
@@ -294,7 +284,11 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
   } else if (is.vector(data)) {
 
+    # data is a vector
+
     if (!is.numeric(data)) {
+
+      # standard bootstrap
 
       res <- repeatFun(1:R, function(i) {
 
@@ -305,6 +299,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       }, mc.cores = mc.cores)
 
     } else {
+
+      # smoothed bootstrap
 
       if (!is.vector(bw))
         stop("bw is not a scalar")
@@ -320,7 +316,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
       res <- repeatFun(1:R, function(i) {
 
-        samp <- cpp_ruvkd(n, data, bw, weights, kernel, preserve.var)
+        samp <- cpp_ruvk(n, data, bw, weights, kernel, preserve.var)
         boot.data <- drop(samp$samples)
         statistic(boot.data, ...)
 

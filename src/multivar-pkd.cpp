@@ -1,11 +1,12 @@
 
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
 #include "kernels.h"
 #include "shared.h"
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_dmvpkd(
+Rcpp::List cpp_dmvpk(
     const arma::mat& x,
     const arma::mat& y,
     const arma::vec& bandwidth,
@@ -39,11 +40,8 @@ Rcpp::List cpp_dmvpkd(
   const unsigned int k = y.n_rows;
   arma::vec p(n), c_weights(k);
 
-  if (x.n_cols != m)
-    Rcpp::stop("wrong dimmensions of x");
-
-  if (bandwidth.n_elem != m)
-    Rcpp::stop("wrong size of bandwidth");
+  if (x.n_cols != m || bandwidth.n_elem != m)
+    Rcpp::stop("dimmensions of x, y and bandwidth do not match");
 
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -54,7 +52,7 @@ Rcpp::List cpp_dmvpkd(
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
       if (weights.n_elem != k)
-        Rcpp::stop("length(weights) != nrow(y)");
+        Rcpp::stop("dimmensions of weights and y do not match");
       c_weights = weights;
     }
 
@@ -93,7 +91,7 @@ Rcpp::List cpp_dmvpkd(
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_rmvpkd(
+Rcpp::List cpp_rmvpk(
     const unsigned int& n,
     const arma::mat& y,
     const arma::vec& bandwidth,
@@ -127,6 +125,9 @@ Rcpp::List cpp_rmvpkd(
   arma::vec c_weights(k);
   std::vector<unsigned int> idx(n);
 
+  if (bandwidth.n_elem != m)
+    Rcpp::stop("dimmensions of y and bandwidth do not match");
+
   if (any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
@@ -136,7 +137,7 @@ Rcpp::List cpp_rmvpkd(
       c_weights.fill( 1.0/static_cast<double>(k) );
     } else {
       if (weights.n_elem != k)
-        Rcpp::stop("length(weights) != nrow(y)");
+        Rcpp::stop("dimmensions of weights and y do not match");
       c_weights = weights;
     }
 
