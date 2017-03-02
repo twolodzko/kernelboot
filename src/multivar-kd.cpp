@@ -26,7 +26,7 @@ Rcpp::List cpp_dmvk(
   if (bandwidth.n_cols != bandwidth.n_rows)
     Rcpp::stop("bandwidth is not a square matrix");
 
-  if (any(weights < 0.0))
+  if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
   try {
@@ -104,7 +104,7 @@ Rcpp::List cpp_rmvk(
   if (bandwidth.n_cols != bandwidth.n_rows)
     Rcpp::stop("bandwidth is not a square matrix");
 
-  if (any(weights < 0.0))
+  if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
   try {
@@ -140,7 +140,7 @@ Rcpp::List cpp_rmvk(
 
     samp += means;
 
-    for (unsigned int i = k; i > 0; i--)
+    for (unsigned int i = (k-1); i > 0; i--)
       c_weights[i] -= c_weights[i-1];
 
   } catch ( std::exception& __ex__ ) {

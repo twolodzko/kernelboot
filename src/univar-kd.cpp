@@ -35,14 +35,14 @@ Rcpp::List cpp_duvk(
     dens_kern = dens_gauss;
   }
 
-  const unsigned int k = y.n_elem;
   const unsigned int n = x.n_elem;
+  const unsigned int k = y.n_elem;
   arma::vec p(n), c_weights(k);
 
   if (bandwidth <= 0.0)
     Rcpp::stop("bandwidth needs to be greater than zero");
 
-  if (any(weights < 0.0))
+  if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
   if (weights.n_elem == 1) {
@@ -56,10 +56,6 @@ Rcpp::List cpp_duvk(
   c_weights /= arma::sum(c_weights);
 
   for (unsigned int i = 0; i < n; i++) {
-    if (ISNAN(y[i])) {
-      p[i] = y[i];
-      continue;
-    }
     p[i] = 0.0;
     for (unsigned int j = 0; j < k; j++)
       p[i] += dens_kern(x[i] - y[j], bandwidth) * c_weights[j];
@@ -118,7 +114,7 @@ Rcpp::List cpp_ruvk(
   if (bandwidth < 0.0)
     Rcpp::stop("bandwidth needs to be non-negative");
 
-  if (any(weights < 0.0))
+  if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
   if (weights.n_elem == 1) {
@@ -157,7 +153,7 @@ Rcpp::List cpp_ruvk(
 
   }
 
-  for (unsigned int i = k; i > 0; i--)
+  for (unsigned int i = (k-1); i > 0; i--)
     c_weights[i] -= c_weights[i-1];
 
   return Rcpp::List::create(
