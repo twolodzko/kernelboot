@@ -117,11 +117,11 @@
 #'
 #' @export
 
-kernelboot <- function(data, statistic, R = 500L, bw = "default",
+kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"),
-                       ..., weights = NULL, adjust = 1,
+                       weights = NULL, adjust = 1,
                        preserve.var = TRUE, ignore = NULL,
                        parallel = FALSE, mc.cores = getOption("mc.cores", 2L)) {
 
@@ -131,7 +131,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   m <- NCOL(data)
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
-    stop("data must be a vector, data.frame, or matrix.")
+    stop("data is not vector, data.frame, or matrix")
 
   if (is.character(bw)) {
     bw <- tolower(bw)
@@ -195,7 +195,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       ignored_cols <- colnames(data) %in% ignore
       if (any(ignored_cols)) {
         msg <- paste(colnames(data)[ignored_cols | !num_cols], collapse = ", ")
-        message(paste0("the following columns are ignored during smoothing phase: ", msg))
+        message(paste0("the following variables are ignored during smoothing phase: ", msg))
       }
     }
 
@@ -218,8 +218,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       # smoothed bootstrap
 
       data_mtx <- as.matrix(data[, incl_cols])
-      if (qr(data)$rank < min(n, m))
-        warning("data matrix is rank deficient")
 
       if (is.null(weights))
         weights <- rep(1/n, n)
@@ -252,6 +250,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       } else {
 
         # MVN kernel
+
+        if (qr(data_mtx)$rank < min(dim(data_mtx)))
+          warning("data matrix is rank deficient")
 
         if (kernel != "gaussian") {
           kernel <- "gaussian"

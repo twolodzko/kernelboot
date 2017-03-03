@@ -4,9 +4,9 @@
 \alias{kernelboot}
 \title{Smoothed bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500L, bw = "default",
+kernelboot(data, statistic, R = 500L, bw = "default", ...,
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), ..., weights = NULL,
+  "biweight", "triweight", "cosine", "optcosine"), weights = NULL,
   adjust = 1, preserve.var = TRUE, ignore = NULL, parallel = FALSE,
   mc.cores = getOption("mc.cores", 2L))
 }
@@ -26,12 +26,12 @@ or covariance matrix of the smoothing kernel. By default
 \code{\link[stats]{bw.nrd0}} is used for univariate data,
 and \code{\link{bw.silv}} is used for multivariate data.}
 
+\item{\dots}{optional arguments to to \code{statistic}.}
+
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "triweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
-
-\item{\dots}{optional arguments to to \code{statistic}.}
 
 \item{weights}{vector of importance weights. It should have as many elements
 as there are observations in \code{data}. It defaults to uniform
