@@ -54,7 +54,7 @@
 #' @export
 
 dmvn <- function(x, mu, sigma, log.prob = FALSE) {
-  cpp_dmvn(as.matrix(x), mu, as.matrix(sigma), log.prob)
+  drop(cpp_dmvn(as.matrix(x), mu, as.matrix(sigma), log.prob))
 }
 
 #' @rdname dmvn
