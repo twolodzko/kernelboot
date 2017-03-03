@@ -43,6 +43,9 @@ Rcpp::List cpp_dmvpk(
   if (x.n_cols != m || bandwidth.n_elem != m)
     Rcpp::stop("dimmensions of x, y and bandwidth do not match");
 
+  if (arma::any(bandwidth <= 0.0))
+    Rcpp::stop("bandwidth needs to be positive");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
 
@@ -127,6 +130,9 @@ Rcpp::List cpp_rmvpk(
 
   if (bandwidth.n_elem != m)
     Rcpp::stop("dimmensions of y and bandwidth do not match");
+
+  if (arma::any(bandwidth <= 0.0))
+    Rcpp::stop("bandwidth needs to be positive");
 
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");

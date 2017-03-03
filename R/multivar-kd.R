@@ -91,10 +91,13 @@ dmvk <- function(x, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1, log.prob = FALSE) {
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
+  if (!all(is.finite(bw)))
+    stop("inappropriate values of bw")
   x <- as.matrix(x)
   y <- as.matrix(y)
   drop(cpp_dmvk(x, y, bw, weights, log.prob, FALSE)$density)
 }
+
 
 #' @rdname dmvk
 #' @export
@@ -104,6 +107,8 @@ rmvk <- function(n, y, bw = bw.silv(y), weights = NULL,
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
+  if (!all(is.finite(bw)))
+    stop("inappropriate values of bw")
   y <- as.matrix(y)
   cpp_rmvk(n, y, bw, weights, FALSE)$samples
 }

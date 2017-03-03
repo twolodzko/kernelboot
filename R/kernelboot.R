@@ -121,7 +121,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"),
-                       weights = NULL, ..., adjust = 1,
+                       ..., weights = NULL, adjust = 1,
                        preserve.var = TRUE, ignore = NULL,
                        parallel = FALSE, mc.cores = getOption("mc.cores", 2L)) {
 
@@ -137,8 +137,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     bw <- tolower(bw)
     if (bw == "default") {
       if (is.vector(data)) {
-        if (n < 2L)
-          stop("need at least 2 points to select a bandwidth automatically")
         bw <- bw.nrd0(data)
       } else {
         bw <- bw.silv(data)
@@ -148,26 +146,24 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                    ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
                    `sj-ste` = bw.SJ(data, method = "ste"),
                    `sj-dpi` = bw.SJ(data, method = "dpi"),
-                   ns = bw.ns(data), `silv` = bw.silv(data),
-                   `scott` = bw.scott(data),
+                   `silv` = bw.silv(data), `scott` = bw.scott(data),
                    stop("unknown bandwidth rule"))
     }
   }
   if (!is.numeric(bw))
     stop("non-numeric bw value")
 
+  if (!is.vector(adjust))
+    stop("adjust is not a scalar")
+
   bw <- bw * adjust[1L]
 
   if (!all(is.finite(bw)))
-    stop("non-finite bw")
+    stop("inappropriate values of bw")
 
   if (!is.null(weights)) {
-    if (length(weights) != n)
-      stop("data and weights have unequal sizes")
     if (!all(is.finite(weights)))
-      stop("weights must all be finite")
-    if (any(weights < 0))
-      stop("weights must not be negative")
+      stop("inappropriate values of weights")
   }
 
   # try evaluating statistic() on the original data
@@ -235,11 +231,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         if (is.vector(bw)) {
           if (length(bw) == 1L)
             bw <- rep(bw, m)
-          else if (length(bw) != ncol(data))
-            stop("dimmensions of bw and data do not match")
         } else {
-          if (ncol(bw) != ncol(data))
-            stop("dimmensions of bw and data do not match")
           if (!is.square(bw))
             stop("bw is not a square matrix")
           bw <- diag(bw)
@@ -263,14 +255,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
         if (kernel != "gaussian") {
           kernel <- "gaussian"
-          warning("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
+          message("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
         }
 
-        if (!(is.matrix(bw) || is.data.frame(bw)))
-          stop("bw is not a matrix, or data.frame")
-        if (ncol(data) != m || nrow(bw) != m)
-          stop("dimmensions of bw and data do not match")
-
+        bw <- as.matrix(bw)
         bw <- bw[incl_cols, incl_cols]
         bw_chol <- chol(bw)
 
@@ -311,10 +299,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         stop("bw is not a scalar")
       if (length(bw) != 1L) {
         bw <- bw[1L]
-        warning("bw has length > 1 and only the first element will be used")
+        message("bw has length > 1 and only the first element will be used")
       }
-      if (any(bw <= 0))
-        stop("bw is not positive.")
 
       if (is.null(weights))
         weights <- rep(1/n, n)

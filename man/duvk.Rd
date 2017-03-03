@@ -5,13 +5,13 @@
 \alias{ruvk}
 \title{Univariate kernel density}
 \usage{
-duvk(x, y, bw = bw.nrd0(y), weights = NULL, kernel = c("gaussian",
-  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), adjust = 1, log.prob = FALSE)
+duvk(x, y, bw = bw.nrd0(y), kernel = c("gaussian", "epanechnikov",
+  "rectangular", "triangular", "biweight", "triweight", "cosine", "optcosine"),
+  weights = NULL, adjust = 1, log.prob = FALSE)
 
-ruvk(n, y, bw = bw.nrd0(y), weights = NULL, kernel = c("gaussian",
-  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), adjust = 1, preserve.var = FALSE)
+ruvk(n, y, bw = bw.nrd0(y), kernel = c("gaussian", "epanechnikov",
+  "rectangular", "triangular", "biweight", "triweight", "cosine", "optcosine"),
+  weights = NULL, adjust = 1, preserve.var = FALSE)
 }
 \arguments{
 \item{x}{numeric vector of length \eqn{k}; kernel density is
@@ -24,12 +24,12 @@ evaluated on those values.}
 such that this is the standard deviation of the smoothing
 kernel (see \code{\link[stats]{density}} for details).}
 
-\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
-
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "triweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
+
+\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'

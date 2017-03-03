@@ -5,14 +5,13 @@
 \alias{rmvpk}
 \title{Multivariate product kernel}
 \usage{
-dmvpk(x, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
-  kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), adjust = 1,
-  log.prob = FALSE)
+dmvpk(x, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
+  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
+  "cosine", "optcosine"), weights = NULL, adjust = 1, log.prob = FALSE)
 
-rmvpk(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
-  kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), adjust = 1)
+rmvpk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
+  "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
+  "cosine", "optcosine"), weights = NULL, adjust = 1)
 }
 \arguments{
 \item{x}{\eqn{k \times m}{k*m} numeric matrix; kernel density
@@ -26,12 +25,12 @@ to be used. The kernels are scaled such that this is the
 standard deviation of the smoothing kernel
 (see \code{\link[stats]{density}} for details).}
 
-\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
-
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "triweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
+
+\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'

@@ -6,7 +6,7 @@
 \usage{
 kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
-  "biweight", "triweight", "cosine", "optcosine"), weights = NULL, ...,
+  "biweight", "triweight", "cosine", "optcosine"), ..., weights = NULL,
   adjust = 1, preserve.var = TRUE, ignore = NULL, parallel = FALSE,
   mc.cores = getOption("mc.cores", 2L))
 }
@@ -31,11 +31,11 @@ This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "triweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
 
+\item{\dots}{optional arguments to to \code{statistic}.}
+
 \item{weights}{vector of importance weights. It should have as many elements
 as there are observations in \code{data}. It defaults to uniform
 weights.}
-
-\item{\dots}{optional arguments to to \code{statistic}.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes
 it easy to specify values like 'half the default' bandwidth.}

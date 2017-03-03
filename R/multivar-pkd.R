@@ -60,11 +60,11 @@
 #'
 #' @export
 
-dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
-                   kernel = c("gaussian", "epanechnikov", "rectangular",
-                              "triangular", "biweight", "triweight",
-                              "cosine", "optcosine"),
-                   adjust = 1, log.prob = FALSE) {
+dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))),
+                  kernel = c("gaussian", "epanechnikov", "rectangular",
+                             "triangular", "biweight", "triweight",
+                             "cosine", "optcosine"),
+                  weights = NULL, adjust = 1, log.prob = FALSE) {
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
   if (is.matrix(bw) || is.data.frame(bw)) {
@@ -75,18 +75,22 @@ dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
     bw <- diag(bw)
   }
   bw <- bw * adjust[1L]
+  if (!all(is.finite(bw)))
+    stop("inappropriate values of bw")
   x <- as.matrix(x)
   y <- as.matrix(y)
   drop(cpp_dmvpk(x, y, bw, weights, kernel, log.prob)$density)
 }
 
+
 #' @rdname dmvpk
 #' @export
 
-rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
-                   kernel = c("gaussian", "epanechnikov", "rectangular",
-                              "triangular", "biweight", "triweight",
-                              "cosine", "optcosine"), adjust = 1) {
+rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
+                  kernel = c("gaussian", "epanechnikov", "rectangular",
+                             "triangular", "biweight", "triweight",
+                             "cosine", "optcosine"),
+                  weights = NULL, adjust = 1) {
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
@@ -98,6 +102,8 @@ rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))), weights = NULL,
     bw <- diag(bw)
   }
   bw <- bw * adjust[1L]
+  if (!all(is.finite(bw)))
+    stop("inappropriate values of bw")
   y <- as.matrix(y)
   cpp_rmvpk(n, y, bw, weights, kernel)$samples
 }

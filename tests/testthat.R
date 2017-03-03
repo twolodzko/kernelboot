@@ -1,4 +1,4 @@
 library(testthat)
 library(kernelboot)
 
-# test_check("kernelboot")
+test_check("kernelboot")

@@ -40,7 +40,7 @@ Rcpp::List cpp_duvk(
   arma::vec p(n), c_weights(k);
 
   if (bandwidth <= 0.0)
-    Rcpp::stop("bandwidth needs to be greater than zero");
+    Rcpp::stop("bandwidth needs to be positive");
 
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -49,7 +49,7 @@ Rcpp::List cpp_duvk(
     c_weights.fill( 1.0/static_cast<double>(k) );
   } else {
     if (weights.n_elem != k)
-      Rcpp::stop("length(weights) != length(y)");
+      Rcpp::stop("dimmensions of weights and y do not match");
     c_weights = weights;
   }
 
@@ -111,8 +111,8 @@ Rcpp::List cpp_ruvk(
   arma::vec c_weights(k);
   std::vector<unsigned int> idx(n);
 
-  if (bandwidth < 0.0)
-    Rcpp::stop("bandwidth needs to be non-negative");
+  if (bandwidth <= 0.0)
+    Rcpp::stop("bandwidth needs to be positive");
 
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
@@ -121,7 +121,7 @@ Rcpp::List cpp_ruvk(
     c_weights.fill( 1.0/static_cast<double>(k) );
   } else {
     if (weights.n_elem != k)
-      Rcpp::stop("length(weights) != length(y)");
+      Rcpp::stop("dimmensions of weights and y do not match");
     c_weights = weights;
   }
 
