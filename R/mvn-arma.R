@@ -50,7 +50,7 @@
 #' Generating a multivariate gaussian distribution using RcppArmadillo.
 #' \url{http://gallery.rcpp.org/articles/simulate-multivariate-normal/}
 #'
-#'
+#' @importFrom stats dnorm rnorm
 #' @export
 
 dmvn <- function(x, mu, sigma, log.prob = FALSE) {

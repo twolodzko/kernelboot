@@ -33,7 +33,7 @@ expect_error(kernelboot(dat$mpg, fun3, R = 10))
 dat <- mtcars
 dat[] <- 0
 
-expect_warning(expect_error(kernelboot(dat, fun1, R = 10)))
+expect_error(kernelboot(dat, fun1, R = 10))
 expect_silent(kernelboot(dat$mpg, fun2, R = 10))
 expect_silent(kernelboot(dat$mpg, fun3, R = 10))
 
