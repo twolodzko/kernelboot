@@ -42,8 +42,14 @@ Rcpp::List cpp_duvk(
   if (bandwidth <= 0.0)
     Rcpp::stop("bandwidth needs to be positive");
 
+  if (!R_FINITE(bandwidth))
+    Rcpp::stop("inappropriate value of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   if (weights.n_elem == 1) {
     c_weights.fill( 1.0/static_cast<double>(k) );
@@ -114,8 +120,14 @@ Rcpp::List cpp_ruvk(
   if (bandwidth <= 0.0)
     Rcpp::stop("bandwidth needs to be positive");
 
+  if (!R_FINITE(bandwidth))
+    Rcpp::stop("inappropriate value of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   if (weights.n_elem == 1) {
     c_weights.fill( 1.0/static_cast<double>(k) );

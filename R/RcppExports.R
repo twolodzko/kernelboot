@@ -13,8 +13,8 @@ cpp_dmvpk <- function(x, y, bandwidth, weights, kernel = "gaussian", log_prob = 
     .Call('kernelboot_cpp_dmvpk', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, log_prob)
 }
 
-cpp_rmvpk <- function(n, y, bandwidth, weights, kernel = "gaussian") {
-    .Call('kernelboot_cpp_rmvpk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel)
+cpp_rmvpk <- function(n, y, bandwidth, weights, kernel = "gaussian", preserve_var = FALSE) {
+    .Call('kernelboot_cpp_rmvpk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, preserve_var)
 }
 
 cpp_dmvn <- function(x, mu, sigma, log_prob = FALSE) {

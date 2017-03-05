@@ -13,6 +13,8 @@
 #'                     while the univariate (\code{\link{duvk}}) and product
 #'                     kernels (\code{\link{dmvpk}}) are parametrized in terms
 #'                     of standard deviations as in \code{\link{density}} function.
+#'                     If provided as a single value, the same bandwidth is used
+#'                     for each variable.
 #' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
@@ -64,7 +66,7 @@
 #' plot(samp1, col = col1, pch = 16, axes = FALSE)
 #' points(dat, pch = 2, lwd = 2)
 #' axis(1); axis(2)
-#' title("Independent gaussian kernels", cex.sub = 0.5)
+#' title("Product kernel", cex.sub = 0.5)
 #' legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
 #'        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
 #'
@@ -89,12 +91,28 @@
 
 dmvk <- function(x, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1, log.prob = FALSE) {
+
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  if (!all(is.finite(bw)))
-    stop("inappropriate values of bw")
-  x <- as.matrix(x)
-  y <- as.matrix(y)
+  if (is.vector(bw)) {
+    if (length(bw) == 1L)
+      bw <- diag(ncol(y)) * bw
+    else
+      bw <- diag(bw)
+  }
+
+  if (is.vector(x)) {
+    x <- matrix(x, nrow = 1)
+  } else {
+    x <- as.matrix(x)
+  }
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1)
+  } else {
+    y <- as.matrix(y)
+  }
+
   drop(cpp_dmvk(x, y, bw, weights, log.prob, FALSE)$density)
 }
 
@@ -104,12 +122,25 @@ dmvk <- function(x, y, bw = bw.silv(y), weights = NULL,
 
 rmvk <- function(n, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1) {
+
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
   bw <- bw * adjust[1L]
-  if (!all(is.finite(bw)))
-    stop("inappropriate values of bw")
-  y <- as.matrix(y)
-  cpp_rmvk(n, y, bw, weights, FALSE)$samples
+  if (is.vector(bw)) {
+    if (length(bw) == 1L)
+      bw <- diag(ncol(y)) * bw
+    else
+      bw <- diag(bw)
+  }
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1)
+  } else {
+    y <- as.matrix(y)
+  }
+
+  out <- cpp_rmvk(n, y, bw, weights, FALSE)$samples
+  colnames(out) <- colnames(y)
+  out
 }
 

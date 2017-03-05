@@ -11,7 +11,8 @@ dmvpk(x, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
 
 rmvpk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), weights = NULL, adjust = 1)
+  "cosine", "optcosine"), weights = NULL, adjust = 1,
+  preserve.var = FALSE)
 }
 \arguments{
 \item{x}{\eqn{k \times m}{k*m} numeric matrix; kernel density
@@ -22,8 +23,9 @@ is estimated using those values.}
 
 \item{bw}{numeric vector of length \eqn{m}; the smoothing bandwidth
 to be used. The kernels are scaled such that this is the
-standard deviation of the smoothing kernel
-(see \code{\link[stats]{density}} for details).}
+standard deviation of the smoothing kernel (see
+\code{\link[stats]{density}} for details). If provided as
+a single value, the same bandwidth is used for each variable.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
@@ -40,6 +42,10 @@ bandwidth.}
 
 \item{n}{number of observations. If length(n) > 1,
 the length is taken to be the number required.}
+
+\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
+mean and variance of each of the columns (see \code{\link{ruvk}}
+for details).}
 }
 \description{
 Multivariate product kernel

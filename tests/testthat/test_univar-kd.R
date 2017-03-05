@@ -36,6 +36,15 @@ w <- 1
 kernel <- "gaussian"
 expect_silent(duvk(x, y, bw, kernel, w, a, lp))
 
+w <- rep(-1, n)
+expect_error(duvk(x, y, bw, kernel, w, a, lp))
+
+w <- rep(Inf, n)
+expect_error(duvk(x, y, bw, kernel, w, a, lp))
+
+w <- rep(NA, n)
+expect_error(duvk(x, y, bw, kernel, w, a, lp))
+
 w <- rep(1/n, n-1)
 expect_error(duvk(x, y, bw, kernel, w, a, lp))
 

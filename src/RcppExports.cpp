@@ -54,8 +54,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_rmvpk
-Rcpp::List cpp_rmvpk(const unsigned int& n, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel);
-RcppExport SEXP kernelboot_cpp_rmvpk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP) {
+Rcpp::List cpp_rmvpk(const unsigned int& n, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& preserve_var);
+RcppExport SEXP kernelboot_cpp_rmvpk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP preserve_varSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -64,7 +64,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type bandwidth(bandwidthSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_rmvpk(n, y, bandwidth, weights, kernel));
+    Rcpp::traits::input_parameter< const bool& >::type preserve_var(preserve_varSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rmvpk(n, y, bandwidth, weights, kernel, preserve_var));
     return rcpp_result_gen;
 END_RCPP
 }

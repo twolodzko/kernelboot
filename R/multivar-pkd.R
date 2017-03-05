@@ -9,8 +9,9 @@
 #'                     the length is taken to be the number required.
 #' @param bw           numeric vector of length \eqn{m}; the smoothing bandwidth
 #'                     to be used. The kernels are scaled such that this is the
-#'                     standard deviation of the smoothing kernel
-#'                     (see \code{\link[stats]{density}} for details).
+#'                     standard deviation of the smoothing kernel (see
+#'                     \code{\link[stats]{density}} for details). If provided as
+#'                     a single value, the same bandwidth is used for each variable.
 #' @param weights      numeric vector of length \eqn{n}; must be non-negative.
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
@@ -19,6 +20,9 @@
 #'                     This must partially match one of "gaussian", "rectangular",
 #'                     "triangular", "epanechnikov", "biweight", "triweight", "cosine"
 #'                     or "optcosine", with default "gaussian", and may be abbreviated.
+#' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
+#'                     mean and variance of each of the columns (see \code{\link{ruvk}}
+#'                     for details).
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -65,20 +69,31 @@ dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))),
                              "triangular", "biweight", "triweight",
                              "cosine", "optcosine"),
                   weights = NULL, adjust = 1, log.prob = FALSE) {
+
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
+
   if (is.matrix(bw) || is.data.frame(bw)) {
-    if (ncol(bw) != ncol(y))
-      stop("dimmensions of bw and y do not match")
     if (!is.square(bw))
       stop("bw is not a square matrix")
     bw <- diag(bw)
   }
   bw <- bw * adjust[1L]
-  if (!all(is.finite(bw)))
-    stop("inappropriate values of bw")
-  x <- as.matrix(x)
-  y <- as.matrix(y)
+  if (length(bw) == 1L)
+    bw <- rep(bw, ncol(y))
+
+  if (is.vector(x)) {
+    x <- matrix(x, nrow = 1)
+  } else {
+    x <- as.matrix(x)
+  }
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1)
+  } else {
+    y <- as.matrix(y)
+  }
+
   drop(cpp_dmvpk(x, y, bw, weights, kernel, log.prob)$density)
 }
 
@@ -90,21 +105,29 @@ rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
                   kernel = c("gaussian", "epanechnikov", "rectangular",
                              "triangular", "biweight", "triweight",
                              "cosine", "optcosine"),
-                  weights = NULL, adjust = 1) {
+                  weights = NULL, adjust = 1, preserve.var = FALSE) {
+
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
+
   if (is.matrix(bw) || is.data.frame(bw)) {
-    if (ncol(bw) != ncol(y))
-      stop("dimmensions of bw and y do not match")
     if (!is.square(bw))
       stop("bw is not a square matrix")
     bw <- diag(bw)
   }
   bw <- bw * adjust[1L]
-  if (!all(is.finite(bw)))
-    stop("inappropriate values of bw")
-  y <- as.matrix(y)
-  cpp_rmvpk(n, y, bw, weights, kernel)$samples
+  if (length(bw) == 1L)
+    bw <- rep(bw, ncol(y))
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1)
+  } else {
+    y <- as.matrix(y)
+  }
+
+  out <- cpp_rmvpk(n, y, bw, weights, kernel, preserve.var)$samples
+  colnames(out) <- colnames(y)
+  out
 }
 

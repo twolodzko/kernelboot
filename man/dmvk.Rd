@@ -22,7 +22,9 @@ is estimated using those values.}
 multivariate normal distribution (see \code{\link{dmvn}}),
 while the univariate (\code{\link{duvk}}) and product
 kernels (\code{\link{dmvpk}}) are parametrized in terms
-of standard deviations as in \code{\link{density}} function.}
+of standard deviations as in \code{\link{density}} function.
+If provided as a single value, the same bandwidth is used
+for each variable.}
 
 \item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
 
@@ -69,7 +71,7 @@ col1 <- pal(10)[cut(dmvpk(samp1, dat), breaks = 10)]
 plot(samp1, col = col1, pch = 16, axes = FALSE)
 points(dat, pch = 2, lwd = 2)
 axis(1); axis(2)
-title("Independent gaussian kernels", cex.sub = 0.5)
+title("Product kernel", cex.sub = 0.5)
 legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
 

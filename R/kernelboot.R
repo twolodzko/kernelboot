@@ -24,9 +24,8 @@
 #'                     as there are observations in \code{data}. It defaults to uniform
 #'                     weights.
 #' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     mean and variance of the original sample (see
-#'                     \code{\link{ruvk}} for details). This parameter is used only for univariate
-#'                     kernels.
+#'                     mean and variance of the variables (see \code{\link{ruvk}} for details).
+#'                     This parameter is used only for univariate and product kernels.
 #' @param ignore       vector of names of columns to be ignored during the smoothing phase of
 #'                     bootstrap procedure (their values are not altered using random noise).
 #' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
@@ -259,6 +258,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
           message("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
         }
 
+        if (is.vector(bw)) {
+          if (length(bw) == 1L)
+            bw <- diag(ncol(data)) * bw
+          else
+            bw <- diag(bw)
+        }
+
         bw <- as.matrix(bw)
         bw <- bw[incl_cols, incl_cols]
         bw_chol <- chol(bw)
@@ -298,7 +304,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
       if (!is.vector(bw))
         stop("bw is not a scalar")
-      if (length(bw) != 1L) {
+      if (length(bw) > 1L) {
         bw <- bw[1L]
         message("bw has length > 1 and only the first element will be used")
       }

@@ -26,8 +26,14 @@ Rcpp::List cpp_dmvk(
   if (bandwidth.n_cols != bandwidth.n_rows)
     Rcpp::stop("bandwidth is not a square matrix");
 
+  if (!arma::is_finite(bandwidth))
+    Rcpp::stop("inappropriate values of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   try {
 
@@ -104,8 +110,14 @@ Rcpp::List cpp_rmvk(
   if (bandwidth.n_cols != bandwidth.n_rows)
     Rcpp::stop("bandwidth is not a square matrix");
 
+  if (!arma::is_finite(bandwidth))
+    Rcpp::stop("inappropriate values of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   try {
 

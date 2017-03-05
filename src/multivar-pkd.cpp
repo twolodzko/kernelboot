@@ -46,8 +46,14 @@ Rcpp::List cpp_dmvpk(
   if (arma::any(bandwidth <= 0.0))
     Rcpp::stop("bandwidth needs to be positive");
 
+  if (!arma::is_finite(bandwidth))
+    Rcpp::stop("inappropriate values of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   try {
 
@@ -99,7 +105,8 @@ Rcpp::List cpp_rmvpk(
     const arma::mat& y,
     const arma::vec& bandwidth,
     const arma::vec& weights,
-    const std::string& kernel = "gaussian"
+    const std::string& kernel = "gaussian",
+    const bool& preserve_var = false
   ) {
 
   double (*rng_kern)();
@@ -134,8 +141,14 @@ Rcpp::List cpp_rmvpk(
   if (arma::any(bandwidth <= 0.0))
     Rcpp::stop("bandwidth needs to be positive");
 
+  if (!arma::is_finite(bandwidth))
+    Rcpp::stop("inappropriate values of bandwidth");
+
   if (arma::any(weights < 0.0))
     Rcpp::stop("weights need to be non-negative");
+
+  if (!arma::is_finite(weights))
+    Rcpp::stop("inappropriate values of weights");
 
   try {
 
@@ -151,12 +164,34 @@ Rcpp::List cpp_rmvpk(
       c_weights[i] += c_weights[i-1];
     c_weights /= c_weights[k-1];
 
-    unsigned int j;
-    for (unsigned int i = 0; i < n; i++) {
-      j = sample_int(c_weights);
-      idx[i] = j + 1;
-      for (unsigned int l = 0; l < m; l++)
-        samp(i, l) = y(j, l) + rng_kern() * bandwidth[l];
+    if (!preserve_var) {
+
+      unsigned int j;
+      for (unsigned int i = 0; i < n; i++) {
+        j = sample_int(c_weights);
+        idx[i] = j + 1;
+        for (unsigned int l = 0; l < m; l++)
+          samp(i, l) = y(j, l) + rng_kern() * bandwidth[l];
+      }
+
+    } else {
+
+      const arma::rowvec my = arma::mean(y);
+      const arma::rowvec sy = arma::var(y);
+      arma::rowvec bw_sq(m);
+      for (unsigned int i = 0; i < m; i++)
+        bw_sq[i] = bandwidth[i] * bandwidth[i];
+      const arma::rowvec c = arma::sqrt(1.0 + bw_sq/sy);
+
+      unsigned int j;
+      for (unsigned int i = 0; i < n; i++) {
+        j = sample_int(c_weights);
+        idx[i] = j + 1;
+        for (unsigned int l = 0; l < m; l++)
+          samp(i, l) = my[l] + (y(j, l) - my[l] + rng_kern() * bandwidth[l]) / c[l];
+
+      }
+
     }
 
     for (unsigned int i = (k-1); i > 0; i--)

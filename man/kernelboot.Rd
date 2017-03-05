@@ -41,9 +41,8 @@ weights.}
 it easy to specify values like 'half the default' bandwidth.}
 
 \item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
-mean and variance of the original sample (see
-\code{\link{ruvk}} for details). This parameter is used only for univariate
-kernels.}
+mean and variance of the variables (see \code{\link{ruvk}} for details).
+This parameter is used only for univariate and product kernels.}
 
 \item{ignore}{vector of names of columns to be ignored during the smoothing phase of
 bootstrap procedure (their values are not altered using random noise).}

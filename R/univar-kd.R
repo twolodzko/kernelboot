@@ -164,15 +164,15 @@ duvk <- function(x, y, bw = bw.nrd0(y),
                             "triangular", "biweight", "triweight",
                             "cosine", "optcosine"),
                  weights = NULL, adjust = 1, log.prob = FALSE) {
+
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
-  if (length(bw) != 1L) {
+  if (length(bw) > 1L) {
     bw <- bw[1L]
     message("bw has length > 1 and only the first element will be used")
   }
   bw <- bw * adjust[1L]
-  if (!is.finite(bw))
-    stop("inappropriate value of bw")
+
   drop(cpp_duvk(x, y, bw, weights, kernel, log.prob)$density)
 }
 
@@ -185,16 +185,16 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
                             "triangular", "biweight", "triweight",
                             "cosine", "optcosine"),
                  weights = NULL, adjust = 1, preserve.var = FALSE) {
+
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
   if (is.null(weights)) weights <- 1
-  if (length(bw) != 1L) {
+  if (length(bw) > 1L) {
     bw <- bw[1L]
     message("bw has length > 1 and only the first element will be used")
   }
   bw <- bw * adjust[1L]
-  if (!is.finite(bw))
-    stop("inappropriate value of bw")
+
   drop(cpp_ruvk(n, y, bw, weights, kernel, preserve.var)$samples)
 }
 
