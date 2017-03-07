@@ -164,7 +164,14 @@ Rcpp::List cpp_rmvpk(
       c_weights[i] += c_weights[i-1];
     c_weights /= c_weights[k-1];
 
-    if (!preserve_var) {
+    if (k == 1) {
+
+      for (unsigned int i = 0; i < n; i++) {
+        for (unsigned int l = 0; l < m; l++)
+          samp(i, l) = y(0, l) + rng_kern() * bandwidth[l];
+      }
+
+    } else if (!preserve_var) {
 
       unsigned int j;
       for (unsigned int i = 0; i < n; i++) {

@@ -14,9 +14,9 @@ expect_silent(dmvk(X, dat))
 expect_silent(X <- rmvk(10, as.matrix(dat)))
 expect_silent(dmvk(X, as.matrix(dat)))
 
-# this IS an inappropriate input
-# expect_silent(X <- rmvk(10, dat[1,], bw = 1))
-# expect_silent(dmvk(X, dat[1,], bw = 1))
+# this IS an inappropriate input ?
+expect_silent(X <- rmvk(10, dat[1,], bw = 1))
+expect_silent(dmvk(X, dat[1,], bw = 1))
 
 expect_silent(X <- rmvk(10, dat, bw = 1))
 expect_silent(dmvk(X, dat, bw = 1))

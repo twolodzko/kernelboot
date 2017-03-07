@@ -24,13 +24,13 @@
 #'                     as there are observations in \code{data}. It defaults to uniform
 #'                     weights.
 #' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     mean and variance of the variables (see \code{\link{ruvk}} for details).
+#'                     variance of the variables (see \code{\link{ruvk}} for details).
 #'                     This parameter is used only for univariate and product kernels.
 #' @param ignore       vector of names of columns to be ignored during the smoothing phase of
 #'                     bootstrap procedure (their values are not altered using random noise).
 #' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
 #' @param mc.cores     number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
-#' @param \dots        optional arguments to to \code{statistic}.
+#' @param \dots        optional arguments passed to \code{statistic}.
 #'
 #'
 #' @details
@@ -61,23 +61,28 @@
 #' An object of class \code{"kernelboot"}, i.e., a list with components including
 #'
 #' \tabular{ll}{
-#' \code{orig.stat}    \tab  estimates from \code{statistic} on the original data, \cr
-#' \code{boot.sample}  \tab  samples drawn, \cr
-#' \code{call}         \tab  function call, \cr
-#' \code{statistic}    \tab  actual \code{statistic} function that was used, \cr
-#' \code{param}        \tab  list of parameters that were used. \cr
+#' \code{orig.stat}          \tab  estimates from \code{statistic} on the original data, \cr
+#' \code{boot.sample}        \tab  samples drawn, \cr
+#' \code{call}               \tab  function call, \cr
+#' \code{statistic}          \tab  actual \code{statistic} function that was used, \cr
+#' \code{orig.data}          \tab  original data used for bootstrapping, \cr
+#' \code{smoothed.variables} \tab  names of variables that were included in the smoothing phase
+#'                                 (\code{NULL} by default); those are the numeric columns and
+#'                                 the variables not mentioned in \code{ignore} parameter, \cr
+#' \code{param}              \tab  list of parameters that were used.
 #' }
 #'
 #' \code{param} section contains:
 #'
 #' \tabular{ll}{
-#' \code{R}            \tab  number of bootstrap iterations, \cr
-#' \code{bw}           \tab  the bandwidth that was used, \cr
-#' \code{weights}      \tab  vector of the weights that were applied, \cr
-#' \code{kernel}       \tab  name of the kernel that was used, \cr
-#' \code{preserve.var} \tab  logical; value of \code{preserve.var} parameter, \cr
-#' \code{parallel}     \tab  logical; states if parallel computation was used.
+#' \code{R}                  \tab  number of bootstrap iterations, \cr
+#' \code{bw}                 \tab  the bandwidth that was used, \cr
+#' \code{weights}            \tab  vector of the weights that were applied, \cr
+#' \code{kernel}             \tab  name of the kernel that was used, \cr
+#' \code{preserve.var}       \tab  logical; value of \code{preserve.var} parameter, \cr
+#' \code{parallel}           \tab  logical; states if parallel computation was used.
 #' }
+#'
 #'
 #'
 #' @references
@@ -107,7 +112,7 @@
 #'
 #' @examples
 #'
-#' kernelboot(mtcars, function(data) coef(lm(mpg ~., data = data)) , R = 250)
+#' kernelboot(mtcars, function(data) coef(lm(mpg ~ ., data = data)) , R = 250)
 #' kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
 #'
 #'
@@ -128,6 +133,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   kernel <- match.arg(kernel)
   n <- NROW(data)
   m <- NCOL(data)
+  smoothed_variables <- NULL
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("data is not vector, data.frame, or matrix")
@@ -145,7 +151,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
                    ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
                    `sj-ste` = bw.SJ(data, method = "ste"),
                    `sj-dpi` = bw.SJ(data, method = "dpi"),
-                   `silv` = bw.silv(data), `scott` = bw.scott(data),
+                   silv = bw.silv(data), scott = bw.scott(data),
                    stop("unknown bandwidth rule"))
     }
   }
@@ -199,6 +205,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
     }
 
     incl_cols <- num_cols & !ignored_cols
+    smoothed_variables <- colnames(data)[incl_cols]
 
     if (!any(incl_cols)) {
 
@@ -260,7 +267,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         if (is.vector(bw)) {
           if (length(bw) == 1L)
-            bw <- diag(ncol(data)) * bw
+            bw <- diag(bw, nrow = ncol(data))
           else
             bw <- diag(bw)
         }
@@ -329,10 +336,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   }
 
   structure(list(
-    orig.stat   = orig.stat,
-    boot.sample = do.call(rbind, res),
-    call        = call,
-    statistic   = statistic,
+    orig.stat          = orig.stat,
+    boot.sample        = do.call(rbind, res),
+    call               = call,
+    statistic          = statistic,
+    orig.data          = data,
+    smoothed.variables = smoothed_variables,
     param = list(
       R            = R,
       bw           = bw,

@@ -92,25 +92,26 @@
 dmvk <- function(x, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1, log.prob = FALSE) {
 
-  if (is.null(weights)) weights <- 1
-  bw <- bw * adjust[1L]
-  if (is.vector(bw)) {
-    if (length(bw) == 1L)
-      bw <- diag(ncol(y)) * bw
-    else
-      bw <- diag(bw)
-  }
-
   if (is.vector(x)) {
-    x <- matrix(x, nrow = 1)
+    x <- matrix(x, nrow = 1L)
   } else {
     x <- as.matrix(x)
   }
 
   if (is.vector(y)) {
-    y <- matrix(y, nrow = 1)
+    y <- matrix(y, nrow = 1L)
   } else {
     y <- as.matrix(y)
+  }
+
+  if (is.null(weights)) weights <- 1
+
+  bw <- bw * adjust[1L]
+  if (is.vector(bw)) {
+    if (length(bw) == 1L)
+      bw <- diag(bw, nrow = ncol(y))
+    else
+      bw <- diag(bw)
   }
 
   drop(cpp_dmvk(x, y, bw, weights, log.prob, FALSE)$density)
@@ -124,19 +125,21 @@ rmvk <- function(n, y, bw = bw.silv(y), weights = NULL,
                   adjust = 1) {
 
   if (length(n) > 1L) n <- length(n)
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1L)
+  } else {
+    y <- as.matrix(y)
+  }
+
   if (is.null(weights)) weights <- 1
+
   bw <- bw * adjust[1L]
   if (is.vector(bw)) {
     if (length(bw) == 1L)
-      bw <- diag(ncol(y)) * bw
+      bw <- diag(bw, nrow = ncol(y))
     else
       bw <- diag(bw)
-  }
-
-  if (is.vector(y)) {
-    y <- matrix(y, nrow = 1)
-  } else {
-    y <- as.matrix(y)
   }
 
   out <- cpp_rmvk(n, y, bw, weights, FALSE)$samples

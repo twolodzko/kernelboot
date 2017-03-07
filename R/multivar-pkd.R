@@ -71,6 +71,19 @@ dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))),
                   weights = NULL, adjust = 1, log.prob = FALSE) {
 
   kernel <- match.arg(kernel)
+
+  if (is.vector(x)) {
+    x <- matrix(x, nrow = 1L)
+  } else {
+    x <- as.matrix(x)
+  }
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1L)
+  } else {
+    y <- as.matrix(y)
+  }
+
   if (is.null(weights)) weights <- 1
 
   if (is.matrix(bw) || is.data.frame(bw)) {
@@ -81,18 +94,6 @@ dmvpk <- function(x, y, bw = sqrt(diag(bw.silv(y))),
   bw <- bw * adjust[1L]
   if (length(bw) == 1L)
     bw <- rep(bw, ncol(y))
-
-  if (is.vector(x)) {
-    x <- matrix(x, nrow = 1)
-  } else {
-    x <- as.matrix(x)
-  }
-
-  if (is.vector(y)) {
-    y <- matrix(y, nrow = 1)
-  } else {
-    y <- as.matrix(y)
-  }
 
   drop(cpp_dmvpk(x, y, bw, weights, kernel, log.prob)$density)
 }
@@ -109,6 +110,13 @@ rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
 
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
+
+  if (is.vector(y)) {
+    y <- matrix(y, nrow = 1L)
+  } else {
+    y <- as.matrix(y)
+  }
+
   if (is.null(weights)) weights <- 1
 
   if (is.matrix(bw) || is.data.frame(bw)) {
@@ -119,12 +127,6 @@ rmvpk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
   bw <- bw * adjust[1L]
   if (length(bw) == 1L)
     bw <- rep(bw, ncol(y))
-
-  if (is.vector(y)) {
-    y <- matrix(y, nrow = 1)
-  } else {
-    y <- as.matrix(y)
-  }
 
   out <- cpp_rmvpk(n, y, bw, weights, kernel, preserve.var)$samples
   colnames(out) <- colnames(y)

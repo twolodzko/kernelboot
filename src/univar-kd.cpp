@@ -141,7 +141,13 @@ Rcpp::List cpp_ruvk(
     c_weights[i] += c_weights[i-1];
   c_weights /= c_weights[k-1];
 
-  if (!preserve_var) {
+  if (k == 1) {
+
+    for (unsigned int i = 0; i < n; i++) {
+      samp[i] = y[0] + rng_kern() * bandwidth;
+    }
+
+  } else if (!preserve_var) {
 
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {

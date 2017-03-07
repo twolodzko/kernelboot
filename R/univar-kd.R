@@ -19,7 +19,7 @@
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
 #' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     mean and variance of the original sample.
+#'                     variance of the original sample.
 #' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
@@ -142,6 +142,10 @@
 #'
 #' @references
 #' Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+#'
+#' @references
+#' Parzen, E. (1962). On estimation of a probability density function and mode.
+#' The annals of mathematical statistics, 33(3), 1065-1076.
 #'
 #'
 #' @seealso \code{\link[stats]{density}}, \code{\link{kernelboot}}

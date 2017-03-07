@@ -41,7 +41,7 @@ bandwidth.}
 the length is taken to be the number required.}
 
 \item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
-mean and variance of the original sample.}
+variance of the original sample.}
 }
 \description{
 Univariate kernel density
@@ -170,6 +170,9 @@ Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 
 Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+
+Parzen, E. (1962). On estimation of a probability density function and mode.
+The annals of mathematical statistics, 33(3), 1065-1076.
 }
 \seealso{
 \code{\link[stats]{density}}, \code{\link{kernelboot}}

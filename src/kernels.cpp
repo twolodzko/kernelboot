@@ -4,10 +4,13 @@
 
 // Constants
 
-#define SQRT_3 1.732050807568877193177
-#define SQRT_5 2.236067977499789805051
-#define SQRT_6 2.449489742783177881336
-#define SQRT_7 2.645751311064590716171
+const double SQRT_3 = 1.732050807568877193177;
+const double SQRT_5 = 2.236067977499789805051;
+const double SQRT_6 = 2.449489742783177881336;
+const double SQRT_7 = 2.645751311064590716171;
+const double PI_SQ = M_PI * M_PI;
+const double COS_C = 1.0 / std::sqrt(1.0/3.0 - 2.0/PI_SQ);
+const double OPTCOS_C = 1.0 / std::sqrt(1.0 - 8.0/PI_SQ);
 
 // kernel RNGs
 
@@ -28,13 +31,13 @@ double rng_epan() {
 }
 
 double rng_cosine() {
-  return (R::rbeta(3.3575, 3.3575) * 2.0 - 1.0) * 2.766159483867713042571;
+  return (R::rbeta(3.3575, 3.3575) * 2.0 - 1.0) * COS_C;
 }
 
 double rng_optcos() {
   double u;
   u = (rng_unif() * 2.0 - 1.0);
-  return (2.0 * std::acos(u)/M_PI - 1.0) * 2.297603117487196922042;
+  return (2.0 * std::acos(u)/M_PI - 1.0) * OPTCOS_C;
 }
 
 double rng_triang() {
@@ -68,14 +71,14 @@ double dens_epan(double x, double bw) {
 }
 
 double dens_cosine(double x, double bw) {
-  double a = bw * 0.36151205519132795; // sqrt(1/3 - 2/pi^2)
+  double a = bw * COS_C;
   if (x < -a || x > a)
     return 0.0;
   return (1.0 + std::cos(M_PI * x/a)) / (2.0 * a);
 }
 
 double dens_optcos(double x, double bw) {
-  double a = bw * 0.43523617825417249; // sqrt(1 - 8/pi^2)
+  double a = bw * OPTCOS_C;
   if (x < -a || x > a)
     return 0.0;
   return M_PI/4.0 * std::cos(M_PI * x/(2.0 * a)) / a;
@@ -101,14 +104,14 @@ double dens_biweight(double x, double bw) {
   double ax = std::abs(x);
   if (ax > a)
     return 0.0;
-  return 0.9375 * std::pow(1.0 - std::pow(ax/a, 2.0), 2.0) / a; // 15/16
+  return (15.0/16.0) * std::pow(1.0 - std::pow(ax/a, 2.0), 2.0) / a;
 }
 
 double dens_triweight(double x, double bw) {
   double a = bw * 3.0;
   if (x < -a || x > a)
     return 0.0;
-  return 1.09375 * std::pow(1 - std::pow(x, 2.0), 3.0) / a; // 35/32
+  return (35.0/32.0) * std::pow(1 - std::pow(x, 2.0), 3.0) / a;
 }
 
 double dens_gauss(double x, double bw) {
