@@ -67,8 +67,8 @@ for (r in c(0, -0.25, 0.5, 0.8)) {
   axis(1); axis(2)
 
   grid <- seq(-4, 4, by = 0.1)
-  contour(grid, grid, z = outer(grid, grid, function(x, y) {
-                             dmvn(cbind(x, y), mu, Sigma)) }, add = TRUE)
+  fx <- outer(grid, grid, function(x, y) dmvn(cbind(x, y), mu, Sigma))
+  contour(grid, grid, z = fx, add = TRUE)
 
 }
 

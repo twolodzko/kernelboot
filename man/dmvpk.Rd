@@ -88,8 +88,8 @@ col1 <- pal(10)[cut(dmvpk(samp1, dat, shrink = FALSE), breaks = 10)]
 
 plot(samp1, col = col1, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
 points(dat, pch = 2, lwd = 2)
-contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) {
-                                  dmvpk(cbind(x, y), dat, shrink = FALSE)) }, add = TRUE)
+fx1 <- outer(gridx, gridy, function(x, y) dmvpk(cbind(x, y), dat, shrink = FALSE))
+contour(gridx, gridy, z = fx1, add = TRUE)
 axis(1)
 axis(2)
 title("Product kernel", cex.sub = 0.5)
@@ -102,7 +102,8 @@ col2 <- pal(10)[cut(dmvpk(samp2, dat, shrink = TRUE), breaks = 10)]
 
 plot(samp2, col = col2, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
 points(dat, pch = 2, lwd = 2)
-contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) dmvpk(cbind(x, y), dat, shrink = TRUE)), add = TRUE)
+fx2 <- outer(gridx, gridy, function(x, y) dmvpk(cbind(x, y), dat, shrink = TRUE))
+contour(gridx, gridy, z = fx2, add = TRUE)
 axis(1)
 axis(2)
 title("Product kernel (shrinked)", cex.sub = 0.5)
