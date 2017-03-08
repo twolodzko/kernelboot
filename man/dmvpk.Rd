@@ -7,12 +7,12 @@
 \usage{
 dmvpk(x, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), weights = NULL, adjust = 1, log.prob = FALSE)
+  "cosine", "optcosine"), weights = NULL, adjust = 1, shrinked = FALSE,
+  log.prob = FALSE)
 
 rmvpk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "triweight",
-  "cosine", "optcosine"), weights = NULL, adjust = 1,
-  preserve.var = FALSE)
+  "cosine", "optcosine"), weights = NULL, adjust = 1, shrinked = FALSE)
 }
 \arguments{
 \item{x}{\eqn{k \times m}{k*m} numeric matrix; kernel density
@@ -38,14 +38,14 @@ or "optcosine", with default "gaussian", and may be abbreviated.}
 This makes it easy to specify values like 'half the default'
 bandwidth.}
 
-\item{log.prob}{logical; if \code{TRUE}, probabilities p are given as log(p).}
+\item{shrinked}{if \code{TRUE} random generation algorithm preserves mean and
+variances of the individual variables (see \code{\link{ruvk}}).
+Shrinking is applied to each of the variables individually.}
+
+\item{log.prob}{if \code{TRUE}, probabilities p are given as log(p).}
 
 \item{n}{number of observations. If length(n) > 1,
 the length is taken to be the number required.}
-
-\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
-mean and variance of each of the columns (see \code{\link{ruvk}}
-for details).}
 }
 \description{
 Multivariate product kernel
@@ -69,14 +69,64 @@ Random generation from product kernel is done by drawing with replacement
 rows of \code{y}, and then adding random noise from univariate kernel \eqn{K}
 (see \code{\link{duvk}}), parametrized by corresponding bandwidth parameter
 \eqn{h}, to the sampled values.
+
+When \code{shrinked = TRUE}, product kernel density is a product of shrinked univariate
+kernels (see \code{\link{duvk}}).
+}
+\examples{
+
+dat <- as.matrix(mtcars[, c("mpg", "disp")])
+pal <- colorRampPalette(c("chartreuse4", "yellow", "orange", "brown"))
+
+gridx <- seq(0, 45, length.out = 200)
+gridy <- seq(-200, 800, length.out = 200)
+
+partmp <- par(mfrow = c(1, 2), mar = c(3,3,3,3))
+
+samp1 <- rmvpk(5000, dat, shrink = FALSE)
+col1 <- pal(10)[cut(dmvpk(samp1, dat, shrink = FALSE), breaks = 10)]
+
+plot(samp1, col = col1, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
+points(dat, pch = 2, lwd = 2)
+contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) {
+                                  dmvpk(cbind(x, y), dat, shrink = FALSE)) }, add = TRUE)
+axis(1)
+axis(2)
+title("Product kernel", cex.sub = 0.5)
+legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
+       legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
+
+
+samp2 <- rmvpk(5000, dat, shrink = TRUE)
+col2 <- pal(10)[cut(dmvpk(samp2, dat, shrink = TRUE), breaks = 10)]
+
+plot(samp2, col = col2, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
+points(dat, pch = 2, lwd = 2)
+contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) dmvpk(cbind(x, y), dat, shrink = TRUE)), add = TRUE)
+axis(1)
+axis(2)
+title("Product kernel (shrinked)", cex.sub = 0.5)
+legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
+       legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
+
+par(partmp)
+
+cov(dat)
+cov(samp1)
+cov(samp2)
+
+
 }
 \references{
 Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 
-Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+Wand, M.P. and Jones, M.C. (1995). Kernel smoothing. Chapman and Hall/CRC.
 
 Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
+
+Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate orobability density.
+Theory of Probability & Its Applications, 14(1): 153-158.
 }
 \seealso{
 \code{\link{kernelboot}}, \code{\link{duvk}}, \code{\link{dmvk}}

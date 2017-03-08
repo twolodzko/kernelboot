@@ -64,10 +64,9 @@ double rng_triweight() {
 
 double dens_epan(double x, double bw) {
   double a = bw * SQRT_5;
-  double ax = std::abs(x);
-  if (ax > a)
+  if (x < -a || x > a)
     return 0.0;
-  return 0.75 * (1.0 - std::pow(ax/a, 2)) / a;
+  return 0.75 * (1.0 - std::pow(x/a, 2)) / a;
 }
 
 double dens_cosine(double x, double bw) {
@@ -101,17 +100,16 @@ double dens_rect(double x, double bw) {
 
 double dens_biweight(double x, double bw) {
   double a = bw * SQRT_7;
-  double ax = std::abs(x);
-  if (ax > a)
+  if (x < -a || x > a)
     return 0.0;
-  return (15.0/16.0) * std::pow(1.0 - std::pow(ax/a, 2.0), 2.0) / a;
+  return (15.0/16.0) * std::pow(1.0 - std::pow(x/a, 2.0), 2.0) / a;
 }
 
 double dens_triweight(double x, double bw) {
   double a = bw * 3.0;
   if (x < -a || x > a)
     return 0.0;
-  return (35.0/32.0) * std::pow(1 - std::pow(x, 2.0), 3.0) / a;
+  return (35.0/32.0) * std::pow(1.0 - std::pow(x/a, 2.0), 3.0) / a;
 }
 
 double dens_gauss(double x, double bw) {

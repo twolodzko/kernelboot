@@ -3,34 +3,34 @@
 #'
 #' Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 #'
-#' @param data         vector, matrix, or data.frame. For non-numeric values standard bootstrap
-#'                     is applied (see below).
-#' @param statistic    a function that is applied to the \code{data}. The first argument of
-#'                     the function will always be the original data. Any further arguments
-#'                     can be passed to \code{statistic} through \dots argument.
-#' @param R            the number of bootstrap replicates.
-#' @param bw           the smoothing bandwidth to be used (see \code{\link[stats]{density}}).
-#'                     The kernels are scaled such that this is the standard deviation,
-#'                     or covariance matrix of the smoothing kernel. By default
-#'                     \code{\link[stats]{bw.nrd0}} is used for univariate data,
-#'                     and \code{\link{bw.silv}} is used for multivariate data.
-#' @param kernel       a character string giving the smoothing kernel to be used.
-#'                     This must partially match one of "gaussian", "rectangular",
-#'                     "triangular", "epanechnikov", "biweight", "triweight", "cosine"
-#'                     or "optcosine", with default "gaussian", and may be abbreviated.
-#' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}. This makes
-#'                     it easy to specify values like 'half the default' bandwidth.
-#' @param weights      vector of importance weights. It should have as many elements
-#'                     as there are observations in \code{data}. It defaults to uniform
-#'                     weights.
-#' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     variance of the variables (see \code{\link{ruvk}} for details).
-#'                     This parameter is used only for univariate and product kernels.
-#' @param ignore       vector of names of columns to be ignored during the smoothing phase of
-#'                     bootstrap procedure (their values are not altered using random noise).
-#' @param parallel     if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
-#' @param mc.cores     number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
-#' @param \dots        optional arguments passed to \code{statistic}.
+#' @param data       vector, matrix, or data.frame. For non-numeric values standard bootstrap
+#'                   is applied (see below).
+#' @param statistic  a function that is applied to the \code{data}. The first argument of
+#'                   the function will always be the original data. Any further arguments
+#'                   can be passed to \code{statistic} through \dots argument.
+#' @param R          the number of bootstrap replicates.
+#' @param bw         the smoothing bandwidth to be used (see \code{\link[stats]{density}}).
+#'                   The kernels are scaled such that this is the standard deviation,
+#'                   or covariance matrix of the smoothing kernel. By default
+#'                   \code{\link[stats]{bw.nrd0}} is used for univariate data,
+#'                   and \code{\link{bw.silv}} is used for multivariate data.
+#' @param kernel     a character string giving the smoothing kernel to be used.
+#'                   This must partially match one of "gaussian", "rectangular",
+#'                   "triangular", "epanechnikov", "biweight", "triweight", "cosine"
+#'                   or "optcosine", with default "gaussian", and may be abbreviated.
+#' @param adjust     scalar; the bandwidth used is actually \code{adjust*bw}. This makes
+#'                   it easy to specify values like 'half the default' bandwidth.
+#' @param weights    vector of importance weights. It should have as many elements
+#'                   as there are observations in \code{data}. It defaults to uniform
+#'                   weights.
+#' @param shrinked   logical; if \code{TRUE} random generation algorithm preserves
+#'                   means and variances of the variables (see \code{\link{ruvk}} for details).
+#'                   This parameter is used only for univariate and product kernels.
+#' @param ignore     vector of names of columns to be ignored during the smoothing phase of
+#'                   bootstrap procedure (their values are not altered using random noise).
+#' @param parallel   if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
+#' @param mc.cores   number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
+#' @param \dots      optional arguments passed to \code{statistic}.
 #'
 #'
 #' @details
@@ -79,18 +79,14 @@
 #' \code{bw}                 \tab  the bandwidth that was used, \cr
 #' \code{weights}            \tab  vector of the weights that were applied, \cr
 #' \code{kernel}             \tab  name of the kernel that was used, \cr
-#' \code{preserve.var}       \tab  logical; value of \code{preserve.var} parameter, \cr
+#' \code{shrinked}           \tab  logical; value of \code{shrinked} parameter, \cr
 #' \code{parallel}           \tab  logical; states if parallel computation was used.
 #' }
-#'
 #'
 #'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
 #' Chapman and Hall/CRC.
-#'
-#' @references
-#' Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
 #'
 #' @references
 #' Scott, D. W. (1992). Multivariate density estimation: theory, practice,
@@ -101,8 +97,29 @@
 #' the bootstrap and other methods. Biometrika, 589-599.
 #'
 #' @references
-#' Hall, P., DiCiccio, T.J., and Romano, J.P. (1989). On smoothing and the bootstrap.
-#' The Annals of Statistics, 692-704. \url{http://projecteuclid.org/euclid.aos/1176347135}
+#' Hall, P., DiCiccio, T.J. and Romano, J.P. (1989). On smoothing and the bootstrap.
+#' The Annals of Statistics, 692-704.
+#'
+#' @references
+#' Silverman, B.W. and Young, G.A. (1987). The bootstrap: To smooth or not to smooth?
+#' Biometrika, 469-479.
+#'
+#' @references
+#' Wang, S. (1995). Optimizing the smoothed bootstrap. Annals of the Institute of
+#' Statistical Mathematics, 47(1), 65-80.
+#'
+#' @references
+#' Young, G.A. (1990). Alternative smoothed bootstraps. Journal of the Royal
+#' Statistical Society. Series B (Methodological), 477-484.
+#'
+#' @references
+#' De Angelis, D. and Young, G.A. (1992). Smoothing the bootstrap.
+#' International Statistical Review/Revue Internationale de Statistique, 45-56.
+#'
+#' @references
+#' Polansky, A.M. and Schucany, W. (1997). Kernel smoothing to improve bootstrap
+#' confidence intervals. Journal of the Royal Statistical Society: Series B
+#' (Statistical Methodology), 59(4), 821-838.
 #'
 #'
 #' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
@@ -126,7 +143,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
                                   "triangular", "biweight", "triweight",
                                   "cosine", "optcosine"),
                        weights = NULL, adjust = 1,
-                       preserve.var = TRUE, ignore = NULL,
+                       shrinked = TRUE, ignore = NULL,
                        parallel = FALSE, mc.cores = getOption("mc.cores", 2L)) {
 
   call <- match.call()
@@ -321,7 +338,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
       res <- repeatFun(1:R, function(i) {
 
-        samp <- cpp_ruvk(n, data, bw, weights, kernel, preserve.var)
+        samp <- cpp_ruvk(n, data, bw, weights, kernel, shrinked)
         boot.data <- drop(samp$samples)
         statistic(boot.data, ...)
 
@@ -343,13 +360,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
     orig.data          = data,
     smoothed.variables = smoothed_variables,
     param = list(
-      R            = R,
-      bw           = bw,
-      adjust       = adjust,
-      weights      = weights,
-      kernel       = kernel,
-      preserve.var = preserve.var,
-      parallel     = parallel
+      R         = R,
+      bw        = bw,
+      adjust    = adjust,
+      weights   = weights,
+      kernel    = kernel,
+      shrinked  = shrinked,
+      parallel  = parallel
     )
   ), class = "kernelboot")
 

@@ -1,12 +1,12 @@
 
 #' Multivariate normal distribution
 #'
-#' @param x        \eqn{n \times m}{n*m} numeric matrix.
-#' @param n        number of observations. If length(n) > 1,
-#'                 the length is taken to be the number required.
-#' @param mu       vector of means of length \eqn{m}.
-#' @param sigma    \eqn{m \times m}{m*m} covariance matrix.
-#' @param log.prob logical; if \code{TRUE}, probabilities p are given as log(p).
+#' @param x         \eqn{n \times m}{n*m} numeric matrix.
+#' @param n         number of observations. If length(n) > 1,
+#'                  the length is taken to be the number required.
+#' @param mu        vector of means of length \eqn{m}.
+#' @param sigma     \eqn{m \times m}{m*m} covariance matrix.
+#' @param log.prob  if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
 #' @details
@@ -49,6 +49,32 @@
 #' Ahmadou Dicko (Mar 12, 2013).
 #' Generating a multivariate gaussian distribution using RcppArmadillo.
 #' \url{http://gallery.rcpp.org/articles/simulate-multivariate-normal/}
+#'
+#'
+#' @examples
+#'
+#' partmp <- par(mfrow = c(2, 2), mar = c(2, 2, 2, 2))
+#'
+#' for (r in c(0, -0.25, 0.5, 0.8)) {
+#'
+#'   mu <- c(0, 0)
+#'   Sigma <- matrix(c(1, r, r, 1), ncol = 2)
+#'
+#'   pal <- colorRampPalette(c("chartreuse4", "yellow", "orange", "brown"))
+#'   x <- rmvn(5000, mu, Sigma)
+#'   col <- pal(10)[cut(dmvn(x, mu, Sigma), breaks = 10)]
+#'
+#'   plot(x, col = col, pch = 16, axes = FALSE, main = paste0("correlation = ", r))
+#'   axis(1); axis(2)
+#'
+#'   grid <- seq(-4, 4, by = 0.1)
+#'   contour(grid, grid, z = outer(grid, grid, function(x, y) {
+#'                              dmvn(cbind(x, y), mu, Sigma)) }, add = TRUE)
+#'
+#' }
+#'
+#' par(partmp)
+#'
 #'
 #' @importFrom stats dnorm rnorm
 #' @export

@@ -7,7 +7,7 @@
 kernelboot(data, statistic, R = 500L, bw = "default", ...,
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
   "biweight", "triweight", "cosine", "optcosine"), weights = NULL,
-  adjust = 1, preserve.var = TRUE, ignore = NULL, parallel = FALSE,
+  adjust = 1, shrinked = TRUE, ignore = NULL, parallel = FALSE,
   mc.cores = getOption("mc.cores", 2L))
 }
 \arguments{
@@ -40,8 +40,8 @@ weights.}
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}. This makes
 it easy to specify values like 'half the default' bandwidth.}
 
-\item{preserve.var}{logical; if \code{TRUE} random generation algorithm preserves
-variance of the variables (see \code{\link{ruvk}} for details).
+\item{shrinked}{logical; if \code{TRUE} random generation algorithm preserves
+means and variances of the variables (see \code{\link{ruvk}} for details).
 This parameter is used only for univariate and product kernels.}
 
 \item{ignore}{vector of names of columns to be ignored during the smoothing phase of
@@ -73,7 +73,7 @@ An object of class \code{"kernelboot"}, i.e., a list with components including
 \code{bw}                 \tab  the bandwidth that was used, \cr
 \code{weights}            \tab  vector of the weights that were applied, \cr
 \code{kernel}             \tab  name of the kernel that was used, \cr
-\code{preserve.var}       \tab  logical; value of \code{preserve.var} parameter, \cr
+\code{shrinked}           \tab  logical; value of \code{shrinked} parameter, \cr
 \code{parallel}           \tab  logical; states if parallel computation was used.
 }
 }
@@ -114,16 +114,30 @@ kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
 Silverman, B. W. (1986). Density estimation for statistics and data analysis.
 Chapman and Hall/CRC.
 
-Wand, M. P. and Jones, M. C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
-
 Scott, D. W. (1992). Multivariate density estimation: theory, practice,
 and visualization. John Wiley & Sons.
 
 Efron, B. (1981). Nonparametric estimates of standard error: the jackknife,
 the bootstrap and other methods. Biometrika, 589-599.
 
-Hall, P., DiCiccio, T.J., and Romano, J.P. (1989). On smoothing and the bootstrap.
-The Annals of Statistics, 692-704. \url{http://projecteuclid.org/euclid.aos/1176347135}
+Hall, P., DiCiccio, T.J. and Romano, J.P. (1989). On smoothing and the bootstrap.
+The Annals of Statistics, 692-704.
+
+Silverman, B.W. and Young, G.A. (1987). The bootstrap: To smooth or not to smooth?
+Biometrika, 469-479.
+
+Wang, S. (1995). Optimizing the smoothed bootstrap. Annals of the Institute of
+Statistical Mathematics, 47(1), 65-80.
+
+Young, G.A. (1990). Alternative smoothed bootstraps. Journal of the Royal
+Statistical Society. Series B (Methodological), 477-484.
+
+De Angelis, D. and Young, G.A. (1992). Smoothing the bootstrap.
+International Statistical Review/Revue Internationale de Statistique, 45-56.
+
+Polansky, A.M. and Schucany, W. (1997). Kernel smoothing to improve bootstrap
+confidence intervals. Journal of the Royal Statistical Society: Series B
+(Statistical Methodology), 59(4), 821-838.
 }
 \seealso{
 \code{\link{bandwidth}}, \code{\link[stats]{density}},

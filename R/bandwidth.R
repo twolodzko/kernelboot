@@ -34,7 +34,7 @@
 #' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel smoothing. Chapman and Hall/CRC.
 #'
 #' @references
 #' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
@@ -43,6 +43,10 @@
 #' @references
 #' Chacon J.E., Duong, T. and Wand, M.P. (2011). Asymptotics for general multivariate kernel density
 #' derivative estimators. Statistica Sinica, 21, 807-840.
+#'
+#' @references
+#' Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate orobability density.
+#' Theory of Probability & Its Applications, 14(1): 153-158.
 #'
 #'
 #' @seealso \code{\link[stats]{bandwidth}}

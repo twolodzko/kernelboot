@@ -9,12 +9,12 @@ cpp_rmvk <- function(n, y, bandwidth, weights, is_chol = FALSE) {
     .Call('kernelboot_cpp_rmvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, is_chol)
 }
 
-cpp_dmvpk <- function(x, y, bandwidth, weights, kernel = "gaussian", log_prob = FALSE) {
-    .Call('kernelboot_cpp_dmvpk', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, log_prob)
+cpp_dmvpk <- function(x, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE, log_prob = FALSE) {
+    .Call('kernelboot_cpp_dmvpk', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, shrinked, log_prob)
 }
 
-cpp_rmvpk <- function(n, y, bandwidth, weights, kernel = "gaussian", preserve_var = FALSE) {
-    .Call('kernelboot_cpp_rmvpk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, preserve_var)
+cpp_rmvpk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
+    .Call('kernelboot_cpp_rmvpk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
 
 cpp_dmvn <- function(x, mu, sigma, log_prob = FALSE) {
@@ -25,11 +25,11 @@ cpp_rmvn <- function(n, mu, sigma) {
     .Call('kernelboot_cpp_rmvn', PACKAGE = 'kernelboot', n, mu, sigma)
 }
 
-cpp_duvk <- function(x, y, bandwidth, weights, kernel = "gaussian", log_prob = FALSE) {
-    .Call('kernelboot_cpp_duvk', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, log_prob)
+cpp_duvk <- function(x, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE, log_prob = FALSE) {
+    .Call('kernelboot_cpp_duvk', PACKAGE = 'kernelboot', x, y, bandwidth, weights, kernel, shrinked, log_prob)
 }
 
-cpp_ruvk <- function(n, y, bandwidth, weights, kernel = "gaussian", preserve_var = FALSE) {
-    .Call('kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, preserve_var)
+cpp_ruvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
+    .Call('kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
 

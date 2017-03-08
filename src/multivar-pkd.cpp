@@ -12,6 +12,7 @@ Rcpp::List cpp_dmvpk(
     const arma::vec& bandwidth,
     const arma::vec& weights,
     const std::string& kernel = "gaussian",
+    const bool& shrinked = false,
     const bool& log_prob = false
   ) {
 
@@ -67,15 +68,41 @@ Rcpp::List cpp_dmvpk(
 
     c_weights /= arma::sum(c_weights);
 
-    double tmp;
-    for (unsigned int i = 0; i < n; i++) {
-      p[i] = 0.0;
-      for (unsigned int j = 0; j < k; j++) {
-        tmp = 0.0;
-        for (unsigned int l = 0; l < m; l++)
-          tmp += std::log(dens_kern(x(i, l) - y(j, l), bandwidth[l]));
-        p[i] += std::exp(tmp) * c_weights[j];
+    if (!shrinked) {
+
+      double aggr;
+      for (unsigned int i = 0; i < n; i++) {
+        p[i] = 0.0;
+        for (unsigned int j = 0; j < k; j++) {
+          aggr = 0.0;
+          for (unsigned int l = 0; l < m; l++)
+            aggr += std::log(dens_kern(x(i, l) - y(j, l), bandwidth[l]));
+          p[i] += std::exp(aggr) * c_weights[j];
+        }
       }
+
+    } else {
+
+      const arma::rowvec my = arma::mean(y);
+      const arma::rowvec sy = arma::var(y);
+      arma::rowvec bw_sq(m);
+      for (unsigned int i = 0; i < m; i++)
+        bw_sq[i] = bandwidth[i] * bandwidth[i];
+      const arma::rowvec r = arma::sqrt(1.0 + bw_sq/sy);
+
+      double tmp, aggr;
+      for (unsigned int i = 0; i < n; i++) {
+        p[i] = 0.0;
+        for (unsigned int j = 0; j < k; j++) {
+          aggr = 0.0;
+          for (unsigned int l = 0; l < m; l++) {
+            tmp = (x(i, l) + (x(i, l) - my[l]) * (r[l] - 1.0)) - y(j, l);
+            aggr += std::log(dens_kern(tmp, bandwidth[l]) * r[l]);
+          }
+          p[i] += std::exp(aggr) * c_weights[j];
+        }
+      }
+
     }
 
     if (log_prob)
@@ -93,6 +120,7 @@ Rcpp::List cpp_dmvpk(
     Rcpp::Named("bandwidth") = bandwidth,
     Rcpp::Named("weights") = c_weights,
     Rcpp::Named("kernel") = kernel,
+    Rcpp::Named("shrinked") = shrinked,
     Rcpp::Named("log_prob") = log_prob
   );
 
@@ -106,7 +134,7 @@ Rcpp::List cpp_rmvpk(
     const arma::vec& bandwidth,
     const arma::vec& weights,
     const std::string& kernel = "gaussian",
-    const bool& preserve_var = false
+    const bool& shrinked = false
   ) {
 
   double (*rng_kern)();
@@ -171,7 +199,7 @@ Rcpp::List cpp_rmvpk(
           samp(i, l) = y(0, l) + rng_kern() * bandwidth[l];
       }
 
-    } else if (!preserve_var) {
+    } else if (!shrinked) {
 
       unsigned int j;
       for (unsigned int i = 0; i < n; i++) {
@@ -216,7 +244,8 @@ Rcpp::List cpp_rmvpk(
     Rcpp::Named("data") = y,
     Rcpp::Named("bandwidth") = bandwidth,
     Rcpp::Named("weights") = c_weights,
-    Rcpp::Named("kernel") = kernel
+    Rcpp::Named("kernel") = kernel,
+    Rcpp::Named("shrinked") = shrinked
   );
 
 }

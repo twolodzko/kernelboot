@@ -19,7 +19,7 @@
 #' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                     This makes it easy to specify values like 'half the default'
 #'                     bandwidth.
-#' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
+#' @param log.prob     if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
 #' @details
@@ -44,7 +44,7 @@
 #' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel smoothing. Chapman and Hall/CRC.
 #'
 #' @references
 #' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
@@ -57,15 +57,19 @@
 #'
 #' dat <- as.matrix(mtcars[, c("mpg", "disp")])
 #' pal <- colorRampPalette(c("chartreuse4", "yellow", "orange", "brown"))
+#' gridx <- seq(0, 45, length.out = 200)
+#' gridy <- seq(-200, 800, length.out = 200)
 #'
 #' partmp <- par(mfrow = c(1, 2), mar = c(3,3,3,3))
 #'
 #' samp1 <- rmvpk(5000, dat)
 #' col1 <- pal(10)[cut(dmvpk(samp1, dat), breaks = 10)]
 #'
-#' plot(samp1, col = col1, pch = 16, axes = FALSE)
+#' plot(samp1, col = col1, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
 #' points(dat, pch = 2, lwd = 2)
-#' axis(1); axis(2)
+#' contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) dmvpk(cbind(x, y), dat)), add = TRUE)
+#' axis(1)
+#' axis(2)
 #' title("Product kernel", cex.sub = 0.5)
 #' legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
 #'        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )
@@ -74,9 +78,11 @@
 #' samp2 <- rmvk(5000, dat)
 #' col2 <- pal(10)[cut(dmvk(samp2, dat), breaks = 10)]
 #'
-#' plot(samp2, col = col2, pch = 16, axes = FALSE)
+#' plot(samp2, col = col2, pch = 16, axes = FALSE, xlim = c(0, 45), ylim = c(-200, 800))
 #' points(dat, pch = 2, lwd = 2)
-#' axis(1); axis(2)
+#' contour(gridx, gridy, z = outer(gridx, gridy, function(x, y) dmvk(cbind(x, y), dat)), add = TRUE)
+#' axis(1)
+#' axis(2)
 #' title("Multivariate Gaussian kernel", cex.sub = 0.5)
 #' legend("topright", pch = c(2, 16), col = c("black", "chartreuse4"),
 #'        legend = c("actual data", "bootstrap samples"), bty = "n", cex = 0.8 )

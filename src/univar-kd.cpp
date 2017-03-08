@@ -12,6 +12,7 @@ Rcpp::List cpp_duvk(
     const double& bandwidth,
     const arma::vec& weights,
     const std::string& kernel = "gaussian",
+    const bool& shrinked = false,
     const bool& log_prob = false
   ) {
 
@@ -61,10 +62,26 @@ Rcpp::List cpp_duvk(
 
   c_weights /= arma::sum(c_weights);
 
-  for (unsigned int i = 0; i < n; i++) {
-    p[i] = 0.0;
-    for (unsigned int j = 0; j < k; j++)
-      p[i] += dens_kern(x[i] - y[j], bandwidth) * c_weights[j];
+  if (!shrinked) {
+
+    for (unsigned int i = 0; i < n; i++) {
+      p[i] = 0.0;
+      for (unsigned int j = 0; j < k; j++)
+        p[i] += dens_kern(x[i] - y[j], bandwidth) * c_weights[j];
+    }
+
+  } else {
+
+    const double my = arma::mean(y);
+    const double sy = arma::var(y);
+    const double r = std::sqrt(1.0 + (bandwidth*bandwidth)/sy);
+
+    for (unsigned int i = 0; i < n; i++) {
+      p[i] = 0.0;
+      for (unsigned int j = 0; j < k; j++)
+        p[i] += dens_kern((x[i] + (x[i] - my) * (r - 1.0)) - y[j], bandwidth) * r * c_weights[j];
+    }
+
   }
 
   if (log_prob)
@@ -76,6 +93,7 @@ Rcpp::List cpp_duvk(
     Rcpp::Named("bandwidth") = bandwidth,
     Rcpp::Named("weights") = c_weights,
     Rcpp::Named("kernel") = kernel,
+    Rcpp::Named("shrinked") = shrinked,
     Rcpp::Named("log_prob") = log_prob
   );
 
@@ -89,7 +107,7 @@ Rcpp::List cpp_ruvk(
     const double& bandwidth,
     const arma::vec& weights,
     const std::string& kernel = "gaussian",
-    const bool& preserve_var = false
+    const bool& shrinked = false
   ) {
 
   double (*rng_kern)();
@@ -147,7 +165,7 @@ Rcpp::List cpp_ruvk(
       samp[i] = y[0] + rng_kern() * bandwidth;
     }
 
-  } else if (!preserve_var) {
+  } else if (!shrinked) {
 
     unsigned int j;
     for (unsigned int i = 0; i < n; i++) {
@@ -181,7 +199,7 @@ Rcpp::List cpp_ruvk(
     Rcpp::Named("bandwidth") = bandwidth,
     Rcpp::Named("weights") = c_weights,
     Rcpp::Named("kernel") = kernel,
-    Rcpp::Named("preserve_var") = preserve_var
+    Rcpp::Named("shrinked") = shrinked
   );
 
 }

@@ -1,26 +1,26 @@
 
 #' Univariate kernel density
 #'
-#' @param x            numeric vector of length \eqn{k}; kernel density is
-#'                     evaluated on those values.
-#' @param y            numeric vector of length \eqn{n}; kernel density is
-#'                     evaluated on those values.
-#' @param n            number of observations. If length(n) > 1,
-#'                     the length is taken to be the number required.
-#' @param bw           the smoothing bandwidth to be used. The kernels are scaled
-#'                     such that this is the standard deviation of the smoothing
-#'                     kernel (see \code{\link[stats]{density}} for details).
-#' @param weights      numeric vector of length \eqn{n}; must be non-negative.
-#' @param kernel       a character string giving the smoothing kernel to be used.
-#'                     This must partially match one of "gaussian", "rectangular",
-#'                     "triangular", "epanechnikov", "biweight", "triweight", "cosine"
-#'                     or "optcosine", with default "gaussian", and may be abbreviated.
-#' @param adjust       scalar; the bandwidth used is actually \code{adjust*bw}.
-#'                     This makes it easy to specify values like 'half the default'
-#'                     bandwidth.
-#' @param preserve.var logical; if \code{TRUE} random generation algorithm preserves
-#'                     variance of the original sample.
-#' @param log.prob     logical; if \code{TRUE}, probabilities p are given as log(p).
+#' @param x         numeric vector of length \eqn{k}; kernel density is
+#'                  evaluated on those values.
+#' @param y         numeric vector of length \eqn{n}; kernel density is
+#'                  evaluated on those values.
+#' @param n         number of observations. If length(n) > 1,
+#'                  the length is taken to be the number required.
+#' @param bw        the smoothing bandwidth to be used. The kernels are scaled
+#'                  such that this is the standard deviation of the smoothing
+#'                  kernel (see \code{\link[stats]{density}} for details).
+#' @param weights   numeric vector of length \eqn{n}; must be non-negative.
+#' @param kernel    a character string giving the smoothing kernel to be used.
+#'                  This must partially match one of "gaussian", "rectangular",
+#'                  "triangular", "epanechnikov", "biweight", "triweight", "cosine"
+#'                  or "optcosine", with default "gaussian", and may be abbreviated.
+#' @param adjust    scalar; the bandwidth used is actually \code{adjust*bw}.
+#'                  This makes it easy to specify values like 'half the default'
+#'                  bandwidth.
+#' @param shrinked  if \code{TRUE} random generation algorithm preserves
+#'                  mean and variance of the original sample.
+#' @param log.prob  if \code{TRUE}, probabilities p are given as log(p).
 #'
 #'
 #' @details
@@ -47,14 +47,26 @@
 #' \emph{Step 3} Set \eqn{Y = X_i + h\varepsilon}{Y = X[i] + h\epsilon}.
 #'
 #' If samples are required to have the same variance as \code{data}
-#' (i.e. \code{preserve.var = TRUE}), then \emph{Step 3} is modified
+#' (i.e. \code{shrinked = TRUE}), then \emph{Step 3} is modified
 #' as following:
 #'
 #' \emph{Step 3'} \eqn{
 #' Y = \hat X + (X_i - \hat X + h\varepsilon)/(1 + h^2 \sigma^2_K/\sigma^2_X)^{1/2}
 #' }{
-#' Y = m + (X[i] - m + h\epsilon)/(1 + h^2 var(K)/var(X))^(1/2)
+#' Y = m + (X[i] - m + h\epsilon)/sqrt(1 + h^2 var(K)/var(X))
 #' }
+#'
+#' where \eqn{\sigma_K^2}{sK} is variance of the kernel (fixed to 1 for kernels used in this package).
+#'
+#' When shrinkage described in \emph{Step 3'} is applied, the smoothed bootstrap density function changes it's form to
+#'
+#' \deqn{
+#' \hat{f}_{h,b}(x) = (1 + r) \hat{f_h}(x + r(x - \bar{y}))
+#' }{
+#' fb(x) = (1+r) f(x + r (x-mean(y)))
+#' }
+#'
+#' where \eqn{r = \left(1 + h^2 \sigma_K^2 / \sigma_y^2 \right)^{1/2}-1}{r = sqrt(1 + h^2 sK/var(y)) - 1}.
 #'
 #'
 #' \strong{Available univariate kernels}
@@ -117,6 +129,9 @@
 #' K(u) = \pi/4 cos(\pi/2 u)
 #' }
 #'
+#' All the kernels are re-scalled so that their standard deviations are equal to 1,
+#' so that bandwidth parameter controls their standard deviations.
+#'
 #' Random generation from Epachenikov kernel is done using algorithm
 #' described by Devoye (1986). For optcosine kernel inverse transform
 #' sampling is used. For biweight kernel random values are drawn from
@@ -134,30 +149,51 @@
 #' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
 #'
 #' @references
-#' Wand, M.P. and Jones, M.C. (1995). Kernel Smoothing. Chapman and Hall/CRC.
+#' Wand, M.P. and Jones, M.C. (1995). Kernel smoothing. Chapman and Hall/CRC.
 #'
 #' @references
 #' Scott, D.W. (1992). Multivariate density estimation: theory, practice,
 #' and visualization. John Wiley & Sons.
 #'
 #' @references
-#' Devroye, L. (1986). Non-Uniform Random Variate Generation. New York: Springer-Verlag.
+#' Devroye, L. (1986). Non-uniform random variate generation. New York: Springer-Verlag.
 #'
 #' @references
 #' Parzen, E. (1962). On estimation of a probability density function and mode.
 #' The annals of mathematical statistics, 33(3), 1065-1076.
 #'
+#' @references
+#' Silverman, B.W. and Young, G.A. (1987). The bootstrap: To smooth or not to smooth?
+#' Biometrika, 469-479.
+#'
+#' @references
+#' Wang, S. (1995). Optimizing the smoothed bootstrap. Annals of the Institute of
+#' Statistical Mathematics, 47(1), 65-80.
 #'
 #' @seealso \code{\link[stats]{density}}, \code{\link{kernelboot}}
 #'
 #'
 #' @examples
 #'
-#' hist(ruvk(1e5, mtcars$mpg), 100, freq = FALSE)
+#' hist(ruvk(1e5, mtcars$mpg), 100, freq = FALSE, xlim = c(5, 40))
 #' curve(duvk(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
 #'
-#' hist(ruvk(1e5, mtcars$mpg, preserve.var = TRUE), 100, freq = FALSE)
-#' curve(duvk(x, mtcars$mpg), from = 0, to = 50, col = "red", add = TRUE)
+#' hist(ruvk(1e5, mtcars$mpg, shrinked = TRUE), 100, freq = FALSE, xlim = c(5, 40))
+#' curve(duvk(x, mtcars$mpg, shrinked = TRUE), from = 0, to = 50, col = "red", add = TRUE)
+#'
+#' # Comparison of different univariate kernels under standard parametrization
+#'
+#' kernels <- c("gaussian", "epanechnikov", "rectangular", "triangular",
+#'              "biweight", "triweight", "cosine", "optcosine")
+#'
+#' partmp <- par(mfrow = c(2, 4), mar = c(3, 3, 3, 3))
+#'
+#' for (k in kernels) {
+#'   hist(ruvk(1e5, 0, 1, kernel = k), 25, freq = FALSE, main = k)
+#'   curve(duvk(x, 0, 1, kernel = k), -4, 4, col = "red", add = TRUE)
+#' }
+#'
+#' par(partmp)
 #'
 #'
 #' @importFrom stats bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
@@ -167,7 +203,8 @@ duvk <- function(x, y, bw = bw.nrd0(y),
                  kernel = c("gaussian", "epanechnikov", "rectangular",
                             "triangular", "biweight", "triweight",
                             "cosine", "optcosine"),
-                 weights = NULL, adjust = 1, log.prob = FALSE) {
+                 weights = NULL, adjust = 1, shrinked = FALSE,
+                 log.prob = FALSE) {
 
   kernel <- match.arg(kernel)
   if (is.null(weights)) weights <- 1
@@ -177,7 +214,7 @@ duvk <- function(x, y, bw = bw.nrd0(y),
   }
   bw <- bw * adjust[1L]
 
-  drop(cpp_duvk(x, y, bw, weights, kernel, log.prob)$density)
+  drop(cpp_duvk(x, y, bw, weights, kernel, shrinked, log.prob)$density)
 }
 
 
@@ -188,7 +225,7 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
                  kernel = c("gaussian", "epanechnikov", "rectangular",
                             "triangular", "biweight", "triweight",
                             "cosine", "optcosine"),
-                 weights = NULL, adjust = 1, preserve.var = FALSE) {
+                 weights = NULL, adjust = 1, shrinked = FALSE) {
 
   kernel <- match.arg(kernel)
   if (length(n) > 1L) n <- length(n)
@@ -199,6 +236,6 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
   }
   bw <- bw * adjust[1L]
 
-  drop(cpp_ruvk(n, y, bw, weights, kernel, preserve.var)$samples)
+  drop(cpp_ruvk(n, y, bw, weights, kernel, shrinked)$samples)
 }
 
