@@ -1,11 +1,13 @@
 Package: kernelboot
 Type: Package
-Title: Kernel density bootstrap
+Title: Smoothed bootstrap and random generation from kernel densities
 Version: 0.1.0
-Date: 2017-03-02
+Date: 2017-03-09
 Author: Tymoteusz Wolodzko
 Maintainer: Tymoteusz Wolodzko <twolodzko+kernelboot@gmail.com>
-Description: Smoothed bootstrap and functions for sampling from kernel densities.
+Description: This package implements smoothed bootstrap and functions for
+             random generation from kernel densities. It does not estimate
+             kernel densities.
 License: GPL-2
 URL: https://github.com/twolodzko/kernelboot
 BugReports: https://github.com/twolodzko/kernelboot/issues
@@ -14,4 +16,4 @@ Imports: Rcpp, RcppArmadillo, parallel
 LinkingTo: Rcpp, RcppArmadillo
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Suggests: covr, testthat
+Suggests: ks, KernSmooth, covr, testthat

@@ -26,7 +26,8 @@ arma::vec cpp_dmvn(
     const arma::mat& x,
     const arma::rowvec& mu,
     const arma::mat& sigma,
-    const bool& log_prob = false
+    const bool& log_prob = false,
+    const bool& is_chol = false    // sigma is passed as Cholesky decomposition
   ) {
 
   const unsigned int n = x.n_rows;
@@ -38,13 +39,19 @@ arma::vec cpp_dmvn(
     if (mu.n_elem != m || sigma.n_cols != m)
       Rcpp::stop("dimansions of parameters do not match the data");
 
-    if (mu.n_elem != sigma.n_cols)
+    if (mu.n_elem != 1 && mu.n_elem != sigma.n_cols)
       Rcpp::stop("dimensions of mu and sigma do not match");
 
     if (sigma.n_cols != sigma.n_rows)
       Rcpp::stop("sigma is not a square matrix");
 
-    const arma::mat chol_sigma = arma::chol(sigma);
+    arma::mat chol_sigma;
+    if (is_chol) {
+      chol_sigma = sigma;
+    } else {
+      chol_sigma = arma::chol(sigma);
+    }
+
     const arma::mat rooti = arma::trans(arma::inv(arma::trimatu(chol_sigma)));
     const double rootisum = arma::sum(arma::log(rooti.diag()));
     const double c = -(static_cast<double>(m) / 2.0) * M_LN_2PI;
@@ -76,7 +83,8 @@ arma::vec cpp_dmvn(
 arma::mat cpp_rmvn(
     const unsigned int& n,
     const arma::vec& mu,
-    const arma::mat& sigma
+    const arma::mat& sigma,
+    const bool& is_chol = false    // sigma is passed as Cholesky decomposition
   ) {
 
   const unsigned int m = sigma.n_cols;
@@ -84,14 +92,21 @@ arma::mat cpp_rmvn(
 
   try {
 
-    if (mu.n_elem != sigma.n_cols)
+    if (mu.n_elem != 1 && mu.n_elem != sigma.n_cols)
       Rcpp::stop("dimensions of mu and sigma do not match");
 
     if (sigma.n_cols != sigma.n_rows)
       Rcpp::stop("sigma is not a square matrix");
 
+    arma::mat chol_sigma;
+    if (is_chol) {
+      chol_sigma = sigma;
+    } else {
+      chol_sigma = arma::chol(sigma);
+    }
+
     const arma::mat Y = arma::randn(n, m);
-    return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+    return arma::repmat(mu, 1, n).t() + Y * chol_sigma;
 
   } catch ( std::exception& __ex__ ) {
     forward_exception_to_r(__ex__);

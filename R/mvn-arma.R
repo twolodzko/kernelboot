@@ -6,7 +6,9 @@
 #'                  the length is taken to be the number required.
 #' @param mu        vector of means of length \eqn{m}.
 #' @param sigma     \eqn{m \times m}{m*m} covariance matrix.
-#' @param log.prob  if \code{TRUE}, probabilities p are given as log(p).
+#' @param log_prob  if \code{TRUE}, probabilities p are given as log(p).
+#' @param is_chol   change to \code{TRUE} if sigma is provided as Cholesky
+#'                  decomposition of covariance matrix.
 #'
 #'
 #' @details
@@ -79,15 +81,20 @@
 #' @importFrom stats dnorm rnorm
 #' @export
 
-dmvn <- function(x, mu, sigma, log.prob = FALSE) {
-  drop(cpp_dmvn(as.matrix(x), mu, as.matrix(sigma), log.prob))
+dmvn <- function(x, mu, sigma, log_prob = FALSE, is_chol = FALSE) {
+  if (length(mu) == 0)
+    mu <- rep(mu, ncol(sigma))
+  drop(cpp_dmvn(as.matrix(x), mu, as.matrix(sigma), log_prob, is_chol))
 }
+
 
 #' @rdname dmvn
 #' @export
 
-rmvn <- function(n, mu, sigma) {
+rmvn <- function(n, mu, sigma, is_chol = FALSE) {
   if (length(n) > 1L) n <- length(n)
-  cpp_rmvn(n, mu, as.matrix(sigma))
+  if (length(mu) == 0)
+    mu <- rep(mu, ncol(sigma))
+  cpp_rmvn(n, mu, as.matrix(sigma), is_chol)
 }
 

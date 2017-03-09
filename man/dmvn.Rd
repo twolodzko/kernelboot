@@ -5,9 +5,9 @@
 \alias{rmvn}
 \title{Multivariate normal distribution}
 \usage{
-dmvn(x, mu, sigma, log.prob = FALSE)
+dmvn(x, mu, sigma, log_prob = FALSE, is_chol = FALSE)
 
-rmvn(n, mu, sigma)
+rmvn(n, mu, sigma, is_chol = FALSE)
 }
 \arguments{
 \item{x}{\eqn{n \times m}{n*m} numeric matrix.}
@@ -16,7 +16,10 @@ rmvn(n, mu, sigma)
 
 \item{sigma}{\eqn{m \times m}{m*m} covariance matrix.}
 
-\item{log.prob}{if \code{TRUE}, probabilities p are given as log(p).}
+\item{log_prob}{if \code{TRUE}, probabilities p are given as log(p).}
+
+\item{is_chol}{change to \code{TRUE} if sigma is provided as Cholesky
+decomposition of covariance matrix.}
 
 \item{n}{number of observations. If length(n) > 1,
 the length is taken to be the number required.}

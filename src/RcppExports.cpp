@@ -6,57 +6,9 @@
 
 using namespace Rcpp;
 
-// cpp_dmvk
-Rcpp::List cpp_dmvk(const arma::mat& x, const arma::mat& y, const arma::mat& bandwidth, const arma::vec& weights, const bool& log_prob, const bool& is_chol);
-RcppExport SEXP kernelboot_cpp_dmvk(SEXP xSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP log_probSEXP, SEXP is_cholSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type bandwidth(bandwidthSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type is_chol(is_cholSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_dmvk(x, y, bandwidth, weights, log_prob, is_chol));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_rmvk
-Rcpp::List cpp_rmvk(const unsigned int& n, const arma::mat& y, const arma::mat& bandwidth, const arma::vec& weights, const bool& is_chol);
-RcppExport SEXP kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP is_cholSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const unsigned int& >::type n(nSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type bandwidth(bandwidthSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type is_chol(is_cholSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_rmvk(n, y, bandwidth, weights, is_chol));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cpp_dmvpk
-Rcpp::List cpp_dmvpk(const arma::mat& x, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& shrinked, const bool& log_prob);
-RcppExport SEXP kernelboot_cpp_dmvpk(SEXP xSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP, SEXP log_probSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type bandwidth(bandwidthSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type shrinked(shrinkedSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_dmvpk(x, y, bandwidth, weights, kernel, shrinked, log_prob));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cpp_rmvpk
-Rcpp::List cpp_rmvpk(const unsigned int& n, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& shrinked);
-RcppExport SEXP kernelboot_cpp_rmvpk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
+Rcpp::List cpp_rmvk(const unsigned int& n, const arma::mat& y, const arma::vec& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& shrinked);
+RcppExport SEXP kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,13 +18,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
     Rcpp::traits::input_parameter< const bool& >::type shrinked(shrinkedSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_rmvpk(n, y, bandwidth, weights, kernel, shrinked));
+    rcpp_result_gen = Rcpp::wrap(cpp_rmvk(n, y, bandwidth, weights, kernel, shrinked));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_dmvn
-arma::vec cpp_dmvn(const arma::mat& x, const arma::rowvec& mu, const arma::mat& sigma, const bool& log_prob);
-RcppExport SEXP kernelboot_cpp_dmvn(SEXP xSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP log_probSEXP) {
+arma::vec cpp_dmvn(const arma::mat& x, const arma::rowvec& mu, const arma::mat& sigma, const bool& log_prob, const bool& is_chol);
+RcppExport SEXP kernelboot_cpp_dmvn(SEXP xSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP log_probSEXP, SEXP is_cholSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -80,37 +32,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::rowvec& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
     Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_dmvn(x, mu, sigma, log_prob));
+    Rcpp::traits::input_parameter< const bool& >::type is_chol(is_cholSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_dmvn(x, mu, sigma, log_prob, is_chol));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_rmvn
-arma::mat cpp_rmvn(const unsigned int& n, const arma::vec& mu, const arma::mat& sigma);
-RcppExport SEXP kernelboot_cpp_rmvn(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+arma::mat cpp_rmvn(const unsigned int& n, const arma::vec& mu, const arma::mat& sigma, const bool& is_chol);
+RcppExport SEXP kernelboot_cpp_rmvn(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP is_cholSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const unsigned int& >::type n(nSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_rmvn(n, mu, sigma));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cpp_duvk
-Rcpp::List cpp_duvk(const arma::vec& x, const arma::vec& y, const double& bandwidth, const arma::vec& weights, const std::string& kernel, const bool& shrinked, const bool& log_prob);
-RcppExport SEXP kernelboot_cpp_duvk(SEXP xSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP, SEXP log_probSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const double& >::type bandwidth(bandwidthSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type kernel(kernelSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type shrinked(shrinkedSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_duvk(x, y, bandwidth, weights, kernel, shrinked, log_prob));
+    Rcpp::traits::input_parameter< const bool& >::type is_chol(is_cholSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rmvn(n, mu, sigma, is_chol));
     return rcpp_result_gen;
 END_RCPP
 }
