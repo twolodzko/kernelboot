@@ -51,32 +51,6 @@ bootstrap procedure (their values are not altered using random noise).}
 
 \item{mc.cores}{number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).}
 }
-\value{
-An object of class \code{"kernelboot"}, i.e., a list with components including
-
-\tabular{ll}{
-\code{orig.stat}          \tab  estimates from \code{statistic} on the original data, \cr
-\code{boot.sample}        \tab  samples drawn, \cr
-\code{call}               \tab  function call, \cr
-\code{statistic}          \tab  actual \code{statistic} function that was used, \cr
-\code{orig.data}          \tab  original data used for bootstrapping, \cr
-\code{smoothed.variables} \tab  names of variables that were included in the smoothing phase
-                                (\code{NULL} by default); those are the numeric columns and
-                                the variables not mentioned in \code{ignore} parameter, \cr
-\code{param}              \tab  list of parameters that were used.
-}
-
-\code{param} section contains:
-
-\tabular{ll}{
-\code{R}                  \tab  number of bootstrap iterations, \cr
-\code{bw}                 \tab  the bandwidth that was used, \cr
-\code{weights}            \tab  vector of the weights that were applied, \cr
-\code{kernel}             \tab  name of the kernel that was used, \cr
-\code{shrinked}           \tab  value of the \code{shrinked} parameter, \cr
-\code{parallel}           \tab  indicates if parallel computation was used.
-}
-}
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
 }
@@ -306,8 +280,11 @@ The annals of mathematical statistics, 33(3), 1065-1076.
 
 Silverman, B.W. and Young, G.A. (1987). The bootstrap: To smooth or not to smooth?
 Biometrika, 469-479.
+
+Jones, M.C. (1991). On correcting for variance inflation in kernel density estimation.
+Computational Statistics & Data Analysis, 11, 3-15.
 }
 \seealso{
 \code{\link{bandwidth}}, \code{\link[stats]{density}},
-         \code{\link[stats]{bandwidth}}, \code{\link{dmvn}}
+         \code{\link[stats]{bandwidth}}, \code{\link{kernelboot-class}}
 }

@@ -175,7 +175,7 @@ expect_silent(kernelboot(dat$mpg, fun3, R = 10, kernel = "cosine"))
 
 dat <- mtcars
 
-expect_message(kernelboot(dat, fun1, R = 10, ignore = colnames(dat)))
+# expect_message(kernelboot(dat, fun1, R = 10, ignore = colnames(dat)))
 expect_silent(kernelboot(dat$mpg, fun2, R = 10, ignore = colnames(dat)))
 expect_silent(kernelboot(dat$mpg, fun3, R = 10, ignore = colnames(dat)))
 

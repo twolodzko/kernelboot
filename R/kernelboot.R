@@ -215,33 +215,6 @@
 #' parametrized by corresponding bandwidth matrix \eqn{H}, to the sampled values.
 #'
 #'
-#' @return
-#' An object of class \code{"kernelboot"}, i.e., a list with components including
-#'
-#' \tabular{ll}{
-#' \code{orig.stat}          \tab  estimates from \code{statistic} on the original data, \cr
-#' \code{boot.sample}        \tab  samples drawn, \cr
-#' \code{call}               \tab  function call, \cr
-#' \code{statistic}          \tab  actual \code{statistic} function that was used, \cr
-#' \code{orig.data}          \tab  original data used for bootstrapping, \cr
-#' \code{smoothed.variables} \tab  names of variables that were included in the smoothing phase
-#'                                 (\code{NULL} by default); those are the numeric columns and
-#'                                 the variables not mentioned in \code{ignore} parameter, \cr
-#' \code{param}              \tab  list of parameters that were used.
-#' }
-#'
-#' \code{param} section contains:
-#'
-#' \tabular{ll}{
-#' \code{R}                  \tab  number of bootstrap iterations, \cr
-#' \code{bw}                 \tab  the bandwidth that was used, \cr
-#' \code{weights}            \tab  vector of the weights that were applied, \cr
-#' \code{kernel}             \tab  name of the kernel that was used, \cr
-#' \code{shrinked}           \tab  value of the \code{shrinked} parameter, \cr
-#' \code{parallel}           \tab  indicates if parallel computation was used.
-#' }
-#'
-#'
 #' @references
 #' Silverman, B. W. (1986). Density estimation for statistics and data analysis.
 #' Chapman and Hall/CRC.
@@ -294,9 +267,13 @@
 #' Silverman, B.W. and Young, G.A. (1987). The bootstrap: To smooth or not to smooth?
 #' Biometrika, 469-479.
 #'
+#' @references
+#' Jones, M.C. (1991). On correcting for variance inflation in kernel density estimation.
+#' Computational Statistics & Data Analysis, 11, 3-15.
+#'
 #'
 #' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
-#'          \code{\link[stats]{bandwidth}}, \code{\link{dmvn}}
+#'          \code{\link[stats]{bandwidth}}, \code{\link{kernelboot-class}}
 #'
 #'
 #' @examples
@@ -305,7 +282,7 @@
 #' kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
 #'
 #'
-#' @importFrom stats bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
+#' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom parallel mclapply
 #'
 #' @export
@@ -321,7 +298,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   kernel <- match.arg(kernel)
   n <- NROW(data)
   m <- NCOL(data)
-  smoothed_variables <- NULL
+  vars <- NULL
+  kd_type <- NULL
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("data is not vector, data.frame, or matrix")
@@ -382,22 +360,26 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
     # data is data.frame or matrix
 
     num_cols <- is_numeric(data)
-    ignored_cols <- FALSE
+    ignr_cols <- colnames(data) %in% ignore
+    incl_cols <- num_cols & !ignr_cols
 
-    if (!is.null(ignore)) {
-      ignored_cols <- colnames(data) %in% ignore
-      if (any(ignored_cols)) {
-        msg <- paste(colnames(data)[ignored_cols | !num_cols], collapse = ", ")
-        message(paste0("the following variables are ignored during smoothing phase: ", msg))
-      }
+    if (!is.null(colnames(data))) {
+      vars <- list(
+        smoothed = colnames(data)[incl_cols],
+        ignored  = colnames(data)[!incl_cols]
+      )
+    } else {
+      vars <- list(
+        smoothed = which(incl_cols),
+        ignored  = which(!incl_cols)
+      )
     }
-
-    incl_cols <- num_cols & !ignored_cols
-    smoothed_variables <- colnames(data)[incl_cols]
 
     if (!any(incl_cols)) {
 
       # standard bootstrap
+
+      kd_type <- "none"
 
       res <- repeatFun(1:R, function(i) {
 
@@ -419,6 +401,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
       if (kernel != "gaussian" || is.vector(bw) || is.diag(bw)) {
 
         # product kernel
+
+        kd_type <- "product"
 
         if (is.vector(bw)) {
           if (length(bw) == 1L)
@@ -445,6 +429,11 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         # MVN kernel
 
+        kd_type <- "multivariate"
+
+        if (!is.square(bw))
+          stop("bw is not a square matrix")
+
         if (qr(data_mtx)$rank < min(dim(data_mtx)))
           warning("data matrix is rank deficient")
 
@@ -460,19 +449,25 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
             bw <- diag(bw)
         }
 
+        if (ncol(bw) != m)
+          stop("dimensions of data and bw do not match")
+
+        if (!is.square(bw))
+          stop("bw is not a square matrix")
+
         if (length(weights) == 1L)
           weights <- rep(1/n, n)
 
         bw <- as.matrix(bw)
         bw <- bw[incl_cols, incl_cols]
         bw_chol <- chol(bw)
-        zeros <- numeric(m)
+        mm <- sum(incl_cols)
 
         res <- repeatFun(1:R, function(i) {
 
           idx <- sample.int(n, n, replace = TRUE, prob = weights)
           boot.data <- data[idx, ]
-          samp <- cpp_rmvn(n, zeros, bw_chol, is_chol = TRUE)
+          samp <- matrix(rnorm(n*mm), n, mm) %*% bw_chol
           boot.data[, incl_cols] <- boot.data[, incl_cols] + samp
           statistic(boot.data, ...)
 
@@ -489,6 +484,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
       # standard bootstrap
 
+      kd_type <- "none"
+
       res <- repeatFun(1:R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
@@ -500,6 +497,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
     } else {
 
       # smoothed bootstrap
+
+      kd_type <- "univariate"
 
       if (!is.vector(bw))
         stop("bw is not a scalar")
@@ -528,12 +527,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   }
 
   structure(list(
-    orig.stat          = orig.stat,
-    boot.sample        = do.call(rbind, res),
-    call               = call,
-    statistic          = statistic,
-    orig.data          = data,
-    smoothed.variables = smoothed_variables,
+    orig.stat     = orig.stat,
+    boot.samples  = res,
+    call          = call,
+    statistic     = statistic,
+    orig.data     = data,
+    variables     = vars,
+    type          = kd_type,
     param = list(
       R         = R,
       bw        = bw,

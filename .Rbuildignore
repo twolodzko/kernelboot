@@ -1,7 +1,2 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-working/.*$
-Readme.rmd
-^\.travis\.yml$
-^appveyor\.yml$
-^codecov\.yml$
