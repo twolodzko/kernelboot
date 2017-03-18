@@ -2,7 +2,7 @@
 
 #' kernelboot class object
 #'
-#' @param x          \code{kernelboot} class object.
+#' @param x,object   \code{kernelboot} class object.
 #' @param quantiles  returned quantiles (see \code{\link{quantile}}).
 #' @param \dots      further arguments passed to or from other methods.
 #'
@@ -37,6 +37,7 @@
 #'
 #' @seealso \code{\link{kernelboot}}
 #'
+#' @importFrom stats sd quantile
 #' @name kernelboot-class
 NULL
 
@@ -44,8 +45,8 @@ NULL
 #' @rdname kernelboot-class
 #' @export
 
-summary.kernelboot <- function(x, quantiles = c(0.025, 0.5, 0.975), ...) {
-  samp <- getSamples(x, simplify = TRUE)
+summary.kernelboot <- function(object, quantiles = c(0.025, 0.5, 0.975), ...) {
+  samp <- getSamples(object, simplify = TRUE)
   if (is.data.frame(samp) || is.matrix(samp)) {
     t(apply(samp, 2, function(x) {
       c(mean = mean(x),
