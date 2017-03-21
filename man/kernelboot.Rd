@@ -237,7 +237,7 @@ parametrized by corresponding bandwidth matrix \eqn{H}, to the sampled values.
 \examples{
 
 kernelboot(mtcars, function(data) coef(lm(mpg ~ ., data = data)) , R = 250)
-kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
+kernelboot(mtcars$mpg, function(data) median(data) , R = 250)
 
 
 }

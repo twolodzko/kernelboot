@@ -5,14 +5,6 @@ cpp_rmvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = F
     .Call('kernelboot_cpp_rmvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
 
-cpp_dmvn <- function(x, mu, sigma, log_prob = FALSE, is_chol = FALSE) {
-    .Call('kernelboot_cpp_dmvn', PACKAGE = 'kernelboot', x, mu, sigma, log_prob, is_chol)
-}
-
-cpp_rmvn <- function(n, mu, sigma, is_chol = FALSE) {
-    .Call('kernelboot_cpp_rmvn', PACKAGE = 'kernelboot', n, mu, sigma, is_chol)
-}
-
 cpp_ruvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
     .Call('kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }

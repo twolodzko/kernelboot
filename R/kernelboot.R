@@ -279,7 +279,7 @@
 #' @examples
 #'
 #' kernelboot(mtcars, function(data) coef(lm(mpg ~ ., data = data)) , R = 250)
-#' kernelboot(mtcars, function(data) median(data$mpg) , R = 250)
+#' kernelboot(mtcars$mpg, function(data) median(data) , R = 250)
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
@@ -302,7 +302,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   kd_type <- NULL
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
-    stop("data is not vector, data.frame, or matrix")
+    stop("data is not a vector, data.frame, or matrix")
 
   if (is.character(bw)) {
     bw <- tolower(bw)
@@ -321,14 +321,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
                    stop("unknown bandwidth rule"))
     }
   }
-  if (!is.numeric(bw))
-    stop("non-numeric bw value")
 
   if (!is.vector(adjust))
     stop("adjust is not a scalar")
 
   bw <- bw * adjust[1L]
 
+  # check for non-numeric, NAs, NaNs, infinite values
   if (!all(is.finite(bw)))
     stop("inappropriate values of bw")
 
@@ -336,6 +335,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
     if (!all(is.finite(weights)))
       stop("inappropriate values of weights")
   }
+
+  # equally weighted
+  if (length(weights) == 1L)
+    weights <- NULL
 
   # try evaluating statistic() on the original data
 
@@ -352,6 +355,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   if (parallel && mc.cores > 1L) {
     repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
   } else {
+    parallel <- FALSE
     repeatFun <- function(i, FUN, mc.cores) lapply(i, FUN)
   }
 
@@ -359,7 +363,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
     # data is data.frame or matrix
 
-    num_cols <- is_numeric(data)
+    num_cols <- is_numeric(data)             # find numeric columns
     ignr_cols <- colnames(data) %in% ignore
     incl_cols <- num_cols & !ignr_cols
 
@@ -434,8 +438,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
         if (!is.square(bw))
           stop("bw is not a square matrix")
 
-        if (qr(data_mtx)$rank < min(dim(data_mtx)))
-          warning("data matrix is rank deficient")
+        # is this check really needed?
+        # if (qr(data_mtx)$rank < min(dim(data_mtx)))
+        #   warning("data matrix is rank deficient")
 
         if (kernel != "gaussian") {
           kernel <- "gaussian"
@@ -454,9 +459,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         if (!is.square(bw))
           stop("bw is not a square matrix")
-
-        if (length(weights) == 1L)
-          weights <- rep(1/n, n)
 
         bw <- as.matrix(bw)
         bw <- bw[incl_cols, incl_cols]

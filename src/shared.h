@@ -2,7 +2,7 @@
 #ifndef KB_SHARED_H
 #define KB_SHARED_H
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 
 // sample from standard uniform distribution
 
@@ -18,10 +18,10 @@ inline double rng_unif() {
 // sample integers from discrete distribution
 // cumul_weights is a vector of cumulative weights
 
-inline unsigned int sample_int(const arma::vec& cumul_weights) {
+inline int sample_int(const Rcpp::NumericVector& cumul_weights) {
   double u = rng_unif();
-  unsigned int j;
-  for (j = 0; j < cumul_weights.n_elem; j++) {
+  int j;
+  for (j = 0; j < cumul_weights.length(); j++) {
     if (cumul_weights[j] >= u)
       break;
   }

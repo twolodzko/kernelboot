@@ -25,7 +25,6 @@ is.square <- function(x) {
 # check for diagonal matrix
 
 is.diag <- function(x, tol = 1e-12) {
-  dx <- matrix(0, NROW(x), NCOL(x))
-  diag(dx) <- diag(x)
+  dx <- diag(diag(x))
   is.square(x) && all(abs(dx - x) < tol)
 }

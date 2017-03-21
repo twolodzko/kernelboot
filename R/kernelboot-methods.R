@@ -3,7 +3,7 @@
 #' kernelboot class object
 #'
 #' @param x,object   \code{kernelboot} class object.
-#' @param quantiles  returned quantiles (see \code{\link{quantile}}).
+#' @param probs      quantiles staturned by \code{summary} (see \code{\link{quantile}}).
 #' @param \dots      further arguments passed to or from other methods.
 #'
 #' @details
@@ -45,14 +45,20 @@ NULL
 #' @rdname kernelboot-class
 #' @export
 
-summary.kernelboot <- function(object, quantiles = c(0.025, 0.5, 0.975), ...) {
+summary.kernelboot <- function(object, probs = c(0.025, 0.5, 0.975), ...) {
   samp <- getSamples(object, simplify = TRUE)
   if (is.data.frame(samp) || is.matrix(samp)) {
-    t(apply(samp, 2, function(x) {
-      c(mean = mean(x),
-        sd = sd(x),
-        quantile(x, quantiles))
-    }))
+    res <- lapply(1:ncol(samp), function(i) {
+      x <- samp[, i]
+      if (is.numeric(x)) {
+        c(mean = mean(x), sd = sd(x), quantile(x, probs = probs))
+      } else {
+        warning("skipping non-numeric variable")
+        NA
+      }
+    })
+    names(res) <- colnames(samp)
+    return(do.call(rbind, res))
   } else summary(samp)
 }
 
@@ -62,6 +68,7 @@ summary.kernelboot <- function(object, quantiles = c(0.025, 0.5, 0.975), ...) {
 print.kernelboot <- function(x, ...) {
 
   cat("Call:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), sep = "")
+
   cat("\n\n")
   cat(length(x$boot.samples), " samples were generated", sep = "")
   if (x$type == "none") {
@@ -71,20 +78,7 @@ print.kernelboot <- function(x, ...) {
         x$param$kernel, " kernel. ", sep = "")
   }
 
-  if (!is.null(length(x$variables))) {
-    if (length(x$variables$smoothed) > 0L && !is.numeric(x$variables$smoothed)) {
-      cat("The following columns were smoothed: ",
-          paste(sprintf("'%s'", x$variables$smoothed), collapse = ", "), ". ", sep = "")
-    }
-    k <- length(x$variables$ignored)
-    if (k > 0L) {
-      if (k == 1L)
-        cat("1 column was ignored during the smoothing phase. ")
-      else
-        cat(k, "columns were ignored during the smoothing phase. ")
-    }
-  }
-
+  invisible(x)
 }
 
 
@@ -105,6 +99,6 @@ getSamples <- function(x, simplify = TRUE) {
 #' @export
 
 as.data.frame.kernelboot <- function(x, ...) {
-  as.data.frame(getSamples(x, simplify = TRUE))
+  as.data.frame(getSamples(x, simplify = TRUE), ...)
 }
 

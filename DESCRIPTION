@@ -12,8 +12,8 @@ License: GPL-2
 URL: https://github.com/twolodzko/kernelboot
 BugReports: https://github.com/twolodzko/kernelboot/issues
 Depends: R (>= 3.1.0)
-Imports: Rcpp, RcppArmadillo, parallel
-LinkingTo: Rcpp, RcppArmadillo
+Imports: Rcpp, parallel
+LinkingTo: Rcpp
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: ks, KernSmooth, covr, testthat

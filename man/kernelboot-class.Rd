@@ -7,14 +7,14 @@
 \alias{as.data.frame.kernelboot}
 \title{kernelboot class object}
 \usage{
-\method{summary}{kernelboot}(object, quantiles = c(0.025, 0.5, 0.975), ...)
+\method{summary}{kernelboot}(object, probs = c(0.025, 0.5, 0.975), ...)
 
 getSamples(x, simplify = TRUE)
 
 \method{as.data.frame}{kernelboot}(x, ...)
 }
 \arguments{
-\item{quantiles}{returned quantiles (see \code{\link{quantile}}).}
+\item{probs}{quantiles staturned by \code{summary} (see \code{\link{quantile}}).}
 
 \item{\dots}{further arguments passed to or from other methods.}
 
