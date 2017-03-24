@@ -4,3 +4,9 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/twolodzko/kernelboot/master.svg)](https://codecov.io/github/twolodzko/kernelboot?branch=master)
 
 WARNING: This is project in it's early stages.
+
+Install the GitHub version with
+
+```
+devtools::install_github("twolodzko/kernelboot")
+```
