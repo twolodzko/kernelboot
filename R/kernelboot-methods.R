@@ -54,19 +54,17 @@ NULL
 
 summary.kernelboot <- function(object, probs = c(0.025, 0.5, 0.975), ...) {
   samp <- getSamples(object, simplify = TRUE)
-  if (is.data.frame(samp) || is.matrix(samp)) {
-    res <- lapply(1:ncol(samp), function(i) {
-      x <- samp[, i]
-      if (is.numeric(x)) {
-        c(mean = mean(x), sd = sd(x), quantile(x, probs = probs))
-      } else {
-        warning("skipping non-numeric variable")
-        NA
-      }
-    })
-    names(res) <- colnames(samp)
-    return(do.call(rbind, res))
-  } else summary(samp)
+  res <- lapply(1:ncol(samp), function(i) {
+    x <- samp[, i]
+    if (is.numeric(x)) {
+      c(mean = mean(x), sd = sd(x), quantile(x, probs = probs))
+    } else {
+      warning("skipping non-numeric variable")
+      NA
+    }
+  })
+  names(res) <- colnames(samp)
+  do.call(rbind, res)
 }
 
 

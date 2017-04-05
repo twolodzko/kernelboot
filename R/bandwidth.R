@@ -60,6 +60,8 @@
 bw.silv <- function(x, diag = FALSE) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
+  if (!all(is_numeric(x)))
+    stop("all columns need to be numeric-valued")
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)
@@ -74,6 +76,8 @@ bw.silv <- function(x, diag = FALSE) {
 bw.scott <- function(x, diag = FALSE) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
+  if (!all(is_numeric(x)))
+    stop("all columns need to be numeric-valued")
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)
