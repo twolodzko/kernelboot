@@ -3,7 +3,9 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/twolodzko/kernelboot?branch=master&svg=true)](https://ci.appveyor.com/project/twolodzko/kernelboot)
 [![Coverage Status](https://img.shields.io/codecov/c/github/twolodzko/kernelboot/master.svg)](https://codecov.io/github/twolodzko/kernelboot?branch=master)
 
-WARNING: This is project in it's early stages.
+This package implements smoothed bootstrap, that is an extension of standard bootstrap procedure,
+where instead of drawing samples with replacement from the empirical distribution, they are drawn
+from kernel density estimate of the distribution.
 
 Install the GitHub version with
 

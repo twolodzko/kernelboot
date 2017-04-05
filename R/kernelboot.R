@@ -13,7 +13,9 @@
 #'                   The kernels are scaled such that this is the standard deviation,
 #'                   or covariance matrix of the smoothing kernel. By default
 #'                   \code{\link[stats]{bw.nrd0}} is used for univariate data,
-#'                   and \code{\link{bw.silv}} is used for multivariate data.
+#'                   and \code{\link{bw.silv}} is used for multivariate data. For using
+#'                   multivariate gaussian kernel this parameter should be a \emph{covariance
+#'                   matrix}.
 #' @param kernel     a character string giving the smoothing kernel to be used.
 #'                   This must partially match one of "gaussian", "rectangular",
 #'                   "triangular", "epanechnikov", "biweight", "cosine"
@@ -47,13 +49,12 @@
 #'
 #' The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
 #' \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
-#' non-numeric columns and columns listed in \code{ignore} standard bootstrap procedure
+#' non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
 #' is applied.
 #'
-#' With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a non-diagonal
-#' matrix, multivariate Gaussian kernel is applied. When \code{kernel = "gaussian"} and \code{bw}
-#' is a diagonal matrix, or a vector, product kernel is used. In other cases, depending on the data,
-#' univariate, or product kernels, are used.
+#' With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a covariance
+#' matrix, multivariate Gaussian kernel is applied. With multivariate data, when \code{bw} is
+#' a vector, or \code{kernel} is other then \code{"gaussian"}, product kernel is used.
 #'
 #'
 #' \strong{Univariate kernels}
@@ -402,7 +403,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
       if (is.null(weights))
         weights <- rep(1/n, n)
 
-      if (kernel != "gaussian" || is.vector(bw) || is.diag(bw)) {
+      if (kernel != "gaussian" || is.vector(bw)) {
 
         # product kernel
 
@@ -434,9 +435,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
         # MVN kernel
 
         kd_type <- "multivariate"
-
-        if (!is.square(bw))
-          stop("bw is not a square matrix")
 
         # is this check really needed?
         # if (qr(data_mtx)$rank < min(dim(data_mtx)))

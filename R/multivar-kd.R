@@ -35,7 +35,7 @@
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
 #' (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_{h_j}}{Khj} is
-#' univariate kernel \eqn{K} parametrized by bandwidth \eqn{h_j}, where
+#' univariate kernel \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where
 #' \eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the
 #' kernel density.
 #'

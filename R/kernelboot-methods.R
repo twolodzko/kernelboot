@@ -8,6 +8,13 @@
 #'
 #' @details
 #'
+#' Function \code{getSamples} can be used to extract the bootstrap samples from
+#' \code{"kernelboot"} class object. When calling \code{getSamples} with
+#' \code{simplify = TRUE} (default) the samples are converted to a matrix, or
+#' data.frame, otherwise they are returned as a list. Method \code{as.data.frame}
+#' extracts samples from \code{"kernelboot"} class object converting them to
+#' data.frame. \code{summary} prints numeric summary of the results if feasable.
+#'
 #' Object of class \code{"kernelboot"}, is a list with components including
 #'
 #' \tabular{ll}{

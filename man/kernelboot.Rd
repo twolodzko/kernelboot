@@ -24,7 +24,9 @@ can be passed to \code{statistic} through \dots argument.}
 The kernels are scaled such that this is the standard deviation,
 or covariance matrix of the smoothing kernel. By default
 \code{\link[stats]{bw.nrd0}} is used for univariate data,
-and \code{\link{bw.silv}} is used for multivariate data.}
+and \code{\link{bw.silv}} is used for multivariate data. For using
+multivariate gaussian kernel this parameter should be a \emph{covariance
+matrix}.}
 
 \item{\dots}{optional arguments passed to \code{statistic}.}
 
@@ -67,13 +69,12 @@ samples.
 
 The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
 \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
-non-numeric columns and columns listed in \code{ignore} standard bootstrap procedure
+non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
 is applied.
 
-With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a non-diagonal
-matrix, multivariate Gaussian kernel is applied. When \code{kernel = "gaussian"} and \code{bw}
-is a diagonal matrix, or a vector, product kernel is used. In other cases, depending on the data,
-univariate, or product kernels, are used.
+With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a covariance
+matrix, multivariate Gaussian kernel is applied. With multivariate data, when \code{bw} is
+a vector, or \code{kernel} is other then \code{"gaussian"}, product kernel is used.
 
 
 \strong{Univariate kernels}
