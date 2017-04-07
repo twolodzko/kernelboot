@@ -42,6 +42,8 @@ NULL
 #' @param object     \code{kernelboot} class object.
 #' @param probs      quantiles returned by \code{summary} (see \code{\link{quantile}}).
 #' @param \dots      further arguments passed to or from other methods.
+#' @param na.rm      a logical value indicating whether \code{NA} values should be
+#'                   stripped before the computation proceeds.
 #'
 #' @importFrom stats sd quantile
 #' @export

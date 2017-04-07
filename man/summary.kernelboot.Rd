@@ -13,6 +13,9 @@
 \item{probs}{quantiles returned by \code{summary} (see \code{\link{quantile}}).}
 
 \item{\dots}{further arguments passed to or from other methods.}
+
+\item{na.rm}{a logical value indicating whether \code{NA} values should be
+stripped before the computation proceeds.}
 }
 \description{
 Summarize the result of kernelboot
