@@ -104,53 +104,14 @@
 #'
 #' This package offers the following univariate kernels:
 #'
-#' \emph{Gaussian}
-#' \deqn{
-#' K(u) = \frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}
-#' }{
-#' K(u) = 1/sqrt(2\pi) exp(-(u^2)/2)
-#' }
-#'
-#' \emph{Rectangular}
-#' \deqn{
-#' K(u) = \frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 1/2
-#' }
-#'
-#' \emph{Triangular}
-#' \deqn{
-#' K(u) = (1-|u|) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = (1 - |u|)
-#' }
-#'
-#' \emph{Epanchenikov}
-#' \deqn{
-#' K(u) = \frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 3/4 (1 - u^2)
-#' }
-#'
-#' \emph{Biweight}
-#' \deqn{
-#' K(u) = \frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 15/16 (1 - u^2)^2
-#' }
-#'
-#' \emph{Cosine}
-#' \deqn{
-#' K(u) = \frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = 1/2 (1 + cos(\pi u))
-#' }
-#'
-#' \emph{Optcosine}
-#' \deqn{
-#' K(u) = \frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}
-#' }{
-#' K(u) = \pi/4 cos(\pi/2 u)
+#' \tabular{ll}{
+#' \emph{Gaussian}     \tab \eqn{\frac{1}{\sqrt{2\pi}} e^{-{u^2}/2}}{1/sqrt(2\pi) exp(-(u^2)/2)} \cr
+#' \emph{Rectangular}  \tab \eqn{\frac{1}{2} \ \mathbf{1}_{(|u|\leq1)}}{1/2} \cr
+#' \emph{Triangular}   \tab \eqn{(1-|u|) \ \mathbf{1}_{(|u|\leq1)}}{1 - |u|} \cr
+#' \emph{Epanchenikov} \tab \eqn{\frac{3}{4}(1-u^2) \ \mathbf{1}_{(|u|\leq1)}}{3/4 (1 - u^2)} \cr
+#' \emph{Biweight}     \tab \eqn{\frac{15}{16}(1-u^2)^2 \ \mathbf{1}_{(|u|\leq1)}}{15/16 (1 - u^2)^2} \cr
+#' \emph{Cosine}       \tab \eqn{\frac{1}{2} \left(1 + \cos(\pi u)\right) \ \mathbf{1}_{(|u|\leq1)}}{1/2 (1 + cos(\pi u))} \cr
+#' \emph{Optcosine}    \tab \eqn{\frac{\pi}{4}\cos\left(\frac{\pi}{2}u\right) \ \mathbf{1}_{(|u|\leq1)}}{\pi/4 cos(\pi/2 u)}
 #' }
 #'
 #' All the kernels are re-scalled so that their standard deviations are equal to 1,
@@ -273,14 +234,71 @@
 #' Computational Statistics & Data Analysis, 11, 3-15.
 #'
 #'
-#' @seealso \code{\link{bandwidth}}, \code{\link[stats]{density}},
+#' @seealso \code{\link{bw.silv}}, \code{\link[stats]{density}},
 #'          \code{\link[stats]{bandwidth}}, \code{\link{kernelboot-class}}
 #'
 #'
 #' @examples
 #'
-#' kernelboot(mtcars, function(data) coef(lm(mpg ~ ., data = data)) , R = 250)
-#' kernelboot(mtcars$mpg, function(data) median(data) , R = 250)
+#' set.seed(1)
+#'
+#' # smooth bootstrap of parameters of linear regression
+#'
+#' b1 <- kernelboot(mtcars, function(data) coef(lm(mpg ~ drat + wt, data = data)) , R = 250)
+#' b1
+#' summary(b1)
+#'
+#' b2 <- kernelboot(mtcars, function(data) coef(lm(mpg ~ drat + wt, data = data)) , R = 250,
+#'                  kernel = "epanechnikov")
+#' b2
+#' summary(b2)
+#'
+#' # smooth bootstrap of parameters of linear regression
+#' # smoothing phase is not applied to "am" and "cyl" variables
+#'
+#' b3 <- kernelboot(mtcars, function(data) coef(lm(mpg ~ drat + wt + am + cyl, data = data)) , R = 250,
+#'                  ignore = c("am", "cyl"))
+#' b3
+#' summary(b3)
+#'
+#' # standard bootstrap (without kernel smoothing)
+#'
+#' b4 <- kernelboot(mtcars, function(data) coef(lm(mpg ~ drat + wt + am + cyl, data = data)) , R = 250,
+#'                  ignore = colnames(mtcars))
+#' b4
+#' summary(b4)
+#'
+#' # smooth bootstrap for median of univariate data
+#'
+#' b5 <- kernelboot(mtcars$mpg, function(data) median(data) , R = 250)
+#' b5
+#' summary(b5)
+#'
+#' # draw samples from different kernels
+#'
+#' \dontrun{
+#'
+#' kernels <- c("gaussian", "epanechnikov", "rectangular", "triangular",
+#'              "biweight", "cosine", "optcosine")
+#'
+#' data <- mtcars[, c(1, 3)]
+#' bw <- bw.silv(data)
+#' R <- 250
+#'
+#' partmp <- par(mfrow = c(2, 4), mar = c(3, 3, 3, 3))
+#' for (k in kernels) {
+#'   plot(kernelboot(data, identity, R = R, kernel = k, bw = sqrt(diag(bw)))$boot.samples,
+#'        xlim = c(-10, 50), ylim = c(-100, 600), col = "#ADD8E640")
+#'   points(data, pch = 2, lwd = 2, col = "red")
+#'   title(k)
+#' }
+#' plot(kernelboot(data, identity, R = R, kernel = "g", bw = bw)$boot.samples,
+#'      xlim = c(-10, 50), ylim = c(-100, 600), col = "#ADD8E640")
+#' points(data, pch = 2, lwd = 2, col = "red")
+#' title("multivariate gaussian")
+#' par(partmp)
+#'
+#' }
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
@@ -312,6 +330,8 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
         bw <- bw.nrd0(data)
       } else {
         bw <- bw.silv(data)
+        if (kernel != "gaussian")
+          bw <- sqrt(diag(bw))
       }
     } else {
       bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
@@ -526,9 +546,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
   }
 
+  # simplify the results to data.frame
+  samples <- do.call(rbind, res)
+
   structure(list(
     orig.stat     = orig.stat,
-    boot.samples  = res,
+    boot.samples  = samples,
     call          = call,
     statistic     = statistic,
     orig.data     = data,

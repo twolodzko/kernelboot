@@ -2,37 +2,11 @@
 % Please edit documentation in R/kernelboot-methods.R
 \name{kernelboot-class}
 \alias{kernelboot-class}
-\alias{summary.kernelboot}
-\alias{getSamples}
-\alias{as.data.frame.kernelboot}
-\title{kernelboot class object}
-\usage{
-\method{summary}{kernelboot}(object, probs = c(0.025, 0.5, 0.975), ...)
-
-getSamples(x, simplify = TRUE)
-
-\method{as.data.frame}{kernelboot}(x, ...)
-}
-\arguments{
-\item{probs}{quantiles staturned by \code{summary} (see \code{\link{quantile}}).}
-
-\item{\dots}{further arguments passed to or from other methods.}
-
-\item{x, object}{\code{kernelboot} class object.}
-
-\item{simplify}{if \code{TRUE} object is simplified to data.frame.}
-}
+\title{'kernelboot' class object}
 \description{
-kernelboot class object
+'kernelboot' class object
 }
 \details{
-Function \code{getSamples} can be used to extract the bootstrap samples from
-\code{"kernelboot"} class object. When calling \code{getSamples} with
-\code{simplify = TRUE} (default) the samples are converted to a matrix, or
-data.frame, otherwise they are returned as a list. Method \code{as.data.frame}
-extracts samples from \code{"kernelboot"} class object converting them to
-data.frame. \code{summary} prints numeric summary of the results if feasable.
-
 Object of class \code{"kernelboot"}, is a list with components including
 
 \tabular{ll}{

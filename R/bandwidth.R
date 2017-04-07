@@ -28,7 +28,8 @@
 #' }
 #'
 #' where \eqn{m} is number of variables, \eqn{n} is sample size, \eqn{\hat\Sigma}{S}
-#' is the empirical covariance matrix.
+#' is the empirical covariance matrix. The bandwidth is returned as a \emph{covariance matrix},
+#' so to use it for a product kernel, take square root of it's diagonal: \code{sqrt(diag(H))}.
 #'
 #' @references
 #' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.
@@ -53,8 +54,6 @@
 #'
 #' @importFrom stats var
 #'
-#' @name bandwidth
-#' @aliases bw.silv
 #' @export
 
 bw.silv <- function(x, diag = FALSE) {
@@ -70,7 +69,7 @@ bw.silv <- function(x, diag = FALSE) {
 }
 
 
-#' @rdname bandwidth
+#' @rdname bw.silv
 #' @export
 
 bw.scott <- function(x, diag = FALSE) {

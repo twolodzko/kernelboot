@@ -33,10 +33,10 @@
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
-#' For functions estimating kernel densities please check \pkg{KernSmooth},
-#' \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
+#' For estimating kernel densities use \code{\link[stats]{density}} function.
 #'
-#' For random generation the algorithm described in \code{\link{kernelboot}} is used.
+#' The random generation the algorithm is described in the documentation of
+#' \code{\link{kernelboot}} function.
 #'
 #'
 #' @references
@@ -64,7 +64,7 @@
 #' }
 #' par(partmp)
 #'
-#' @seealso \code{\link{kernelboot}}
+#' @seealso \code{\link{kernelboot}}, \code{\link[stats]{density}}
 #'
 #' @importFrom stats density bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @export
