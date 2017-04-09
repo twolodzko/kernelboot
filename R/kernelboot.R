@@ -303,6 +303,10 @@
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom parallel mclapply
+#' @importFrom foreach foreach %do% %dopar%
+#' @importFrom parallel makeCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom doRNG registerDoRNG %dorng%
 #'
 #' @export
 
@@ -374,10 +378,15 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   # looping functions - paralell or lapply
 
   if (parallel && mc.cores > 1L) {
-    repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
+    # repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
+    repeatFun <- function(n, FUN, mc.cores) {
+      cl <- makeCluster(mc.cores)
+      registerDoParallel(cl)
+      foreach(i = 1:n) %dorng% FUN(i)
+    }
   } else {
     parallel <- FALSE
-    repeatFun <- function(i, FUN, mc.cores) lapply(i, FUN)
+    repeatFun <- function(n, FUN, mc.cores) lapply(1:n, FUN)
   }
 
   if (is.data.frame(data) || is.matrix(data)) {
@@ -406,7 +415,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
       kd_type <- "none"
 
-      res <- repeatFun(1:R, function(i) {
+      res <- repeatFun(R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx, ]
@@ -440,7 +449,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         bw <- bw[incl_cols]
 
-        res <- repeatFun(1:R, function(i) {
+        res <- repeatFun(R, function(i) {
 
           samp <- cpp_rmvk(n, data_mtx, bw, weights, kernel)
           idx <- samp$boot_index
@@ -483,7 +492,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
         bw_chol <- chol(bw)
         mm <- sum(incl_cols)
 
-        res <- repeatFun(1:R, function(i) {
+        res <- repeatFun(R, function(i) {
 
           idx <- sample.int(n, n, replace = TRUE, prob = weights)
           boot.data <- data[idx, ]
@@ -506,7 +515,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
       kd_type <- "none"
 
-      res <- repeatFun(1:R, function(i) {
+      res <- repeatFun(R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx]
@@ -530,7 +539,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
       if (is.null(weights))
         weights <- rep(1/n, n)
 
-      res <- repeatFun(1:R, function(i) {
+      res <- repeatFun(R, function(i) {
 
         samp <- cpp_ruvk(n, data, bw, weights, kernel, shrinked)
         boot.data <- drop(samp$samples)
