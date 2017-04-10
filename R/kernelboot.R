@@ -30,9 +30,8 @@
 #'                   This parameter is used only for univariate and product kernels.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
-#' @param parallel   if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).
-#' @param mc.cores   number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).
-#' @param \dots      optional arguments passed to \code{statistic}.
+#' @param parallel   if \code{TRUE} uses parallel processing (see \code{\link[future]{future_lapply}}).
+#' @param workers    number of cores used for parallel computing (see \code{\link[future]{multiprocess}}).
 #'
 #'
 #' @details
@@ -302,20 +301,16 @@
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
-#' @importFrom parallel mclapply
-#' @importFrom foreach foreach %do% %dopar%
-#' @importFrom parallel makeCluster
-#' @importFrom doParallel registerDoParallel
-#' @importFrom doRNG registerDoRNG %dorng%
+#' @importFrom future plan multiprocess future_lapply availableCores
 #'
 #' @export
 
-kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
+kernelboot <- function(data, statistic, R = 500L, bw = "default",
                        kernel = c("gaussian", "epanechnikov", "rectangular",
                                   "triangular", "biweight", "cosine", "optcosine"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, mc.cores = getOption("mc.cores", 2L)) {
+                       parallel = FALSE, workers = availableCores()) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
@@ -368,7 +363,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
   # try evaluating statistic() on the original data
 
   tryCatch(
-    orig.stat <- statistic(data, ...),
+    orig.stat <- statistic(data),
     error = function(e) {
       message("applying the statistic on the original data resulted in an error")
       stop(e)
@@ -377,16 +372,16 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
   # looping functions - paralell or lapply
 
-  if (parallel && mc.cores > 1L) {
-    # repeatFun <- function(i, FUN, mc.cores) mclapply(i, FUN, mc.cores = mc.cores)
-    repeatFun <- function(n, FUN, mc.cores) {
-      cl <- makeCluster(mc.cores)
-      registerDoParallel(cl)
-      foreach(i = 1:n) %dorng% FUN(i)
-    }
+  if (parallel && workers > 1L) {
+
+    plan(multiprocess, workers = workers)
+    repeatFun <- function(n, FUN, workers) future_lapply(1:n, FUN, future.seed = TRUE)
+
   } else {
+
     parallel <- FALSE
-    repeatFun <- function(n, FUN, mc.cores) lapply(1:n, FUN)
+    repeatFun <- function(n, FUN, workers) lapply(1:n, FUN)
+
   }
 
   if (is.data.frame(data) || is.matrix(data)) {
@@ -419,9 +414,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx, ]
-        statistic(boot.data, ...)
+        statistic(boot.data)
 
-      }, mc.cores = mc.cores)
+      }, workers = workers)
 
     } else {
 
@@ -455,9 +450,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
           idx <- samp$boot_index
           boot.data <- data[idx, ]
           boot.data[, incl_cols] <- samp$samples
-          statistic(boot.data, ...)
+          statistic(boot.data)
 
-        }, mc.cores = mc.cores)
+        }, workers = workers)
 
       } else {
 
@@ -498,9 +493,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
           boot.data <- data[idx, ]
           samp <- matrix(rnorm(n*mm), n, mm) %*% bw_chol
           boot.data[, incl_cols] <- boot.data[, incl_cols] + samp
-          statistic(boot.data, ...)
+          statistic(boot.data)
 
-        }, mc.cores = mc.cores)
+        }, workers = workers)
 
       }
     }
@@ -519,9 +514,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
         boot.data <- data[idx]
-        statistic(boot.data, ...)
+        statistic(boot.data)
 
-      }, mc.cores = mc.cores)
+      }, workers = workers)
 
     } else {
 
@@ -543,9 +538,9 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default", ...,
 
         samp <- cpp_ruvk(n, data, bw, weights, kernel, shrinked)
         boot.data <- drop(samp$samples)
-        statistic(boot.data, ...)
+        statistic(boot.data)
 
-      }, mc.cores = mc.cores)
+      }, workers = workers)
 
     }
 

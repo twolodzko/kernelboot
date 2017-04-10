@@ -4,11 +4,11 @@
 \alias{kernelboot}
 \title{Smoothed bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500L, bw = "default", ...,
+kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
   "biweight", "cosine", "optcosine"), weights = NULL, adjust = 1,
   shrinked = TRUE, ignore = NULL, parallel = FALSE,
-  mc.cores = getOption("mc.cores", 2L))
+  workers = availableCores())
 }
 \arguments{
 \item{data}{vector, matrix, or data.frame. For non-numeric values standard bootstrap
@@ -27,8 +27,6 @@ or covariance matrix of the smoothing kernel. By default
 and \code{\link{bw.silv}} is used for multivariate data. For using
 multivariate gaussian kernel this parameter should be a \emph{covariance
 matrix}.}
-
-\item{\dots}{optional arguments passed to \code{statistic}.}
 
 \item{kernel}{a character string giving the smoothing kernel to be used.
 This must partially match one of "gaussian", "rectangular",
@@ -49,9 +47,9 @@ This parameter is used only for univariate and product kernels.}
 \item{ignore}{vector of names of columns to be ignored during the smoothing phase of
 bootstrap procedure (their values are not altered using random noise).}
 
-\item{parallel}{if \code{TRUE} uses parallel processing (see \code{\link[parallel]{mclapply}}).}
+\item{parallel}{if \code{TRUE} uses parallel processing (see \code{\link[future]{future_lapply}}).}
 
-\item{mc.cores}{number of cores used for parallel computing (see \code{\link[parallel]{mclapply}}).}
+\item{workers}{number of cores used for parallel computing (see \code{\link[future]{multiprocess}}).}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
