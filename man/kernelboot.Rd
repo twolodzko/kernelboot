@@ -8,7 +8,7 @@ kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("gaussian", "epanechnikov", "rectangular", "triangular",
   "biweight", "cosine", "optcosine"), weights = NULL, adjust = 1,
   shrinked = TRUE, ignore = NULL, parallel = FALSE,
-  workers = availableCores())
+  workers = getOption("mc.cores", 2L))
 }
 \arguments{
 \item{data}{vector, matrix, or data.frame. For non-numeric values standard bootstrap
@@ -47,9 +47,9 @@ This parameter is used only for univariate and product kernels.}
 \item{ignore}{vector of names of columns to be ignored during the smoothing phase of
 bootstrap procedure (their values are not altered using random noise).}
 
-\item{parallel}{if \code{TRUE} uses parallel processing (see \code{\link[future]{future_lapply}}).}
+\item{parallel}{if \code{TRUE} uses parallel processing.}
 
-\item{workers}{number of cores used for parallel computing (see \code{\link[future]{multiprocess}}).}
+\item{workers}{number of workers used for parallel computing.}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.

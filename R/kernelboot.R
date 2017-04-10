@@ -30,8 +30,8 @@
 #'                   This parameter is used only for univariate and product kernels.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
-#' @param parallel   if \code{TRUE} uses parallel processing (see \code{\link[future]{future_lapply}}).
-#' @param workers    number of cores used for parallel computing (see \code{\link[future]{multiprocess}}).
+#' @param parallel   if \code{TRUE} uses parallel processing.
+#' @param workers    number of workers used for parallel computing.
 #'
 #'
 #' @details
@@ -303,6 +303,11 @@
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom future plan multiprocess future_lapply availableCores
 #'
+#' @importFrom foreach foreach %do% %dopar%
+#' @importFrom parallel makeCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom doRNG registerDoRNG %dorng%
+#'
 #' @export
 
 kernelboot <- function(data, statistic, R = 500L, bw = "default",
@@ -310,7 +315,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                                   "triangular", "biweight", "cosine", "optcosine"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, workers = availableCores()) {
+                       parallel = FALSE, workers = getOption("mc.cores", 2L)) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
@@ -374,8 +379,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
   if (parallel && workers > 1L) {
 
-    plan(multiprocess, workers = workers)
-    repeatFun <- function(n, FUN, workers) future_lapply(1:n, FUN, future.seed = TRUE)
+    # plan(multiprocess, workers = workers)
+    # repeatFun <- function(n, FUN, workers) future_lapply(1:n, FUN, future.seed = TRUE)
+
+    cl <- makeCluster(workers)
+    registerDoParallel(cl)
+    on.exit(stopCluster(cl))
+    repeatFun <- function(n, FUN, workers) foreach(i = 1:n) %dorng% FUN(i)
 
   } else {
 
