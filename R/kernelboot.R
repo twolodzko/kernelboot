@@ -13,13 +13,16 @@
 #'                   The kernels are scaled such that this is the standard deviation,
 #'                   or covariance matrix of the smoothing kernel. By default
 #'                   \code{\link[stats]{bw.nrd0}} is used for univariate data,
-#'                   and \code{\link{bw.silv}} is used for multivariate data. For using
-#'                   multivariate gaussian kernel this parameter should be a \emph{covariance
-#'                   matrix}.
+#'                   and \code{\link{bw.silv}} is used for multivariate data. When using
+#'                   \code{kernel = "multivariate"} this parameter should be a
+#'                   \emph{covariance matrix}.
 #' @param kernel     a character string giving the smoothing kernel to be used.
-#'                   This must partially match one of "gaussian", "rectangular",
-#'                   "triangular", "epanechnikov", "biweight", "cosine"
-#'                   or "optcosine", with default "gaussian", and may be abbreviated.
+#'                   This must partially match one of "multivariate", "gaussian",
+#'                   "rectangular", "triangular", "epanechnikov", "biweight", "cosine",
+#'                   "optcosine", or "none" with default "multivariate", and may be abbreviated.
+#'                   Using \code{kernel = "multivariate"} forces multivariate Gaussian kernel
+#'                   (or univariate Gaussian for univariate data). Using \code{kernel = "none"}
+#'                   forces using standard bootstrap (no kernel smoothing).
 #' @param adjust     scalar; the bandwidth used is actually \code{adjust*bw}. This makes
 #'                   it easy to specify values like 'half the default' bandwidth.
 #' @param weights    vector of importance weights. It should have as many elements
@@ -53,10 +56,6 @@
 #' \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
 #' non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
 #' is applied.
-#'
-#' With multivariate data, when using \code{kernel = "gaussian"} and \code{bw} is a covariance
-#' matrix, multivariate Gaussian kernel is applied. With multivariate data, when \code{bw} is
-#' a vector, or \code{kernel} is other then \code{"gaussian"}, product kernel is used.
 #'
 #'
 #' \strong{Univariate kernels}
@@ -294,7 +293,7 @@
 #'   points(data, pch = 2, lwd = 2, col = "red")
 #'   title(k)
 #' }
-#' plot(kernelboot(data, identity, R = R, kernel = "g", bw = bw)$boot.samples,
+#' plot(kernelboot(data, identity, R = R, kernel = "multivariate", bw = bw)$boot.samples,
 #'      xlim = c(-10, 50), ylim = c(-100, 600), col = "#ADD8E640")
 #' points(data, pch = 2, lwd = 2, col = "red")
 #' title("multivariate gaussian")
@@ -309,8 +308,9 @@
 #' @export
 
 kernelboot <- function(data, statistic, R = 500L, bw = "default",
-                       kernel = c("gaussian", "epanechnikov", "rectangular",
-                                  "triangular", "biweight", "cosine", "optcosine"),
+                       kernel = c("multivariate", "gaussian", "epanechnikov",
+                                  "rectangular", "triangular", "biweight",
+                                  "cosine", "optcosine", "none"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
                        parallel = FALSE, workers = future::availableCores()) {
@@ -321,7 +321,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   n <- NROW(data)
   m <- NCOL(data)
   vars <- NULL
-  kd_type <- NULL
 
   if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("data is not a vector, data.frame, or matrix")
@@ -333,7 +332,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         bw <- bw.nrd0(data)
       } else {
         bw <- bw.silv(data)
-        if (kernel != "gaussian")
+        if (kernel != "multivariate")
           bw <- sqrt(diag(bw))
       }
     } else {
@@ -424,11 +423,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       )
     }
 
-    if (!any(incl_cols)) {
+    if (kernel == "none" || !any(incl_cols)) {
 
       # standard bootstrap
 
-      kd_type <- "none"
+      kernel.type <- "multivariate"
+      kernel <- "none"
 
       res <- repeatFun(R, function(i) {
 
@@ -447,11 +447,11 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       if (is.null(weights))
         weights <- rep(1/n, n)
 
-      if (kernel != "gaussian" || is.vector(bw)) {
+      if (kernel != "multivariate") {
 
         # product kernel
 
-        kd_type <- "product"
+        kernel.type <- "product"
 
         if (is.vector(bw)) {
           if (length(bw) == 1L)
@@ -478,16 +478,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
         # MVN kernel
 
-        kd_type <- "multivariate"
+        kernel.type <- "multivariate"
+        kernel <- "multivariate"
 
         # is this check really needed?
         # if (qr(data_mtx)$rank < min(dim(data_mtx)))
         #   warning("data matrix is rank deficient")
-
-        if (kernel != "gaussian") {
-          kernel <- "gaussian"
-          message("for multivariate data only Gaussian kernel is supported; defaulting to Gaussian")
-        }
 
         if (is.vector(bw)) {
           if (length(bw) == 1L)
@@ -524,11 +520,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     # data is a vector
 
-    if (!is.numeric(data)) {
+    kernel.type <- "univariate"
+
+    if (kernel == "none" || !is.numeric(data)) {
 
       # standard bootstrap
 
-      kd_type <- "none"
+      kernel <- "none"
 
       res <- repeatFun(R, function(i) {
 
@@ -542,7 +540,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
       # smoothed bootstrap
 
-      kd_type <- "univariate"
+      if (kernel == "multivariate") {
+        kernel <- "gaussian"
+        message("data is univariate, switching to 'gaussian' kernel")
+      }
 
       if (!is.vector(bw))
         stop("bw is not a scalar")
@@ -580,7 +581,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     statistic     = statistic,
     orig.data     = data,
     variables     = vars,
-    type          = kd_type,
+    type          = kernel.type,
     param = list(
       R           = R,
       bw          = bw,

@@ -75,11 +75,11 @@ print.kernelboot <- function(x, ...) {
   cat("\n\n")
 
   cat(NROW(x$boot.samples), " samples were generated", sep = "")
-  if (x$type == "none") {
+  if (x$param$kernel == "none") {
     cat(" using standard bootstrap. ", sep = "")
   } else {
-    cat(" from ", x$type, " kernel density with ",
-        x$param$kernel, " kernel. ", sep = "")
+    kernel <- if (x$type == "multivariate") "multivariate gaussian" else x$param$kernel
+    cat(" from ", x$type, " kernel density with ", kernel, " kernel. ", sep = "")
   }
 
   invisible(x)
