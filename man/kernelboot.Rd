@@ -15,8 +15,7 @@ kernelboot(data, statistic, R = 500L, bw = "default",
 is applied (see below).}
 
 \item{statistic}{a function that is applied to the \code{data}. The first argument of
-the function will always be the original data. Any further arguments
-can be passed to \code{statistic} through \dots argument.}
+the function will always be the original data.}
 
 \item{R}{the number of bootstrap replicates.}
 
@@ -167,8 +166,9 @@ are univariate kernels \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where
 kernel density.
 
 Random generation from product kernel is done by drawing with replacement
-rows of \eqn{y}, and then adding random noise from univariate kernel \eqn{K},
-parametrized by corresponding bandwidth parameter \eqn{h}, to the sampled values.
+rows of \eqn{y}, and then adding to the sampled values random noise from
+univariate kernels \eqn{K}, parametrized by corresponding bandwidth parameters
+\eqn{h_j}{h[j]}.
 
 
 \strong{Multivariate kernels}
@@ -192,8 +192,9 @@ bandwidth parameter \eqn{H} is a \emph{covariance matrix} as compared to standar
 used in univariate and product kernels.
 
 Random generation from multivariate kernel is done by drawing with replacement
-rows of \eqn{y}, and then adding random noise from multivariate kernel \eqn{K},
-parametrized by corresponding bandwidth matrix \eqn{H}, to the sampled values.
+rows of \eqn{y}, and then adding to the sampled values random noise from
+multivariate normal distribution centered at the data points and parametrized
+by corresponding bandwidth matrix \eqn{H}.
 }
 \examples{
 

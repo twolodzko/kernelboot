@@ -16,7 +16,8 @@
 #'                                 for multivaiate data it contains two lists of \code{smoothed}
 #'                                 and \code{ignored} variables (names or column indexes) during
 #'                                 the smoothing phase. \cr
-#' \code{type}               \tab  type of kernel density that was used, \cr
+#' \code{type}               \tab  type of kernel density that was used ("univariate", "product",
+#'                                 "multivariate"), \cr
 #' \code{param}              \tab  list of parameters that were used.
 #' }
 #'
@@ -26,7 +27,10 @@
 #' \code{R}                  \tab  number of bootstrap iterations, \cr
 #' \code{bw}                 \tab  the bandwidth that was used, \cr
 #' \code{weights}            \tab  vector of the weights that were applied, \cr
-#' \code{kernel}             \tab  name of the kernel that was used, \cr
+#' \code{kernel}             \tab  name of the kernel that was used ("multivariate",
+#'                                 "gaussian", "epanechnikov", "rectangular",
+#'                                 "triangular", "biweight", "cosine", "optcosine",
+#'                                 "none"), \cr
 #' \code{shrinked}           \tab  value of the \code{shrinked} parameter, \cr
 #' \code{parallel}           \tab  indicates if parallel computation was used, \cr
 #' \code{random.seed}        \tab  random seed used to initialize the random number

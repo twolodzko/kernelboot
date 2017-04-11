@@ -6,8 +6,7 @@
 #' @param data       vector, matrix, or data.frame. For non-numeric values standard bootstrap
 #'                   is applied (see below).
 #' @param statistic  a function that is applied to the \code{data}. The first argument of
-#'                   the function will always be the original data. Any further arguments
-#'                   can be passed to \code{statistic} through \dots argument.
+#'                   the function will always be the original data.
 #' @param R          the number of bootstrap replicates.
 #' @param bw         the smoothing bandwidth to be used (see \code{\link[stats]{density}}).
 #'                   The kernels are scaled such that this is the standard deviation,
@@ -149,8 +148,9 @@
 #' kernel density.
 #'
 #' Random generation from product kernel is done by drawing with replacement
-#' rows of \eqn{y}, and then adding random noise from univariate kernel \eqn{K},
-#' parametrized by corresponding bandwidth parameter \eqn{h}, to the sampled values.
+#' rows of \eqn{y}, and then adding to the sampled values random noise from
+#' univariate kernels \eqn{K}, parametrized by corresponding bandwidth parameters
+#' \eqn{h_j}{h[j]}.
 #'
 #'
 #' \strong{Multivariate kernels}
@@ -174,8 +174,9 @@
 #' used in univariate and product kernels.
 #'
 #' Random generation from multivariate kernel is done by drawing with replacement
-#' rows of \eqn{y}, and then adding random noise from multivariate kernel \eqn{K},
-#' parametrized by corresponding bandwidth matrix \eqn{H}, to the sampled values.
+#' rows of \eqn{y}, and then adding to the sampled values random noise from
+#' multivariate normal distribution centered at the data points and parametrized
+#' by corresponding bandwidth matrix \eqn{H}.
 #'
 #'
 #' @references
