@@ -480,7 +480,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         # MVN kernel
 
         kernel.type <- "multivariate"
-        kernel <- "multivariate"
 
         # is this check really needed?
         # if (qr(data_mtx)$rank < min(dim(data_mtx)))

@@ -18,6 +18,7 @@ expect_silent(kernelboot(dat$mpg, fun3, R = 10, kernel = "gaussian"))
 # expect_silent(kernelboot(dat, fun1, R = 10, parallel = TRUE))
 
 # standard bootstrap
+expect_equal(kernelboot(dat, fun1, R = 10, kernel = "gaussian", ignore = colnames(dat))$param$kernel, "none")
 expect_equal(kernelboot(dat, fun1, R = 10, kernel = "none")$param$kernel, "none")
 expect_equal(kernelboot(dat$mpg, fun2, R = 10, kernel = "none")$param$kernel, "none")
 expect_equal(kernelboot(dat, fun1, R = 10, kernel = "none")$type, "multivariate")
