@@ -30,8 +30,11 @@
 #'                   This parameter is used only for univariate and product kernels.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
-#' @param parallel   if \code{TRUE} uses parallel processing.
-#' @param workers    number of workers used for parallel computing.
+#' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future]{future_lapply}}).
+#'                   \emph{Warning:} using parallel computing does not necessary have to
+#'                   lead to improved performance.
+#' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
+#'
 #'
 #'
 #' @details
@@ -303,11 +306,6 @@
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom future plan multiprocess future_lapply availableCores
 #'
-#' @importFrom foreach foreach %do% %dopar%
-#' @importFrom parallel makeCluster
-#' @importFrom doParallel registerDoParallel
-#' @importFrom doRNG registerDoRNG %dorng%
-#'
 #' @export
 
 kernelboot <- function(data, statistic, R = 500L, bw = "default",
@@ -315,10 +313,11 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                                   "triangular", "biweight", "cosine", "optcosine"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, workers = getOption("mc.cores", 2L)) {
+                       parallel = FALSE, workers = future::availableCores()) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
+  seed <- .Random.seed
   n <- NROW(data)
   m <- NCOL(data)
   vars <- NULL
@@ -379,13 +378,24 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
   if (parallel && workers > 1L) {
 
-    # plan(multiprocess, workers = workers)
-    # repeatFun <- function(n, FUN, workers) future_lapply(1:n, FUN, future.seed = TRUE)
+    # using future for parallel computing
+    repeatFun <- function(n, FUN, workers) {
+      plan(multiprocess, workers = workers)
+      future_lapply(1:n, FUN, future.seed = TRUE)
+    }
 
-    cl <- makeCluster(workers)
-    registerDoParallel(cl)
-    on.exit(stopCluster(cl))
-    repeatFun <- function(n, FUN, workers) foreach(i = 1:n) %dorng% FUN(i)
+    # imports for this method
+    # #' @importFrom foreach foreach %do% %dopar%
+    # #' @importFrom parallel makeCluster stopCluster
+    # #' @importFrom doParallel registerDoParallel
+    # #' @importFrom doRNG registerDoRNG %dorng%
+
+    # repeatFun <- function(n, FUN, workers) {
+    #   cl <- makeCluster(workers)
+    #   registerDoParallel(cl)
+    #   on.exit(stopCluster(cl))
+    #   foreach(i = 1:n) %dorng% FUN(i)
+    # }
 
   } else {
 
@@ -572,13 +582,14 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     variables     = vars,
     type          = kd_type,
     param = list(
-      R         = R,
-      bw        = bw,
-      adjust    = adjust,
-      weights   = weights,
-      kernel    = kernel,
-      shrinked  = shrinked,
-      parallel  = parallel
+      R           = R,
+      bw          = bw,
+      adjust      = adjust,
+      weights     = weights,
+      kernel      = kernel,
+      shrinked    = shrinked,
+      parallel    = parallel,
+      random.seed = seed
     )
   ), class = "kernelboot")
 

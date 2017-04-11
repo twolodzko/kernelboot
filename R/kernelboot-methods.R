@@ -28,7 +28,9 @@
 #' \code{weights}            \tab  vector of the weights that were applied, \cr
 #' \code{kernel}             \tab  name of the kernel that was used, \cr
 #' \code{shrinked}           \tab  value of the \code{shrinked} parameter, \cr
-#' \code{parallel}           \tab  indicates if parallel computation was used.
+#' \code{parallel}           \tab  indicates if parallel computation was used, \cr
+#' \code{random.seed}        \tab  random seed used to initialize the random number
+#'                                 generator (see \code{\link[base]{.Random.seed}}).
 #' }
 #'
 #' @seealso \code{\link{kernelboot}}
