@@ -8,7 +8,7 @@ kernelboot(data, statistic, R = 500L, bw = "default",
   kernel = c("multivariate", "gaussian", "epanechnikov", "rectangular",
   "triangular", "biweight", "cosine", "optcosine", "none"), weights = NULL,
   adjust = 1, shrinked = TRUE, ignore = NULL, parallel = FALSE,
-  workers = future::availableCores())
+  workers = availableCores())
 }
 \arguments{
 \item{data}{vector, matrix, or data.frame. For non-numeric values standard bootstrap
@@ -43,8 +43,8 @@ weights.}
 it easy to specify values like 'half the default' bandwidth.}
 
 \item{shrinked}{logical; if \code{TRUE} random generation algorithm preserves
-means and variances of the variables (see \code{\link{ruvk}} for details).
-This parameter is used only for univariate and product kernels.}
+means and variances of the variables. This parameter is used only for
+univariate and product kernels.}
 
 \item{ignore}{vector of names of columns to be ignored during the smoothing phase of
 bootstrap procedure (their values are not altered using random noise).}
@@ -53,7 +53,9 @@ bootstrap procedure (their values are not altered using random noise).}
 \emph{Warning:} using parallel computing does not necessary have to
 lead to improved performance.}
 
-\item{workers}{the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).}
+\item{workers}{the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
+By default this is automatically determined using the \code{\link[future]{availableCores}}
+function.}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
@@ -69,7 +71,7 @@ standard bootstrap. Next, random noise from kernel density \eqn{K} is added to e
 values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
 samples.
 
-The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
+The noise is added \emph{only} to the numeric columns, while non-numeric columns (e.g.
 \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
 non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
 is applied.
@@ -86,7 +88,7 @@ f(x) = sum[i](w[i] * Kh((x-y[i])/h))
 }
 
 where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
+(by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 data points used for estimating the kernel density.
 
@@ -160,10 +162,9 @@ f(x) = sum[i](w[i] * prod[j]( Kh[j]((x[i]-y[i,j])/h[j]) ))
 }
 
 where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), and \eqn{K_{h_j}}{Kh[j]}
-are univariate kernels \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where
-\eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the
-kernel density.
+(by default uniform weights are used), and \eqn{K_{h_j}}{Kh[j]} are univariate kernels
+\eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y}
+is a matrix of data points used for estimating the kernel density.
 
 Random generation from product kernel is done by drawing with replacement
 rows of \eqn{y}, and then adding to the sampled values random noise from
@@ -183,9 +184,9 @@ f(x) = sum[i](w[i] * KH(x-y[i]))
 }
 
 where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_H}{KH} is
-kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y}
-is a matrix of data points used for estimating the kernel density.
+(by default uniform weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
+bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
+estimating the kernel density.
 
 \emph{Notice:} When using multivariate normal (Gaussian) distribution as a kernel \eqn{K}, the
 bandwidth parameter \eqn{H} is a \emph{covariance matrix} as compared to standard deviations

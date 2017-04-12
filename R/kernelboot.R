@@ -28,15 +28,16 @@
 #'                   as there are observations in \code{data}. It defaults to uniform
 #'                   weights.
 #' @param shrinked   logical; if \code{TRUE} random generation algorithm preserves
-#'                   means and variances of the variables (see \code{\link{ruvk}} for details).
-#'                   This parameter is used only for univariate and product kernels.
+#'                   means and variances of the variables. This parameter is used only for
+#'                   univariate and product kernels.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
 #' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future]{future_lapply}}).
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
 #' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
-#'
+#'                   By default this is automatically determined using the \code{\link[future]{availableCores}}
+#'                   function.
 #'
 #'
 #' @details
@@ -51,7 +52,7 @@
 #' values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
 #' samples.
 #'
-#' The noise is added \emph{only} to the numeric columns, while non-numeric columns (i.e.
+#' The noise is added \emph{only} to the numeric columns, while non-numeric columns (e.g.
 #' \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
 #' non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
 #' is applied.
@@ -68,7 +69,7 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
+#' (by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
@@ -142,10 +143,9 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), and \eqn{K_{h_j}}{Kh[j]}
-#' are univariate kernels \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where
-#' \eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the
-#' kernel density.
+#' (by default uniform weights are used), and \eqn{K_{h_j}}{Kh[j]} are univariate kernels
+#' \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y}
+#' is a matrix of data points used for estimating the kernel density.
 #'
 #' Random generation from product kernel is done by drawing with replacement
 #' rows of \eqn{y}, and then adding to the sampled values random noise from
@@ -165,9 +165,9 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_H}{KH} is
-#' kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y}
-#' is a matrix of data points used for estimating the kernel density.
+#' (by default uniform weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
+#' bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
+#' estimating the kernel density.
 #'
 #' \emph{Notice:} When using multivariate normal (Gaussian) distribution as a kernel \eqn{K}, the
 #' bandwidth parameter \eqn{H} is a \emph{covariance matrix} as compared to standard deviations
@@ -314,7 +314,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                                   "cosine", "optcosine", "none"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, workers = future::availableCores()) {
+                       parallel = FALSE, workers = availableCores()) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
@@ -323,13 +323,13 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   m <- NCOL(data)
   vars <- NULL
 
-  if (!(is.vector(data) || is.data.frame(data) || is.matrix(data)))
-    stop("data is not a vector, data.frame, or matrix")
+  if (!(is.simple.vector(data) || is.data.frame(data) || is.matrix(data)))
+    stop("unsupported data type")
 
   if (is.character(bw)) {
     bw <- tolower(bw)
     if (bw == "default") {
-      if (is.vector(data)) {
+      if (is.simple.vector(data)) {
         bw <- bw.nrd0(data)
       } else {
         bw <- bw.silv(data)
@@ -346,7 +346,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     }
   }
 
-  if (!is.vector(adjust))
+  if (!is.simple.vector(adjust))
     stop("adjust is not a scalar")
 
   bw <- bw * adjust[1L]
@@ -383,19 +383,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       plan(multiprocess, workers = workers)
       future_lapply(1:n, FUN, future.seed = TRUE)
     }
-
-    # imports for this method
-    # #' @importFrom foreach foreach %do% %dopar%
-    # #' @importFrom parallel makeCluster stopCluster
-    # #' @importFrom doParallel registerDoParallel
-    # #' @importFrom doRNG registerDoRNG %dorng%
-
-    # repeatFun <- function(n, FUN, workers) {
-    #   cl <- makeCluster(workers)
-    #   registerDoParallel(cl)
-    #   on.exit(stopCluster(cl))
-    #   foreach(i = 1:n) %dorng% FUN(i)
-    # }
 
   } else {
 
@@ -434,7 +421,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       res <- repeatFun(R, function(i) {
 
         idx <- sample.int(n, n, replace = TRUE, prob = weights)
-        boot.data <- data[idx, ]
+        boot.data <- data[idx, , drop = FALSE]
         statistic(boot.data)
 
       }, workers = workers)
@@ -454,7 +441,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
         kernel.type <- "product"
 
-        if (is.vector(bw)) {
+        if (is.simple.vector(bw)) {
           if (length(bw) == 1L)
             bw <- rep(bw, m)
         } else {
@@ -468,9 +455,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         res <- repeatFun(R, function(i) {
 
           samp <- cpp_rmvk(n, data_mtx, bw, weights, kernel)
-          idx <- samp$boot_index
-          boot.data <- data[idx, ]
-          boot.data[, incl_cols] <- samp$samples
+          idx <- attr(samp, "boot_index")
+          attr(samp, "boot_index") <- NULL
+          boot.data <- data[idx, , drop = FALSE]
+          boot.data[, incl_cols] <- samp
           statistic(boot.data)
 
         }, workers = workers)
@@ -485,7 +473,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         # if (qr(data_mtx)$rank < min(dim(data_mtx)))
         #   warning("data matrix is rank deficient")
 
-        if (is.vector(bw)) {
+        if (is.simple.vector(bw)) {
           if (length(bw) == 1L)
             bw <- diag(bw, nrow = ncol(data))
           else
@@ -506,7 +494,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         res <- repeatFun(R, function(i) {
 
           idx <- sample.int(n, n, replace = TRUE, prob = weights)
-          boot.data <- data[idx, ]
+          boot.data <- data[idx, , drop = FALSE]
           samp <- matrix(rnorm(n*mm), n, mm) %*% bw_chol
           boot.data[, incl_cols] <- boot.data[, incl_cols] + samp
           statistic(boot.data)
@@ -516,7 +504,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       }
     }
 
-  } else if (is.vector(data)) {
+  } else if (is.simple.vector(data)) {
 
     # data is a vector
 
@@ -545,7 +533,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
         message("data is univariate, switching to 'gaussian' kernel")
       }
 
-      if (!is.vector(bw))
+      if (!is.simple.vector(bw))
         stop("bw is not a scalar")
       if (length(bw) > 1L) {
         bw <- bw[1L]
@@ -558,7 +546,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       res <- repeatFun(R, function(i) {
 
         samp <- cpp_ruvk(n, data, bw, weights, kernel, shrinked)
-        boot.data <- drop(samp$samples)
+        boot.data <- as.vector(samp)
         statistic(boot.data)
 
       }, workers = workers)

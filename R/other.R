@@ -28,3 +28,9 @@ is.diag <- function(x, tol = 1e-12) {
   dx <- diag(diag(x))
   is.square(x) && all(abs(dx - x) < tol)
 }
+
+# test for being the vector
+
+is.simple.vector <- function(x) {
+  is.atomic(x) && !is.recursive(x) && !is.array(x)
+}

@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // cpp_rmvk
-Rcpp::List cpp_rmvk(const int& n, const NumericMatrix& y, const NumericVector& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
+NumericMatrix cpp_rmvk(const int& n, const NumericMatrix& y, const NumericVector& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
 RcppExport SEXP kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -22,7 +22,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_ruvk
-Rcpp::List cpp_ruvk(const int& n, const NumericVector& y, const double& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
+NumericVector cpp_ruvk(const int& n, const NumericVector& y, const double& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
 RcppExport SEXP kernelboot_cpp_ruvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

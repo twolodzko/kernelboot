@@ -1,13 +1,14 @@
 
 #' Random generation from univariate kernel density
 #'
-#' @param y         numeric vector of length \eqn{n}.
-#' @param n         number of observations. If length(n) > 1,
+#' @param y         numeric vector.
+#' @param n         number of observations. If \code{length(n) > 1},
 #'                  the length is taken to be the number required.
 #' @param bw        the smoothing bandwidth to be used. The kernels are scaled
 #'                  such that this is the standard deviation of the smoothing
 #'                  kernel (see \code{\link[stats]{density}} for details).
-#' @param weights   numeric vector of length \eqn{n}; must be non-negative.
+#' @param weights   numeric vector of length equal to \code{length(y)}; must be
+#'                  non-negative.
 #' @param kernel    a character string giving the smoothing kernel to be used.
 #'                  This must partially match one of "gaussian", "rectangular",
 #'                  "triangular", "epanechnikov", "biweight", "cosine"
@@ -23,13 +24,13 @@
 #' Univariate kernel density estimator is defined as
 #'
 #' \deqn{
-#' \hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
+#' \hat{f_h}(x) = \sum_i w_i \, K_h\left(\frac{x-y_i}{h}\right)
 #' }{
 #' f(x) = sum[i](w[i] * Kh((x-y[i])/h))
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
+#' (by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
@@ -83,6 +84,6 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
   }
   bw <- bw * adjust[1L]
 
-  drop(cpp_ruvk(n, y, bw, weights, kernel, shrinked)$samples)
+  as.vector(cpp_ruvk(n, y, bw, weights, kernel, shrinked))
 }
 

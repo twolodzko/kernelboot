@@ -6,7 +6,6 @@
 #' Scott (1992) and Silverman (1986).
 #'
 #' @param x      numeric matrix or data.frame.
-#' @param diag   if \code{TRUE} returns the diagonal of bandwidth matrix.
 #'
 #'
 #' @details
@@ -56,7 +55,7 @@
 #'
 #' @export
 
-bw.silv <- function(x, diag = FALSE) {
+bw.silv <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
   if (!all(is_numeric(x)))
@@ -64,7 +63,6 @@ bw.silv <- function(x, diag = FALSE) {
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)
-  if (diag) S <- S * diag(m)
   (4/(n*(m + 2)))^(2/(m + 4)) * S
 }
 
@@ -72,7 +70,7 @@ bw.silv <- function(x, diag = FALSE) {
 #' @rdname bw.silv
 #' @export
 
-bw.scott <- function(x, diag = FALSE) {
+bw.scott <- function(x) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
   if (!all(is_numeric(x)))
@@ -80,6 +78,5 @@ bw.scott <- function(x, diag = FALSE) {
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)
-  if (diag) S <- S * diag(m)
   n^(-2/(m + 4)) * S
 }

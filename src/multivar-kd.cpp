@@ -8,7 +8,7 @@ using Rcpp::NumericMatrix;
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_rmvk(
+NumericMatrix cpp_rmvk(
     const int& n,
     const NumericMatrix& y,
     const NumericVector& bandwidth,
@@ -16,6 +16,14 @@ Rcpp::List cpp_rmvk(
     const std::string& kernel = "gaussian",
     const bool& shrinked = false
   ) {
+
+  if (y.nrow() < 1 || y.ncol() < 1) {
+    Rcpp::warning("NAs produced");
+    NumericMatrix out(n, y.ncol());
+    std::fill(out.begin(), out.end(), NA_REAL);
+    out.attr("boot_index") = NumericVector(n, NA_REAL);
+    return out;
+  }
 
   double (*rng_kern)();
 
@@ -112,16 +120,8 @@ Rcpp::List cpp_rmvk(
   for (int i = (k-1); i > 0; i--)
     c_weights[i] -= c_weights[i-1];
 
-
-  return Rcpp::List::create(
-    Rcpp::Named("samples") = samp,
-    Rcpp::Named("boot_index") = idx,
-    Rcpp::Named("data") = y,
-    Rcpp::Named("bandwidth") = bandwidth,
-    Rcpp::Named("weights") = c_weights,
-    Rcpp::Named("kernel") = kernel,
-    Rcpp::Named("shrinked") = shrinked
-  );
+  samp.attr("boot_index") = idx;
+  return samp;
 
 }
 

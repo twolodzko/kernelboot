@@ -7,7 +7,7 @@ using Rcpp::NumericVector;
 
 
 // [[Rcpp::export]]
-Rcpp::List cpp_ruvk(
+NumericVector cpp_ruvk(
     const int& n,
     const NumericVector& y,
     const double& bandwidth,
@@ -15,6 +15,13 @@ Rcpp::List cpp_ruvk(
     const std::string& kernel = "gaussian",
     const bool& shrinked = false
   ) {
+
+  if (y.length() < 1) {
+    Rcpp::warning("NAs produced");
+    NumericVector out(n, NA_REAL);
+    out.attr("boot_index") = NumericVector(n, NA_REAL);
+    return out;
+  }
 
   double (*rng_kern)();
 
@@ -96,15 +103,8 @@ Rcpp::List cpp_ruvk(
   for (int i = (k-1); i > 0; i--)
     c_weights[i] -= c_weights[i-1];
 
-  return Rcpp::List::create(
-    Rcpp::Named("samples") = samp,
-    Rcpp::Named("boot_index") = idx,
-    Rcpp::Named("data") = y,
-    Rcpp::Named("bandwidth") = bandwidth,
-    Rcpp::Named("weights") = c_weights,
-    Rcpp::Named("kernel") = kernel,
-    Rcpp::Named("shrinked") = shrinked
-  );
+  samp.attr("boot_index") = idx;
+  return samp;
 
 }
 

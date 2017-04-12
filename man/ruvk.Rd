@@ -9,10 +9,10 @@ ruvk(n, y, bw = bw.nrd0(y), kernel = c("gaussian", "epanechnikov",
   weights = NULL, adjust = 1, shrinked = FALSE)
 }
 \arguments{
-\item{n}{number of observations. If length(n) > 1,
+\item{n}{number of observations. If \code{length(n) > 1},
 the length is taken to be the number required.}
 
-\item{y}{numeric vector of length \eqn{n}.}
+\item{y}{numeric vector.}
 
 \item{bw}{the smoothing bandwidth to be used. The kernels are scaled
 such that this is the standard deviation of the smoothing
@@ -23,7 +23,8 @@ This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
 
-\item{weights}{numeric vector of length \eqn{n}; must be non-negative.}
+\item{weights}{numeric vector of length equal to \code{length(y)}; must be
+non-negative.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'
@@ -39,13 +40,13 @@ Random generation from univariate kernel density
 Univariate kernel density estimator is defined as
 
 \deqn{
-\hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
+\hat{f_h}(x) = \sum_i w_i \, K_h\left(\frac{x-y_i}{h}\right)
 }{
 f(x) = sum[i](w[i] * Kh((x-y[i])/h))
 }
 
 where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default \eqn{w_i=1/n}{w[i]=1/n} for all \eqn{i}), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
+(by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 data points used for estimating the kernel density.
 

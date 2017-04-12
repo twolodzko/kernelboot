@@ -78,12 +78,12 @@ print.kernelboot <- function(x, ...) {
   cat("Call:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), sep = "")
   cat("\n\n")
 
-  cat(NROW(x$boot.samples), " samples were generated", sep = "")
+  cat(x$param$R, " samples were generated", sep = "")
   if (x$param$kernel == "none") {
-    cat(" using standard bootstrap. ", sep = "")
+    cat(" using standard bootstrap.\n", sep = "")
   } else {
     kernel <- if (x$type == "multivariate") "multivariate gaussian" else x$param$kernel
-    cat(" from ", x$type, " kernel density with ", kernel, " kernel. ", sep = "")
+    cat(" from ", x$type, " kernel density with ", kernel, " kernel.\n", sep = "")
   }
 
   invisible(x)

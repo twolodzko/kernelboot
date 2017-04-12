@@ -5,14 +5,12 @@
 \alias{bw.scott}
 \title{Bandwidth selector for multivariate kernel density estimation}
 \usage{
-bw.silv(x, diag = FALSE)
+bw.silv(x)
 
-bw.scott(x, diag = FALSE)
+bw.scott(x)
 }
 \arguments{
 \item{x}{numeric matrix or data.frame.}
-
-\item{diag}{if \code{TRUE} returns the diagonal of bandwidth matrix.}
 }
 \description{
 Rule of thumb bandwidth selectors for Gaussian kernels as described by
