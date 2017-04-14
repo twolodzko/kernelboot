@@ -46,7 +46,7 @@
 #' factor of \eqn{\Sigma}). In the case of multivariate Gaussian kernel
 #' density, \eqn{\mu}, is the \eqn{i}-th row of \eqn{y}, where \eqn{i}
 #' is drawn randomly with replacement with probability proportional to
-#' \eqn{w_i}{w[i]}.
+#' \eqn{w_i}{w[i]}, and \eqn{\Sigma} is the bandwidth matrix \eqn{H}.
 #'
 #' For functions estimating kernel densities please check \pkg{KernSmooth},
 #' \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
@@ -97,10 +97,13 @@ rmvg <- function(n, y, bw = bw.silv(y), weights = NULL, adjust = 1) {
 
   bw <- bw * adjust[1L]
 
+  if (!all(is.finite(bw)))
+    stop("inappropriate values of bw")
+
   idx <- sample.int(nrow(y), n, replace = TRUE, prob = weights)
   mu <- y[idx, , drop = FALSE]
-  eps <- matrix(rnorm(n*ncol(y)), n, ncol(y)) %*% chol(bw)
-  mu + eps
+  Az <- matrix(rnorm(n*ncol(y)), n, ncol(y)) %*% chol(bw)
+  return(Az + mu)
 
 }
 

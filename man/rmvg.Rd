@@ -57,7 +57,7 @@ matrix such that \eqn{A'A=\Sigma}{A'A=\Sigma} (\eqn{A} is a Cholesky
 factor of \eqn{\Sigma}). In the case of multivariate Gaussian kernel
 density, \eqn{\mu}, is the \eqn{i}-th row of \eqn{y}, where \eqn{i}
 is drawn randomly with replacement with probability proportional to
-\eqn{w_i}{w[i]}.
+\eqn{w_i}{w[i]}, and \eqn{\Sigma} is the bandwidth matrix \eqn{H}.
 
 For functions estimating kernel densities please check \pkg{KernSmooth},
 \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
