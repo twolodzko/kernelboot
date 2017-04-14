@@ -33,7 +33,7 @@ Multivariate kernel density estimator with multivariate Gaussian (normal) kernel
 \eqn{K_H}{KH} is defined as
 
 \deqn{
-\hat{f_H}(x_1,\dots,x_n) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
+\hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
 }{
 f(x) = sum[i](w[i] * KH(x-y[i]))
 }

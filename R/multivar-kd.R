@@ -28,7 +28,7 @@
 #' Product kernel density is defined in terms of independent univariate kernels
 #'
 #' \deqn{
-#' \hat{f_H}(x_1,\dots,x_n) = \sum_i w_i \prod_j
+#' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \prod_{j=1}^m
 #' K_{h_j} \left( \frac{x_i - y_{ij}}{h_j} \right)
 #' }{
 #' f(x) = sum[i](w[i] * prod[j]( Khj((x[i]-y[i,j])/h[j]) ))

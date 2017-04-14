@@ -40,7 +40,7 @@ Random generation from univariate kernel density
 Univariate kernel density estimator is defined as
 
 \deqn{
-\hat{f_h}(x) = \sum_i w_i \, K_h\left(\frac{x-y_i}{h}\right)
+\hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
 }{
 f(x) = sum[i](w[i] * Kh((x-y[i])/h))
 }

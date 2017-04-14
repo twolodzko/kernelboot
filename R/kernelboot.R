@@ -136,7 +136,7 @@
 #' using product kernel
 #'
 #' \deqn{
-#' \hat{f_H}(x_1,\dots,x_n) = \sum_{i=1}^n w_i \prod_{j=1}^m
+#' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \prod_{j=1}^m
 #' K_{h_j} \left( \frac{x_i - y_{ij}}{h_j} \right)
 #' }{
 #' f(x) = sum[i](w[i] * prod[j]( Kh[j]((x[i]-y[i,j])/h[j]) ))
@@ -159,7 +159,7 @@
 #' \eqn{K_H}{KH} (e.g. multivariate normal distribution, as in this package)
 #'
 #' \deqn{
-#' \hat{f_H}(x_1,\dots,x_n) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
+#' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
 #' }{
 #' f(x) = sum[i](w[i] * KH(x-y[i]))
 #' }
