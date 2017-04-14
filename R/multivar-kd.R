@@ -1,5 +1,5 @@
 
-#' Random generation from product kernel
+#' Random generation from product kernel density
 #'
 #' @param y         numeric matrix.
 #' @param n         number of observations. If \code{length(n) > 1},
@@ -10,7 +10,7 @@
 #'                  smoothing kernel (see
 #'                  \code{\link[stats]{density}} for details). If provided as
 #'                  a single value, the same bandwidth is used for each variable.
-#' @param weights   numeric vector of length \code{nrow(y)}; must be non-negative.
+#' @param weights   numeric vector of length equal to \code{nrow(y)}; must be non-negative.
 #' @param adjust    scalar; the bandwidth used is actually \code{adjust*bw}.
 #'                  This makes it easy to specify values like 'half the default'
 #'                  bandwidth.
@@ -25,7 +25,7 @@
 #'
 #' @details
 #'
-#' Product kernel is defined in terms of independent univariate kernels
+#' Product kernel density is defined in terms of independent univariate kernels
 #'
 #' \deqn{
 #' \hat{f_H}(x_1,\dots,x_n) = \sum_i w_i \prod_j

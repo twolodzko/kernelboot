@@ -20,8 +20,8 @@ test_that("multivariate kernels", {
 
   expect_silent(rmvk(10, as.matrix(dat)))
 
-  # this IS an inappropriate input ?
   expect_silent(rmvk(10, dat[1,], bw = 1))
+  expect_silent(rmvk(10, dat[1, , drop = FALSE], bw = 1))
 
   expect_silent(rmvk(10, dat, bw = 1))
 

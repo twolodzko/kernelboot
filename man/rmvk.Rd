@@ -2,7 +2,7 @@
 % Please edit documentation in R/multivar-kd.R
 \name{rmvk}
 \alias{rmvk}
-\title{Random generation from product kernel}
+\title{Random generation from product kernel density}
 \usage{
 rmvk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
   "epanechnikov", "rectangular", "triangular", "biweight", "cosine",
@@ -26,7 +26,7 @@ This must partially match one of "gaussian", "rectangular",
 "triangular", "epanechnikov", "biweight", "cosine"
 or "optcosine", with default "gaussian", and may be abbreviated.}
 
-\item{weights}{numeric vector of length \code{nrow(y)}; must be non-negative.}
+\item{weights}{numeric vector of length equal to \code{nrow(y)}; must be non-negative.}
 
 \item{adjust}{scalar; the bandwidth used is actually \code{adjust*bw}.
 This makes it easy to specify values like 'half the default'
@@ -37,10 +37,10 @@ variances of the individual variables (see \code{\link{ruvk}}).
 Shrinking is applied to each of the variables individually.}
 }
 \description{
-Random generation from product kernel
+Random generation from product kernel density
 }
 \details{
-Product kernel is defined in terms of independent univariate kernels
+Product kernel density is defined in terms of independent univariate kernels
 
 \deqn{
 \hat{f_H}(x_1,\dots,x_n) = \sum_i w_i \prod_j

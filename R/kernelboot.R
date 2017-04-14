@@ -58,7 +58,7 @@
 #' is applied.
 #'
 #'
-#' \strong{Univariate kernels}
+#' \strong{Univariate kernel densities}
 #'
 #' Univariate kernel density estimator is defined as
 #'
@@ -130,7 +130,7 @@
 #' (see \code{\link[stats]{runif}} and \code{\link[stats]{rnorm}}).
 #'
 #'
-#' \strong{Product kernels}
+#' \strong{Product kernel densities}
 #'
 #' Univariate kernels may easily be extended to multiple dimensions by
 #' using product kernel
@@ -153,10 +153,10 @@
 #' \eqn{h_j}{h[j]}.
 #'
 #'
-#' \strong{Multivariate kernels}
+#' \strong{Multivariate kernel densities}
 #'
 #' Multivariate kernel density estimator may also be defined in terms of multivariate kernels
-#' (e.g. multivariate normal distribution, as in this package)
+#' \eqn{K_H}{KH} (e.g. multivariate normal distribution, as in this package)
 #'
 #' \deqn{
 #' \hat{f_H}(x_1,\dots,x_n) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
@@ -176,7 +176,7 @@
 #' Random generation from multivariate kernel is done by drawing with replacement
 #' rows of \eqn{y}, and then adding to the sampled values random noise from
 #' multivariate normal distribution centered at the data points and parametrized
-#' by corresponding bandwidth matrix \eqn{H}.
+#' by corresponding bandwidth matrix \eqn{H}. For further details see \code{\link{rmvg}}.
 #'
 #'
 #' @references
