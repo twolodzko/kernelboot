@@ -10,6 +10,7 @@ test_that("univariate kernels", {
 
   for (k in kernels) {
 
+    expect_silent(ruvk(10, y, kernel = substr(k, 1, 1)))
     expect_silent(ruvk(10, y, kernel = k))
     expect_warning(expect_true(all(is.na(ruvk(10, numeric(0), kernel = k, bw = 1)))))
 
@@ -24,10 +25,6 @@ test_that("univariate kernels", {
   expect_error(ruvk(10, y, bw = NA))
   expect_error(ruvk(10, y, bw = Inf))
   expect_error(ruvk(10, y, kernel = "fluffy cat"))
-
-  expect_silent(ruvk(10, y, kernel = "gaussian"))
-  expect_silent(ruvk(10, y, kernel = "Gaussian"))
-  expect_silent(ruvk(10, y, kernel = "g"))
 
   expect_error(ruvk(10, y, weights = rep(-1, n)))
   expect_error(ruvk(10, y, weights = rep(Inf, n)))
