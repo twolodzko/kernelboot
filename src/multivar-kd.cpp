@@ -52,8 +52,8 @@ NumericMatrix cpp_rmvk(
   if (bandwidth.length() != m)
     Rcpp::stop("dimmensions of y and bandwidth do not match");
 
-  if (Rcpp::is_true(Rcpp::any(bandwidth <= 0.0)))
-    Rcpp::stop("bandwidth needs to be positive");
+  if (Rcpp::is_true(Rcpp::any(bandwidth < 0.0)))
+    Rcpp::stop("bandwidth needs to be non-negative");
 
   if (Rcpp::is_false(Rcpp::all(Rcpp::is_finite(bandwidth))))
     Rcpp::stop("inappropriate values of bandwidth");

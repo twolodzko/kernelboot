@@ -6,51 +6,36 @@ test_that("multivariate Gaussian kernel", {
   dat <- mtcars
   n <- nrow(dat)
   m <- ncol(dat)
-  w <- rep(1/n, n)
-  H <- cov(dat)*0.5
 
   expect_silent(rmvg(10, as.matrix(dat)))
 
   expect_silent(rmvg(10, dat[1, ], bw = 1))
   expect_silent(rmvg(10, dat[1, , drop = FALSE], bw = 1))
 
+  expect_silent(rmvg(10, dat, bw = 0))
   expect_silent(rmvg(10, dat, bw = 1))
+  expect_silent(rmvg(10, dat, bw = matrix(0, m, m)))
+  expect_silent(rmvg(10, dat, bw = rep(0, m)))
+  expect_silent(rmvg(10, dat, bw = diag(cov(dat))))
 
-  H <- diag(cov(dat))
-  expect_silent(rmvg(10, dat, bw = H))
+  expect_error(rmvg(10, dat, bw = matrix(1, 2, 2)))
+  expect_error(rmvg(10, dat, bw = matrix(NA, m, m)))
+  expect_error(rmvg(10, dat, bw = matrix(Inf, m, m)))
 
-  H <- matrix(1, 2, 2)
-  expect_error(rmvg(10, dat, bw = H))
-
-  H <- matrix(NA, m, m)
-  expect_error(rmvg(10, dat, bw = H))
-
-  H <- matrix(Inf, m, m)
-  expect_error(rmvg(10, dat, bw = H))
-
-  expect_silent(rmvg(10, dat, weights = w))
-
+  expect_silent(rmvg(10, dat, weights = rep(1/n, n)))
   expect_silent(rmvg(10, dat, weights = 1))
+  expect_silent(rmvg(10, dat, weights = rep(1, n)))
 
-  w <- c(1,1,1)
-  expect_error(rmvg(10, dat, weights = w))
-
-  w <- rep(-1, n)
-  expect_error(rmvg(10, dat, weights = w))
-
-  w <- rep(NA, n)
-  expect_error(rmvg(10, dat, weights = w))
-
-  w <- rep(Inf, n)
-  expect_error(rmvg(10, dat, weights = w))
+  expect_error(rmvg(10, dat, weights = rep(-1, n)))
+  expect_error(rmvg(10, dat, weights = rep(NA, n)))
+  expect_error(rmvg(10, dat, weights = rep(Inf, n)))
 
   expect_silent(rmvg(10, dat, adjust = 1))
-
   expect_silent(rmvg(10, dat, adjust = 1:10))
 
   expect_error(rmvg(10, dat, adjust = NA))
 
-  expect_error(rmvg(10, dat, adjust = 0))
+  expect_silent(rmvg(10, dat, adjust = 0))
 
   expect_error(rmvg(10, dat, adjust = Inf))
 

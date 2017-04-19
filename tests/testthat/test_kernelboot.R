@@ -21,16 +21,19 @@ test_that("kernelboot function", {
 
   # standard bootstrap
   expect_equal(kernelboot(dat, fun1, R = 10, kernel = "gaussian", ignore = colnames(dat))$param$kernel, "none")
+  expect_equal(kernelboot(dat, fun1, R = 10, bw = 0)$param$kernel, "none")
+  expect_equal(kernelboot(dat$mpg, fun2, R = 10, bw = 0)$param$kernel, "none")
   expect_equal(kernelboot(dat, fun1, R = 10, kernel = "none")$param$kernel, "none")
   expect_equal(kernelboot(dat$mpg, fun2, R = 10, kernel = "none")$param$kernel, "none")
   expect_equal(kernelboot(dat, fun1, R = 10, kernel = "none")$type, "multivariate")
   expect_equal(kernelboot(dat$mpg, fun2, R = 10, kernel = "none")$type, "univariate")
 
   kernels <- c("multivariate", "gaussian", "epanechnikov", "rectangular",
-               "triangular", "biweight", "cosine", "optcosine")
+               "triangular", "biweight", "cosine", "optcosine", "none")
 
   for (k in kernels) {
 
+    expect_silent(kernelboot(dat, identity, R = 10, kernel = substr(k, 1, 1), bw = 1))
     expect_silent(kernelboot(matrix(0, 0L, 0L), identity, R = 10, kernel = k, bw = 1))
     expect_silent(kernelboot(matrix(0, 0L, 1L), identity, R = 10, kernel = k, bw = 1))
     expect_silent(kernelboot(matrix(0, 1L, 0L), identity, R = 10, kernel = k, bw = 1))
@@ -46,7 +49,8 @@ test_that("kernelboot function", {
 
   expect_equal(kernelboot(dat, fun1, R = 10, kernel = "multivariate")$type, "multivariate")
 
-  for (k in kernels[-1L]) {
+  # ignore multivariate and simple bootstrap
+  for (k in kernels[-c(1L, length(kernels))]) {
 
     expect_warning(kernelboot(numeric(0), identity, R = 10, kernel = k, bw = 1))
     expect_equal(kernelboot(dat, fun1, R = 10, kernel = k)$type, "product")
@@ -80,7 +84,7 @@ test_that("kernelboot function", {
   dat <- mtcars
   dat[] <- 0
 
-  expect_error(kernelboot(dat, fun1, R = 10))
+  expect_silent(kernelboot(dat, fun1, R = 10))
   expect_silent(kernelboot(dat$mpg, fun2, R = 10, kernel = "gaussian"))
   expect_silent(kernelboot(dat$mpg, fun3, R = 10, kernel = "gaussian"))
 
@@ -109,6 +113,12 @@ test_that("kernelboot function", {
 
 
   w <- rep(-Inf, n)
+
+  expect_error(kernelboot(dat, fun1, weights = w, R = 10))
+  expect_error(kernelboot(dat$mpg, weights = w, fun2, R = 10, kernel = "gaussian"))
+  expect_error(kernelboot(dat$mpg, weights = w, fun3, R = 10, kernel = "gaussian"))
+
+  w <- rep(Inf, n)
 
   expect_error(kernelboot(dat, fun1, weights = w, R = 10))
   expect_error(kernelboot(dat$mpg, weights = w, fun2, R = 10, kernel = "gaussian"))

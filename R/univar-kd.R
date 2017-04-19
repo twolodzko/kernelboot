@@ -36,7 +36,7 @@
 #'
 #' For estimating kernel densities use \code{\link[stats]{density}} function.
 #'
-#' The random generation the algorithm is described in the documentation of
+#' The random generation algorithm is described in the documentation of
 #' \code{\link{kernelboot}} function.
 #'
 #'
@@ -47,8 +47,14 @@
 #'
 #' @examples
 #'
+#' # ruvk() produces samples from kernel densities as estimated using
+#' # density() function from base R
+#'
 #' hist(ruvk(1e5, mtcars$mpg), 100, freq = FALSE, xlim = c(5, 40))
 #' lines(density(mtcars$mpg, bw = bw.nrd0(mtcars$mpg)), col = "red")
+#'
+#' # when using 'shrinked = TRUE', the samples differ from density() estimates
+#' # since they are shrinked to have the same variance as the underlying data
 #'
 #' hist(ruvk(1e5, mtcars$mpg, shrinked = TRUE), 100, freq = FALSE, xlim = c(5, 40))
 #' lines(density(mtcars$mpg, bw = bw.nrd0(mtcars$mpg)), col = "red")
@@ -84,6 +90,8 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
   }
   bw <- bw * adjust[1L]
 
+  if (is.null(weights)) weights <- 1
   as.vector(cpp_ruvk(n, y, bw, weights, kernel, shrinked))
+
 }
 

@@ -5,12 +5,15 @@
 \alias{bw.scott}
 \title{Bandwidth selector for multivariate kernel density estimation}
 \usage{
-bw.silv(x)
+bw.silv(x, na.rm = FALSE)
 
-bw.scott(x)
+bw.scott(x, na.rm = FALSE)
 }
 \arguments{
 \item{x}{numeric matrix or data.frame.}
+
+\item{na.rm}{a logical value indicating whether \code{NA} values should
+be stripped before the computation proceeds.}
 }
 \description{
 Rule of thumb bandwidth selectors for Gaussian kernels as described by

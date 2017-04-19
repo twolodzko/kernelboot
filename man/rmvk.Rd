@@ -12,7 +12,7 @@ rmvk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
 \item{n}{number of observations. If \code{length(n) > 1},
 the length is taken to be the number required.}
 
-\item{y}{numeric matrix.}
+\item{y}{numeric matrix or data.frame.}
 
 \item{bw}{numeric vector of length equal to \code{ncol(y)};
 the smoothing bandwidth to be used. The kernels are
@@ -58,7 +58,7 @@ For functions estimating kernel densities please check \pkg{KernSmooth},
 \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
 
 For random generation the algorithm described in \code{\link{kernelboot}} is used.
-When using \code{shrinked = TRUE}, random noise is drawn from independent shrinked
+When using \code{shrinked = TRUE}, random noise is drawn from independent, shrinked
 univariate kernels.
 }
 \examples{

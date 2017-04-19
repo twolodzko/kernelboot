@@ -14,7 +14,7 @@
 #'                   \code{\link[stats]{bw.nrd0}} is used for univariate data,
 #'                   and \code{\link{bw.silv}} is used for multivariate data. When using
 #'                   \code{kernel = "multivariate"} this parameter should be a
-#'                   \emph{covariance matrix}.
+#'                   \emph{covariance matrix} of the smoothing kernel.
 #' @param kernel     a character string giving the smoothing kernel to be used.
 #'                   This must partially match one of "multivariate", "gaussian",
 #'                   "rectangular", "triangular", "epanechnikov", "biweight", "cosine",
@@ -28,8 +28,8 @@
 #'                   as there are observations in \code{data}. It defaults to uniform
 #'                   weights.
 #' @param shrinked   logical; if \code{TRUE} random generation algorithm preserves
-#'                   means and variances of the variables. This parameter is used only for
-#'                   univariate and product kernels.
+#'                   means and variances of the variables. This parameter is ignored for
+#'                   "multivariate" kernel.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
 #' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future]{future_lapply}}).
@@ -91,7 +91,7 @@
 #' x = m + (y[i] - m + h\epsilon)/sqrt(1 + h^2 var(K)/var(y))
 #' }
 #'
-#' where \eqn{\sigma_K^2}{sK} is variance of the kernel (fixed to 1 for kernels used in this package).
+#' where \eqn{\sigma_K^2}{var(K)} is variance of the kernel (fixed to 1 for kernels used in this package).
 #'
 #' When shrinkage described in \emph{Step 3'} is applied, the smoothed bootstrap density function changes it's form to
 #'
@@ -101,7 +101,7 @@
 #' fb(x) = (1+r) f(x + r (x-mean(y)))
 #' }
 #'
-#' where \eqn{r = \left(1 + h^2 \sigma_K^2 / \sigma_y^2 \right)^{1/2}-1}{r = sqrt(1 + h^2 sK/var(y)) - 1}.
+#' where \eqn{r = \left(1 + h^2 \sigma_K^2 / \sigma_y^2 \right)^{1/2}-1}{r = sqrt(1 + h^2 var(K)/var(y)) - 1}.
 #'
 #' This package offers the following univariate kernels:
 #'
@@ -276,32 +276,6 @@
 #' b5
 #' summary(b5)
 #'
-#' # draw samples from different kernels
-#'
-#' \dontrun{
-#'
-#' kernels <- c("gaussian", "epanechnikov", "rectangular", "triangular",
-#'              "biweight", "cosine", "optcosine")
-#'
-#' data <- mtcars[, c(1, 3)]
-#' bw <- bw.silv(data)
-#' R <- 250
-#'
-#' partmp <- par(mfrow = c(2, 4), mar = c(3, 3, 3, 3))
-#' for (k in kernels) {
-#'   plot(kernelboot(data, identity, R = R, kernel = k, bw = sqrt(diag(bw)))$boot.samples,
-#'        xlim = c(-10, 50), ylim = c(-100, 600), col = "#ADD8E640")
-#'   points(data, pch = 2, lwd = 2, col = "red")
-#'   title(k)
-#' }
-#' plot(kernelboot(data, identity, R = R, kernel = "multivariate", bw = bw)$boot.samples,
-#'      xlim = c(-10, 50), ylim = c(-100, 600), col = "#ADD8E640")
-#' points(data, pch = 2, lwd = 2, col = "red")
-#' title("multivariate gaussian")
-#' par(partmp)
-#'
-#' }
-#'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
 #' @importFrom future plan multiprocess future_lapply availableCores
@@ -395,7 +369,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     # data is data.frame or matrix
 
-    num_cols <- is_numeric(data)             # find numeric columns
+    num_cols <- numericColumns(data)             # find numeric columns
     ignr_cols <- colnames(data) %in% ignore
     incl_cols <- num_cols & !ignr_cols
 
@@ -411,7 +385,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
       )
     }
 
-    if (kernel == "none" || !any(incl_cols)) {
+    if (kernel == "none" || !any(incl_cols) || is.allzeros(bw)) {
 
       # standard bootstrap
 
@@ -510,7 +484,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     kernel.type <- "univariate"
 
-    if (kernel == "none" || !is.numeric(data)) {
+    if (kernel == "none" || !is.numeric(data) || is.allzeros(bw)) {
 
       # standard bootstrap
 

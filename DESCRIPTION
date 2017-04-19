@@ -2,7 +2,7 @@ Package: kernelboot
 Type: Package
 Title: Smoothed Bootstrap and Random Generation from Kernel Densities
 Version: 0.1.0
-Date: 2017-04-12
+Date: 2017-04-19
 Author: Tymoteusz Wolodzko
 Maintainer: Tymoteusz Wolodzko <twolodzko+kernelboot@gmail.com>
 Description: This package implements smoothed bootstrap and functions for

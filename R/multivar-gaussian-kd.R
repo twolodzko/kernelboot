@@ -1,7 +1,7 @@
 
 #' Random generation from multivariate Gaussian kernel density
 #'
-#' @param y         numeric matrix.
+#' @param y         numeric matrix or data.frame.
 #' @param n         number of observations. If \code{length(n) > 1},
 #'                  the length is taken to be the number required.
 #' @param bw        numeric matrix with number of rows and columns equal to
@@ -102,6 +102,10 @@ rmvg <- function(n, y, bw = bw.silv(y), weights = NULL, adjust = 1) {
 
   idx <- sample.int(nrow(y), n, replace = TRUE, prob = weights)
   mu <- y[idx, , drop = FALSE]
+
+  if (is.allzeros(bw))
+    return(mu)
+
   Az <- matrix(rnorm(n*ncol(y)), n, ncol(y)) %*% chol(bw)
   return(Az + mu)
 

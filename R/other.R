@@ -2,17 +2,17 @@
 # check if different objects are numeric
 # for data.frames and matrix objects check the individual columns
 
-is_numeric <- function(x) UseMethod("is_numeric")
+numericColumns <- function(x) UseMethod("numericColumns")
 
-is_numeric.default <- function(x) {
+numericColumns.default <- function(x) {
   is.numeric(x)
 }
 
-is_numeric.matrix <- function(x) {
+numericColumns.matrix <- function(x) {
   structure(rep(is.numeric(x), ncol(x)), names = colnames(x))
 }
 
-is_numeric.data.frame <- function(x) {
+numericColumns.data.frame <- function(x) {
   unlist(lapply(x, is.numeric))
 }
 
@@ -24,13 +24,19 @@ is.square <- function(x) {
 
 # check for diagonal matrix
 
-is.diag <- function(x, tol = 1e-12) {
+is.diag <- function(x) {
   dx <- diag(diag(x))
-  is.square(x) && all(abs(dx - x) < tol)
+  is.square(x) && all(abs(dx - x) <= .Machine$double.eps)
 }
 
 # test for being the vector
 
 is.simple.vector <- function(x) {
   is.atomic(x) && !is.recursive(x) && !is.array(x)
+}
+
+# test is all elements are zeros
+
+is.allzeros <- function(x) {
+  all(abs(x) <= .Machine$double.eps)
 }

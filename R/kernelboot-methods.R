@@ -51,7 +51,7 @@ NULL
 #' @param na.rm      a logical value indicating whether \code{NA} values should be
 #'                   stripped before the computation proceeds.
 #'
-#' @importFrom stats sd quantile
+#' @importFrom stats sd quantile na.omit
 #' @export
 
 summary.kernelboot <- function(object, probs = c(0.025, 0.5, 0.975), ..., na.rm = FALSE) {
@@ -59,8 +59,9 @@ summary.kernelboot <- function(object, probs = c(0.025, 0.5, 0.975), ..., na.rm 
   res <- lapply(1:ncol(samp), function(i) {
     x <- samp[, i]
     if (is.numeric(x)) {
-      c(mean = mean(x, na.rm = na.rm), sd = sd(x, na.rm = na.rm),
-        quantile(x, probs = probs, na.rm = na.rm))
+      if (na.rm)
+        x <- na.omit(x)
+      c(mean = mean(x), sd = sd(x), quantile(x, probs = probs))
     } else {
       warning("skipping non-numeric variable")
       NA

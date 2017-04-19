@@ -10,7 +10,7 @@ rmvg(n, y, bw = bw.silv(y), weights = NULL, adjust = 1)
 \item{n}{number of observations. If \code{length(n) > 1},
 the length is taken to be the number required.}
 
-\item{y}{numeric matrix.}
+\item{y}{numeric matrix or data.frame.}
 
 \item{bw}{numeric matrix with number of rows and columns equal to
 \code{ncol(y)}; the smoothing bandwidth to be used. This is the

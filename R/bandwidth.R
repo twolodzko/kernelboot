@@ -6,6 +6,8 @@
 #' Scott (1992) and Silverman (1986).
 #'
 #' @param x      numeric matrix or data.frame.
+#' @param na.rm  a logical value indicating whether \code{NA} values should
+#'               be stripped before the computation proceeds.
 #'
 #'
 #' @details
@@ -51,15 +53,17 @@
 #'
 #' @seealso \code{\link[stats]{bandwidth}}
 #'
-#' @importFrom stats var
+#' @importFrom stats var na.omit
 #'
 #' @export
 
-bw.silv <- function(x) {
+bw.silv <- function(x, na.rm = FALSE) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
-  if (!all(is_numeric(x)))
-    stop("all columns need to be numeric-valued")
+  if (!all(numericColumns(x)))
+    stop("all columns need to be numeric")
+  if (na.rm)
+    x <- na.omit(x)
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)
@@ -70,11 +74,13 @@ bw.silv <- function(x) {
 #' @rdname bw.silv
 #' @export
 
-bw.scott <- function(x) {
+bw.scott <- function(x, na.rm = FALSE) {
   if (!(is.matrix(x) || is.data.frame(x)))
     stop("this method works only for matrix, or data.frame objects")
-  if (!all(is_numeric(x)))
-    stop("all columns need to be numeric-valued")
+  if (!all(numericColumns(x)))
+    stop("all columns need to be numeric")
+  if (na.rm)
+    x <- na.omit(x)
   m <- ncol(x)
   n <- nrow(x)
   S <- var(x)

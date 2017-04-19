@@ -46,8 +46,8 @@ NumericVector cpp_ruvk(
   NumericVector c_weights(k);
   std::vector<int> idx(n);
 
-  if (bandwidth <= 0.0)
-    Rcpp::stop("bandwidth needs to be positive");
+  if (bandwidth < 0.0)
+    Rcpp::stop("bandwidth needs to be non-negative");
 
   if (!R_FINITE(bandwidth))
     Rcpp::stop("inappropriate value of bandwidth");

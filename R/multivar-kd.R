@@ -1,7 +1,7 @@
 
 #' Random generation from product kernel density
 #'
-#' @param y         numeric matrix.
+#' @param y         numeric matrix or data.frame.
 #' @param n         number of observations. If \code{length(n) > 1},
 #'                  the length is taken to be the number required.
 #' @param bw        numeric vector of length equal to \code{ncol(y)};
@@ -43,7 +43,7 @@
 #' \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
 #'
 #' For random generation the algorithm described in \code{\link{kernelboot}} is used.
-#' When using \code{shrinked = TRUE}, random noise is drawn from independent shrinked
+#' When using \code{shrinked = TRUE}, random noise is drawn from independent, shrinked
 #' univariate kernels.
 #'
 #'
@@ -110,5 +110,6 @@ rmvk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
   attr(out, "boot_index") <- NULL
   colnames(out) <- colnames(y)
   out
+
 }
 
