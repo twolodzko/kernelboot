@@ -32,7 +32,8 @@
 #' is the empirical covariance matrix. The bandwidth is returned as a \emph{covariance matrix},
 #' so to use it for a product kernel, take square root of it's diagonal: \code{sqrt(diag(H))}.
 #'
-#' \code{bw.silv} corresponds to \code{Hns} method with \code{deriv.order=0} from \pkg{ks} package.
+#' \code{bw.silv} corresponds to \code{Hns} method with \code{deriv.order=0} from the
+#' \pkg{ks} package.
 #'
 #' @references
 #' Silverman, B.W. (1986). Density estimation for statistics and data analysis. Chapman and Hall/CRC.

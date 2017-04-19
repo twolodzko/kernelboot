@@ -69,7 +69,7 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
+#' (by default uniform \eqn{1/n} weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
 #' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
@@ -96,7 +96,7 @@
 #' When shrinkage described in \emph{Step 3'} is applied, the smoothed bootstrap density function changes it's form to
 #'
 #' \deqn{
-#' \hat{f}_{h,b}(x) = (1 + r) \hat{f_h}(x + r(x - \bar{y}))
+#' \hat{f}_{h,b}(x) = (1 + r) \; \hat{f_h}(x + r(x - \bar{y}))
 #' }{
 #' fb(x) = (1+r) f(x + r (x-mean(y)))
 #' }
@@ -143,7 +143,7 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform weights are used), and \eqn{K_{h_j}}{Kh[j]} are univariate kernels
+#' (by default uniform \eqn{1/n} weights are used), and \eqn{K_{h_j}}{Kh[j]} are univariate kernels
 #' \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y}
 #' is a matrix of data points used for estimating the kernel density.
 #'
@@ -165,7 +165,7 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
+#' (by default uniform \eqn{1/n} weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
 #' bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
 #' estimating the kernel density.
 #'

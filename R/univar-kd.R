@@ -30,11 +30,11 @@
 #' }
 #'
 #' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
-#' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
+#' (by default uniform \eqn{1/n} weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h}
+#' is kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
 #' data points used for estimating the kernel density.
 #'
-#' For estimating kernel densities use \code{\link[stats]{density}} function.
+#' For estimating kernel densities use the \code{\link[stats]{density}} function.
 #'
 #' The random generation algorithm is described in the documentation of
 #' \code{\link{kernelboot}} function.

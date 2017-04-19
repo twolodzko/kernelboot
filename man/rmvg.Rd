@@ -39,7 +39,7 @@ f(x) = sum[i](w[i] * KH(x-y[i]))
 }
 
 where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default uniform weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
+(by default uniform \eqn{1/n} weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
 bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
 estimating the kernel density.
 
@@ -55,9 +55,10 @@ where \eqn{z} is a vector of \eqn{m} i.i.d. standard normal deviates,
 \eqn{\mu} is a vector of means and \eqn{A} is a \eqn{m \times m}{m*m}
 matrix such that \eqn{A'A=\Sigma}{A'A=\Sigma} (\eqn{A} is a Cholesky
 factor of \eqn{\Sigma}). In the case of multivariate Gaussian kernel
-density, \eqn{\mu}, is the \eqn{i}-th row of \eqn{y}, where \eqn{i}
-is drawn randomly with replacement with probability proportional to
-\eqn{w_i}{w[i]}, and \eqn{\Sigma} is the bandwidth matrix \eqn{H}.
+density, \eqn{\mu}, is the \eqn{i}-th row of \eqn{\boldsymbol{y}}{y},
+where \eqn{i} is drawn randomly with replacement with probability
+proportional to \eqn{w_i}{w[i]}, and \eqn{\Sigma} is the bandwidth
+matrix \eqn{H}.
 
 For functions estimating kernel densities please check \pkg{KernSmooth},
 \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).
