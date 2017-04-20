@@ -6,7 +6,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/twolodzko/kernelboot?branch=master&svg=true)](https://ci.appveyor.com/project/twolodzko/kernelboot)
 [![Coverage Status](https://img.shields.io/codecov/c/github/twolodzko/kernelboot/master.svg)](https://codecov.io/github/twolodzko/kernelboot?branch=master)
 
-This package implements raqndom generation procedures for sampling from kernel
+This package implements random generation procedures for sampling from kernel
 densities and smoothed bootstrap, that is an extension of standard bootstrap
 procedure, where instead of drawing samples with replacement from the empirical
 distribution, they are drawn from kernel density estimate of the distribution.
@@ -24,5 +24,5 @@ that allows for correlation between the variables.
 Smooth bootstrap is possible by using the `kernelboot` function, that draws with
 replacement samples from the empirical distribution, enchances them using noise
 drawn from the kernel density and evaluates the user-provided statistic on the
-sample. This procedure can be thought as an extension of the basic bootstrap
+samples. This procedure can be thought as an extension of the basic bootstrap
 procedure.
