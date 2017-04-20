@@ -9,8 +9,15 @@ test_that("multivariate Gaussian kernel", {
 
   expect_silent(rmvg(10, as.matrix(dat)))
 
+  expect_silent(rmvg(10, as.numeric(dat[1,]), bw = 1))
   expect_silent(rmvg(10, dat[1, ], bw = 1))
   expect_silent(rmvg(10, dat[1, , drop = FALSE], bw = 1))
+
+  set.seed(0xBEEF)
+  x <- expect_silent(rmvg(10, as.numeric(dat[1,]), bw = 1))
+  set.seed(0xBEEF)
+  y <- expect_silent(rmvg(10, dat[1,], bw = 1))
+  expect_equal(x, y)
 
   expect_silent(rmvg(10, dat, bw = 0))
   expect_silent(rmvg(10, dat, bw = 1))
@@ -39,8 +46,13 @@ test_that("multivariate Gaussian kernel", {
 
   expect_error(rmvg(10, dat, adjust = Inf))
 
+})
 
-  ## Not run:
+
+
+test_that("compare results of rmvk and rmvg", {
+
+  skip_on_cran()
 
   if ( requireNamespace("cramer", quietly = TRUE) ) {
 
@@ -58,7 +70,4 @@ test_that("multivariate Gaussian kernel", {
 
   }
 
-  ## End(Not run)
-
 })
-

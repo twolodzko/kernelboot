@@ -10,6 +10,8 @@ N <- 1000
 
 test_that("single column multivariate kernels = univariate kernels", {
 
+  skip_on_cran()
+
   dat <- mtcars[, 1, drop = FALSE]
 
   for (k in kernels) {
@@ -53,6 +55,8 @@ test_that("single column multivariate kernels = univariate kernels", {
 
 
 test_that("marginal distributions of multivariate kernels = univariate kernels", {
+
+  skip_on_cran()
 
   dat <- mtcars
 

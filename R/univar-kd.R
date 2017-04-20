@@ -89,8 +89,6 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
     message("bw has length > 1 and only the first element will be used")
   }
   bw <- bw * adjust[1L]
-
-  if (is.null(weights)) weights <- 1
   as.vector(cpp_ruvk(n, y, bw, weights, kernel, shrinked))
 
 }

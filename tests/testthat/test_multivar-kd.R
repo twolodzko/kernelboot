@@ -19,8 +19,15 @@ test_that("multivariate kernels", {
 
   expect_silent(rmvk(10, as.matrix(dat)))
 
+  expect_silent(rmvk(10, as.numeric(dat[1,]), bw = 1))
   expect_silent(rmvk(10, dat[1,], bw = 1))
   expect_silent(rmvk(10, dat[1, , drop = FALSE], bw = 1))
+
+  set.seed(0xBEEF)
+  x <- expect_silent(rmvk(10, as.numeric(dat[1,]), bw = 1))
+  set.seed(0xBEEF)
+  y <- expect_silent(rmvk(10, dat[1,], bw = 1))
+  expect_equal(x, y)
 
   expect_silent(rmvk(10, dat, bw = 0))
   expect_silent(rmvk(10, dat, bw = 1))
@@ -32,6 +39,7 @@ test_that("multivariate kernels", {
   expect_error(rmvk(10, dat, bw = matrix(NA, m, m)))
   expect_error(rmvk(10, dat, bw = matrix(Inf, m, m)))
 
+  expect_silent(rmvk(10, dat, weights = NULL))
   expect_silent(rmvk(10, dat, weights = rep(1/n, n)))
   expect_silent(rmvk(10, dat, weights = 1))
   expect_silent(rmvk(10, dat, weights = rep(1, n)))
