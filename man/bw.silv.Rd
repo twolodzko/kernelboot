@@ -54,7 +54,7 @@ and visualization. John Wiley & Sons.
 Chacon J.E., Duong, T. and Wand, M.P. (2011). Asymptotics for general multivariate kernel density
 derivative estimators. Statistica Sinica, 21, 807-840.
 
-Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate orobability density.
+Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate probability density.
 Theory of Probability & Its Applications, 14(1): 153-158.
 }
 \seealso{

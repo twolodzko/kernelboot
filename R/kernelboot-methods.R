@@ -13,7 +13,7 @@
 #' \code{statistic}          \tab  actual \code{statistic} function that was used, \cr
 #' \code{orig.data}          \tab  original data used for bootstrapping, \cr
 #' \code{variables}          \tab  used variables: it is \code{NULL} for univariate data and
-#'                                 for multivaiate data it contains two lists of \code{smoothed}
+#'                                 for multivariate data it contains two lists of \code{smoothed}
 #'                                 and \code{ignored} variables (names or column indexes) during
 #'                                 the smoothing phase. \cr
 #' \code{type}               \tab  type of kernel density that was used ("univariate", "product",

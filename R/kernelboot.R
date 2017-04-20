@@ -49,12 +49,12 @@
 #' For smoothed bootstrap, points (in univariate case), or rows (in multivariate case), are drawn with
 #' replacement, to obtain samples of size \eqn{n} from the initial dataset of size \eqn{n}, as with
 #' standard bootstrap. Next, random noise from kernel density \eqn{K} is added to each of the drawn
-#' values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
+#' values. The procedure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
 #' samples.
 #'
 #' The noise is added \emph{only} to the numeric columns, while non-numeric columns (e.g.
 #' \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
-#' non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
+#' non-numeric columns and columns listed in \code{ignore} parameter standard bootstrap procedure
 #' is applied.
 #'
 #'

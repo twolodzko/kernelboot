@@ -50,7 +50,7 @@
 #' derivative estimators. Statistica Sinica, 21, 807-840.
 #'
 #' @references
-#' Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate orobability density.
+#' Epanechnikov, V.A. (1969). Non-parametric estimation of a multivariate probability density.
 #' Theory of Probability & Its Applications, 14(1): 153-158.
 #'
 #'
