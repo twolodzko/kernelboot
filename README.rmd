@@ -22,7 +22,7 @@ to sample from multivariate Gaussian kernel density using the `rmvg` function,
 that allows for correlation between the variables.
 
 Smooth bootstrap is possible by using the `kernelboot` function, that draws with
-replacement samples from the empirical distribution, enchances them using noise
+replacement samples from the empirical distribution, enhances them using noise
 drawn from the kernel density and evaluates the user-provided statistic on the
 samples. This procedure can be thought as an extension of the basic bootstrap
 procedure.
