@@ -20,9 +20,11 @@ NumericMatrix cpp_rmvk(
   if (y.nrow() < 1 || y.ncol() < 1) {
     Rcpp::warning("NAs produced");
     NumericMatrix out(n, y.ncol());
+    if (y.ncol() < 1)
+      return out;
     std::fill(out.begin(), out.end(), NA_REAL);
     out.attr("boot_index") = NumericVector(n, NA_REAL);
-    return out;
+    
   }
 
   double (*rng_kern)();
