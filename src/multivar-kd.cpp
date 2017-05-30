@@ -24,7 +24,7 @@ NumericMatrix cpp_rmvk(
       return out;
     std::fill(out.begin(), out.end(), NA_REAL);
     out.attr("boot_index") = NumericVector(n, NA_REAL);
-    
+    return out;
   }
 
   double (*rng_kern)();

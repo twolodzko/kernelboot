@@ -13,7 +13,7 @@ test_that("multivariate kernels", {
     expect_silent(rmvk(10, dat, kernel = substr(k, 1, 1)))
     expect_silent(rmvk(10, dat, kernel = k))
     expect_warning(expect_true(all(is.na(rmvk(10, matrix(0, 0L, 1L), kernel = k, bw = 1)))))
-    expect_warning(expect_true(all(is.na(rmvk(10, matrix(0, 1L, 0L), kernel = k, bw = 1)))))
+    expect_warning(expect_true(ncol(rmvk(10, matrix(0, 1L, 0L), kernel = k, bw = 1)) == 0))
 
   }
 
