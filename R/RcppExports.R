@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 cpp_rmvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
-    .Call('kernelboot_cpp_rmvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
+    .Call('_kernelboot_cpp_rmvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
 
 cpp_ruvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
-    .Call('kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
+    .Call('_kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
 

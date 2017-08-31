@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // cpp_rmvk
 NumericMatrix cpp_rmvk(const int& n, const NumericMatrix& y, const NumericVector& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
-RcppExport SEXP kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
+RcppExport SEXP _kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // cpp_ruvk
 NumericVector cpp_ruvk(const int& n, const NumericVector& y, const double& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
-RcppExport SEXP kernelboot_cpp_ruvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
+RcppExport SEXP _kernelboot_cpp_ruvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,4 +36,15 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(cpp_ruvk(n, y, bandwidth, weights, kernel, shrinked));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_kernelboot_cpp_rmvk", (DL_FUNC) &_kernelboot_cpp_rmvk, 6},
+    {"_kernelboot_cpp_ruvk", (DL_FUNC) &_kernelboot_cpp_ruvk, 6},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_kernelboot(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
