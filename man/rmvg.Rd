@@ -38,10 +38,10 @@ Multivariate kernel density estimator with multivariate Gaussian (normal) kernel
 f(x) = sum[i](w[i] * KH(x-y[i]))
 }
 
-where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default uniform \eqn{1/n} weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
-bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
-estimating the kernel density.
+where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+\eqn{K_H}{KH} is kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and
+\eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the kernel density.
 
 Random generation from multivariate normal distribution is possible by taking
 

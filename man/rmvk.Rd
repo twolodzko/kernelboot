@@ -44,15 +44,16 @@ Product kernel density is defined in terms of independent univariate kernels
 
 \deqn{
 \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \prod_{j=1}^m
-K_{h_j} \left( \frac{x_i - y_{ij}}{h_j} \right)
+K_{h_j}( x_i - y_{ij})
 }{
-f(x) = sum[i](w[i] * prod[j]( Khj((x[i]-y[i,j])/h[j]) ))
+f(x) = sum[i](w[i] * prod[j]( Khj(x[i]-y[i,j]) ))
 }
 
-where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-(by default uniform \eqn{1/n} weights are used), \eqn{K_{h_j}}{Khj} is univariate kernel
-\eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y}
-is a matrix of data points used for estimating the kernel density.
+where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+\eqn{K_{h_j}}{Khj} is univariate kernel \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]},
+where \eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the
+kernel density.
 
 For functions estimating kernel densities please check \pkg{KernSmooth},
 \pkg{ks}, or other packages reviewed by Deng and Wickham (2011).

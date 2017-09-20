@@ -24,15 +24,15 @@
 #' Univariate kernel density estimator is defined as
 #'
 #' \deqn{
-#' \hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
+#' \hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h(x-y_i)
 #' }{
-#' f(x) = sum[i](w[i] * Kh((x-y[i])/h))
+#' f(x) = sum[i](w[i] * Kh(x-y[i]))
 #' }
 #'
-#' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform \eqn{1/n} weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h}
-#' is kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
-#' data points used for estimating the kernel density.
+#' where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+#' and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+#' \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is kernel \eqn{K} parametrized by bandwidth
+#' \eqn{h} and \eqn{y} is a vector of data points used for estimating the kernel density.
 #'
 #' For estimating kernel densities use the \code{\link[stats]{density}} function.
 #'

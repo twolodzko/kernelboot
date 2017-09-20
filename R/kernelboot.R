@@ -63,15 +63,15 @@
 #' Univariate kernel density estimator is defined as
 #'
 #' \deqn{
-#' \hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h\left(\frac{x-y_i}{h}\right)
+#' \hat{f_h}(x) = \sum_{i=1}^n w_i \, K_h(x-y_i)
 #' }{
-#' f(x) = sum[i](w[i] * Kh((x-y[i])/h))
+#' f(x) = sum[i](w[i] * Kh(x-y[i]))
 #' }
 #'
-#' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform \eqn{1/n} weights are used), \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is
-#' kernel \eqn{K} parametrized by bandwidth \eqn{h} and \eqn{y} is a vector of
-#' data points used for estimating the kernel density.
+#' where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+#' and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+#' \eqn{K_h = K(x/h)/h}{Kh = K(x/h)/h} is kernel \eqn{K} parametrized by bandwidth \eqn{h}
+#' and \eqn{y} is a vector of data points used for estimating the kernel density.
 #'
 #' To draw samples from univariate kernel density, the following procedure can be applied (Silverman, 1986):
 #'
@@ -93,7 +93,8 @@
 #'
 #' where \eqn{\sigma_K^2}{var(K)} is variance of the kernel (fixed to 1 for kernels used in this package).
 #'
-#' When shrinkage described in \emph{Step 3'} is applied, the smoothed bootstrap density function changes it's form to
+#' When shrinkage described in \emph{Step 3'} is applied, the smoothed bootstrap density function changes
+#' it's form to
 #'
 #' \deqn{
 #' \hat{f}_{h,b}(x) = (1 + r) \; \hat{f_h}(x + r(x - \bar{y}))
@@ -137,15 +138,16 @@
 #'
 #' \deqn{
 #' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \prod_{j=1}^m
-#' K_{h_j} \left( \frac{x_i - y_{ij}}{h_j} \right)
+#' K_{h_j}(x_i - y_{ij})
 #' }{
-#' f(x) = sum[i](w[i] * prod[j]( Kh[j]((x[i]-y[i,j])/h[j]) ))
+#' f(x) = sum[i](w[i] * prod[j]( Kh[j](x[i]-y[i,j) ))
 #' }
 #'
-#' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform \eqn{1/n} weights are used), and \eqn{K_{h_j}}{Kh[j]} are univariate kernels
-#' \eqn{K} parametrized by bandwidth \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y}
-#' is a matrix of data points used for estimating the kernel density.
+#' where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+#' and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+#' and \eqn{K_{h_j}}{Kh[j]} are univariate kernels \eqn{K} parametrized by bandwidth
+#' \eqn{h_j}{h[j]}, where \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
+#' estimating the kernel density.
 #'
 #' Random generation from product kernel is done by drawing with replacement
 #' rows of \eqn{y}, and then adding to the sampled values random noise from
@@ -159,15 +161,15 @@
 #' \eqn{K_H}{KH} (e.g. multivariate normal distribution, as in this package)
 #'
 #' \deqn{
-#' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \, K_H \left( \mathbf{x}-\boldsymbol{y}_i \right)
+#' \hat{f_H}(\mathbf{x}) = \sum_{i=1}^n w_i \, K_H( \mathbf{x}-\boldsymbol{y}_i)
 #' }{
 #' f(x) = sum[i](w[i] * KH(x-y[i]))
 #' }
 #'
-#' where \eqn{w} is a vector of weights such that \eqn{\sum_i w_i = 1}{sum(w) = 1}
-#' (by default uniform \eqn{1/n} weights are used), \eqn{K_H}{KH} is kernel \eqn{K} parametrized by
-#' bandwidth matrix \eqn{H} and \eqn{\boldsymbol{y}}{y} is a matrix of data points used for
-#' estimating the kernel density.
+#' where \eqn{w} is a vector of weights such that all \eqn{w_i \ge 0}{w[i] \ge 0}
+#' and \eqn{\sum_i w_i = 1}{sum(w) = 1} (by default uniform \eqn{1/n} weights are used),
+#' \eqn{K_H}{KH} is kernel \eqn{K} parametrized by bandwidth matrix \eqn{H} and
+#' \eqn{\boldsymbol{y}}{y} is a matrix of data points used for estimating the kernel density.
 #'
 #' \emph{Notice:} When using multivariate normal (Gaussian) distribution as a kernel \eqn{K}, the
 #' bandwidth parameter \eqn{H} is a \emph{covariance matrix} as compared to standard deviations
