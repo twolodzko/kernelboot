@@ -16,5 +16,8 @@ There are no reverse dependencies.
 
 ## Comments
 
-* Fixed memory access errors suggested bu UBSAN checks on CRAN
-* Fixed spelling in the documentstion
+This update provides minor fixes in the documentation.
+I upload it now since there is no other pending issues
+or things to be fixed and no other scheduled improvements
+to be made.
+
