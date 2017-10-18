@@ -24,10 +24,10 @@ test_that("multivariate kernels", {
   expect_silent(rmvk(10, dat[1, , drop = FALSE], bw = 1))
 
   set.seed(0xBEEF)
-  x <- expect_silent(rmvk(10, as.numeric(dat[1,]), bw = 1))
+  x <- rmvk(10, as.numeric(dat[1,]), bw = 1)
   set.seed(0xBEEF)
-  y <- expect_silent(rmvk(10, dat[1,], bw = 1))
-  expect_equal(x, y)
+  y <- rmvk(10, dat[1,], bw = 1)
+  expect_equal(x, y, check.attributes = FALSE)
 
   expect_silent(rmvk(10, dat, bw = 0))
   expect_silent(rmvk(10, dat, bw = 1))

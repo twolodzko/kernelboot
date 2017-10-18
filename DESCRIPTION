@@ -15,6 +15,7 @@ Depends: R (>= 3.1.0)
 LinkingTo: Rcpp
 Imports: Rcpp, future
 Suggests: covr, testthat, ks, KernSmooth
+Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 6.0.1
 

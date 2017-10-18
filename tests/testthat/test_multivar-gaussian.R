@@ -14,10 +14,10 @@ test_that("multivariate Gaussian kernel", {
   expect_silent(rmvg(10, dat[1, , drop = FALSE], bw = 1))
 
   set.seed(0xBEEF)
-  x <- expect_silent(rmvg(10, as.numeric(dat[1,]), bw = 1))
+  x <- rmvg(10, as.numeric(dat[1,]), bw = 1)
   set.seed(0xBEEF)
-  y <- expect_silent(rmvg(10, dat[1,], bw = 1))
-  expect_equal(x, y)
+  y <- rmvg(10, dat[1,], bw = 1)
+  expect_equal(x, y, check.attributes = FALSE)
 
   expect_silent(rmvg(10, dat, bw = 0))
   expect_silent(rmvg(10, dat, bw = 1))
