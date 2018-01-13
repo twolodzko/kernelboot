@@ -16,8 +16,6 @@ There are no reverse dependencies.
 
 ## Comments
 
-This update provides minor fixes in the documentation.
-I upload it now since there is no other pending issues
-or things to be fixed and no other scheduled improvements
-to be made.
+This release fixes minor bug in the tests (#2) that can return
+errors when testing the package on single core machine.
 
