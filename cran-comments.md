@@ -16,6 +16,11 @@ There are no reverse dependencies.
 
 ## Comments
 
+This is a minor update to make the package compatibile with the 
+enchancements in the future package that it depends on.
+
 This release fixes minor bug in the tests (#2) that can return
-errors when testing the package on single core machine.
+errors when testing the package on single core machine. I switched
+to using future.apply package, since the future_lapply function
+was moved there from the future package.
 
