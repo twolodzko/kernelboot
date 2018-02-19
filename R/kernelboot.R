@@ -32,7 +32,7 @@
 #'                   "multivariate" kernel.
 #' @param ignore     vector of names of columns to be ignored during the smoothing phase of
 #'                   bootstrap procedure (their values are not altered using random noise).
-#' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future]{future_lapply}}).
+#' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future.apply]{future_lapply}}).
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
 #' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
