@@ -139,7 +139,7 @@ All the kernels are re-scalled so that their standard deviations are equal to 1,
 so that bandwidth parameter controls their standard deviations.
 
 Random generation from Epanchenikov kernel is done using algorithm
-described by Devoye (1986). For optcosine kernel inverse transform
+described by Devroye (1986). For optcosine kernel inverse transform
 sampling is used. For biweight kernel random values are drawn from
 \eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution and
 \eqn{\mathrm{Beta}(3.3575, 3.3575)}{Beta(3.3575, 3.3575)}
