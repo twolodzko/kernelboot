@@ -54,18 +54,17 @@ NumericMatrix cpp_rmvk(
   if (bandwidth.length() != m)
     Rcpp::stop("dimmensions of y and bandwidth do not match");
 
-  if (Rcpp::is_true(Rcpp::any(bandwidth < 0.0)))
-    Rcpp::stop("bandwidth needs to be non-negative");
-
   if (Rcpp::is_false(Rcpp::all(Rcpp::is_finite(bandwidth))))
     Rcpp::stop("inappropriate values of bandwidth");
 
-  if (Rcpp::is_true(Rcpp::any(weights < 0.0)))
-    Rcpp::stop("weights need to be non-negative");
+  if (Rcpp::is_true(Rcpp::any(bandwidth < 0.0)))
+    Rcpp::stop("bandwidth needs to be non-negative");
 
   if (!Rcpp::is_true(Rcpp::any(Rcpp::is_finite(weights))))
     Rcpp::stop("inappropriate values of weights");
 
+  if (Rcpp::is_true(Rcpp::any(weights < 0.0)))
+    Rcpp::stop("weights need to be non-negative");
 
   if (weights.length() == 1) {
     c_weights.fill( 1.0/static_cast<double>(k) );
