@@ -295,7 +295,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
   call <- match.call()
   kernel <- match.arg(kernel)
-  seed <- .Random.seed
+  seed <- get0(".Random.seed", envir = .GlobalEnv, ifnotfound = NULL)
   n <- NROW(data)
   m <- NCOL(data)
   vars <- NULL
