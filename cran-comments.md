@@ -16,10 +16,4 @@ There are no reverse dependencies.
 
 ## Comments
 
-Explicitely declaring dependencies for the unit tests.
-
-As discussed during the discussion on CRAN@r-project.org,
-I attempted to fix the clang-UBSAN warning, but I wasn't
-able to confirm this warning, as I wasn't able to reproduce
-it. Nonetheless, the potential cause was fixed.
-
+Bugfix.

@@ -234,5 +234,12 @@ test_that("kernelboot function", {
   expect_silent(kernelboot(dat$mpg, fun2, R = 10, ignore = colnames(dat), kernel = "gaussian"))
   expect_silent(kernelboot(dat$mpg, fun3, R = 10, ignore = colnames(dat), kernel = "gaussian"))
 
+  # tests for #7
+  f <- function(dat) coef(lm(Sepal.Width ~ . , data = dat))
+  expect_silent(kernelboot(iris, f, ignore = "Species"))
+
+  f <- function(dat) coef(lm(Sepal.Width ~ . -Species, data = dat))
+  expect_silent(kernelboot(iris, f, ignore = "Species"))
+
 })
 
