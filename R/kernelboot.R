@@ -312,14 +312,14 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   }
 
   if (is.character(bw)) {
+    method <- bw
     if (is.data.frame(data) || is.matrix(data)) {
-      method <- bw
       bw <- matrix(0, m, m)
       if (!is.null(colnames(data)))
         rownames(bw) <- colnames(bw) <- colnames(data)
-      bw[incl_cols, incl_cols] <- calculate_bandwidth(data[, incl_cols], method, kernel)
+      bw[incl_cols, incl_cols] <- calculate_bandwidth(data[, incl_cols], method, kernel == 'multivariate')
     } else {
-      bw <- calculate_bandwidth(data, bw, kernel)
+      bw <- calculate_bandwidth(data, method, FALSE)
     }
   }
 
@@ -556,18 +556,18 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 }
 
 
-calculate_bandwidth <- function(data, bw, kernel) {
-  bw <- tolower(bw)
-  if (bw == "default") {
+calculate_bandwidth <- function(data, method, multivariate) {
+  method <- tolower(method)
+  if (method == "default") {
     if (is.simple.vector(data)) {
       bw <- bw.nrd0(data)
     } else {
       bw <- bw.silv(data)
-      if (kernel != "multivariate")
+      if (!multivariate)
         bw <- sqrt(diag(bw))
     }
   } else {
-    bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
+    bw <- switch(method, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
                  ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
                  `sj-ste` = bw.SJ(data, method = "ste"),
                  `sj-dpi` = bw.SJ(data, method = "dpi"),
