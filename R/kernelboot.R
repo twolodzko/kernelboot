@@ -303,23 +303,23 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   if (!(is.simple.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("unsupported data type")
 
+  if (is.data.frame(data) || is.matrix(data)) {
+    # data is data.frame or matrix
+
+    num_cols <- numericColumns(data)             # find numeric columns
+    ignr_cols <- colnames(data) %in% ignore
+    incl_cols <- num_cols & !ignr_cols
+  }
+
   if (is.character(bw)) {
-    bw <- tolower(bw)
-    if (bw == "default") {
-      if (is.simple.vector(data)) {
-        bw <- bw.nrd0(data)
-      } else {
-        bw <- bw.silv(data)
-        if (kernel != "multivariate")
-          bw <- sqrt(diag(bw))
-      }
+    if (is.data.frame(data) || is.matrix(data)) {
+      method <- bw
+      bw <- matrix(0, m, m)
+      if (!is.null(colnames(data)))
+        rownames(bw) <- colnames(bw) <- colnames(data)
+      bw[incl_cols, incl_cols] <- calculate_bandwidth(data[, incl_cols], method, kernel)
     } else {
-      bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
-                   ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
-                   `sj-ste` = bw.SJ(data, method = "ste"),
-                   `sj-dpi` = bw.SJ(data, method = "dpi"),
-                   silv = bw.silv(data), scott = bw.scott(data),
-                   stop("unknown bandwidth rule"))
+      bw <- calculate_bandwidth(data, bw, kernel)
     }
   }
 
@@ -369,12 +369,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   }
 
   if (is.data.frame(data) || is.matrix(data)) {
-
-    # data is data.frame or matrix
-
-    num_cols <- numericColumns(data)             # find numeric columns
-    ignr_cols <- colnames(data) %in% ignore
-    incl_cols <- num_cols & !ignr_cols
 
     if (!is.null(colnames(data))) {
       vars <- list(
@@ -561,3 +555,24 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
 }
 
+
+calculate_bandwidth <- function(data, bw, kernel) {
+  bw <- tolower(bw)
+  if (bw == "default") {
+    if (is.simple.vector(data)) {
+      bw <- bw.nrd0(data)
+    } else {
+      bw <- bw.silv(data)
+      if (kernel != "multivariate")
+        bw <- sqrt(diag(bw))
+    }
+  } else {
+    bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
+                 ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
+                 `sj-ste` = bw.SJ(data, method = "ste"),
+                 `sj-dpi` = bw.SJ(data, method = "dpi"),
+                 silv = bw.silv(data), scott = bw.scott(data),
+                 stop("unknown bandwidth rule"))
+  }
+  return(bw)
+}
