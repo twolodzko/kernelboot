@@ -1,10 +1,6 @@
 ## Test environments
 
-* local Ubuntu and Windows, R (release)
-* ubuntu 12.04 (on travis-ci), R (oldrel, release, devel)
-* Windows (on AppVeyor), R (release)
-* win-builder, R (release, devel)
-* r-hub for UBSAN checks (Debian Linux, R-devel, GCC ASAN/UBSAN)
+* Windows, Ubuntu, Mac OS on GitHub Actions
 
 ## R CMD check results
 
