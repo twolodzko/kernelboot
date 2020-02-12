@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: r-lib/actions/setup-r@master
-      - name: Install system dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: apt-get install libcurl4-openssl-dev
+      - if: matrix.os == 'ubuntu-latest'
+        name: Install system dependencies
+        run: sudo apt-get install libcurl4-openssl-dev
       - name: Install packages
         run: Rscript -e "install.packages(c('remotes', 'rcmdcheck'))" -e "remotes::install_deps(dependencies = TRUE)"
       - name: Check
