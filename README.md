@@ -2,7 +2,6 @@
 # kernelboot
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/kernelboot)](https://CRAN.R-project.org/package=kernelboot)
-[![Travis-CI Build Status](https://travis-ci.org/twolodzko/kernelboot.svg?branch=master)](https://travis-ci.org/twolodzko/kernelboot)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/twolodzko/kernelboot?branch=master&svg=true)](https://ci.appveyor.com/project/twolodzko/kernelboot)
 [![Coverage Status](https://img.shields.io/codecov/c/github/twolodzko/kernelboot/master.svg)](https://codecov.io/github/twolodzko/kernelboot?branch=master)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/kernelboot)](https://CRAN.R-project.org/package=kernelboot)
