@@ -4,9 +4,16 @@
 \alias{rmvk}
 \title{Random generation from product kernel density}
 \usage{
-rmvk(n, y, bw = sqrt(diag(bw.silv(y))), kernel = c("gaussian",
-  "epanechnikov", "rectangular", "triangular", "biweight", "cosine",
-  "optcosine"), weights = NULL, adjust = 1, shrinked = FALSE)
+rmvk(
+  n,
+  y,
+  bw = sqrt(diag(bw.silv(y))),
+  kernel = c("gaussian", "epanechnikov", "rectangular", "triangular", "biweight",
+    "cosine", "optcosine"),
+  weights = NULL,
+  adjust = 1,
+  shrinked = FALSE
+)
 }
 \arguments{
 \item{n}{number of observations. If \code{length(n) > 1},

@@ -4,8 +4,7 @@
 \alias{summary.kernelboot}
 \title{Summarize the result of kernelboot}
 \usage{
-\method{summary}{kernelboot}(object, probs = c(0.025, 0.5, 0.975), ...,
-  na.rm = FALSE)
+\method{summary}{kernelboot}(object, probs = c(0.025, 0.5, 0.975), ..., na.rm = FALSE)
 }
 \arguments{
 \item{object}{\code{kernelboot} class object.}

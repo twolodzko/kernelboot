@@ -36,8 +36,6 @@
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
 #' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
-#'                   By default this is automatically determined using the \code{\link[future]{availableCores}}
-#'                   function.
 #'
 #'
 #' @details
@@ -280,7 +278,7 @@
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
-#' @importFrom future plan multiprocess availableCores
+#' @importFrom future plan multiprocess
 #' @importFrom future.apply future_lapply
 #'
 #' @export
@@ -291,7 +289,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                                   "cosine", "optcosine", "none"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, workers = availableCores()) {
+                       parallel = FALSE, workers = 1L) {
 
   call <- match.call()
   kernel <- match.arg(kernel)

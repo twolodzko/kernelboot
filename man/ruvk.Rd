@@ -4,9 +4,16 @@
 \alias{ruvk}
 \title{Random generation from univariate kernel density}
 \usage{
-ruvk(n, y, bw = bw.nrd0(y), kernel = c("gaussian", "epanechnikov",
-  "rectangular", "triangular", "biweight", "cosine", "optcosine"),
-  weights = NULL, adjust = 1, shrinked = FALSE)
+ruvk(
+  n,
+  y,
+  bw = bw.nrd0(y),
+  kernel = c("gaussian", "epanechnikov", "rectangular", "triangular", "biweight",
+    "cosine", "optcosine"),
+  weights = NULL,
+  adjust = 1,
+  shrinked = FALSE
+)
 }
 \arguments{
 \item{n}{number of observations. If \code{length(n) > 1},

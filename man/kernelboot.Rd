@@ -4,11 +4,20 @@
 \alias{kernelboot}
 \title{Smoothed bootstrap}
 \usage{
-kernelboot(data, statistic, R = 500L, bw = "default",
-  kernel = c("multivariate", "gaussian", "epanechnikov", "rectangular",
-  "triangular", "biweight", "cosine", "optcosine", "none"), weights = NULL,
-  adjust = 1, shrinked = TRUE, ignore = NULL, parallel = FALSE,
-  workers = availableCores())
+kernelboot(
+  data,
+  statistic,
+  R = 500L,
+  bw = "default",
+  kernel = c("multivariate", "gaussian", "epanechnikov", "rectangular", "triangular",
+    "biweight", "cosine", "optcosine", "none"),
+  weights = NULL,
+  adjust = 1,
+  shrinked = TRUE,
+  ignore = NULL,
+  parallel = FALSE,
+  workers = 1L
+)
 }
 \arguments{
 \item{data}{vector, matrix, or data.frame. For non-numeric values standard bootstrap
@@ -53,9 +62,7 @@ bootstrap procedure (their values are not altered using random noise).}
 \emph{Warning:} using parallel computing does not necessary have to
 lead to improved performance.}
 
-\item{workers}{the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
-By default this is automatically determined using the \code{\link[future]{availableCores}}
-function.}
+\item{workers}{the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
