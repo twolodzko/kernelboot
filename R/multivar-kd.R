@@ -112,4 +112,3 @@ rmvk <- function(n, y, bw = sqrt(diag(bw.silv(y))),
   out
 
 }
-

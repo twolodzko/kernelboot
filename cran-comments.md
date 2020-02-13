@@ -12,4 +12,5 @@ There are no reverse dependencies.
 
 ## Comments
 
-Bugfix.
+* Bugfix.
+* By default don't use all the available cores.

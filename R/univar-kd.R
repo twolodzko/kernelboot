@@ -92,4 +92,3 @@ ruvk <- function(n, y, bw = bw.nrd0(y),
   as.vector(cpp_ruvk(n, y, bw, weights, kernel, shrinked))
 
 }
-

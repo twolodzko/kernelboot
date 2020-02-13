@@ -1,6 +1,4 @@
 
-
-
 test_that("multivariate Gaussian kernel", {
 
   dat <- mtcars
@@ -47,7 +45,6 @@ test_that("multivariate Gaussian kernel", {
   expect_error(rmvg(10, dat, adjust = Inf))
 
 })
-
 
 
 test_that("compare results of rmvk and rmvg", {

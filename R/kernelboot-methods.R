@@ -89,4 +89,3 @@ print.kernelboot <- function(x, ...) {
 
   invisible(x)
 }
-

@@ -1,5 +1,4 @@
 
-
 set.seed(1)
 
 kernels <- c("gaussian", "epanechnikov", "rectangular",
@@ -73,7 +72,3 @@ test_that("marginal distributions of multivariate kernels = univariate kernels",
   }
 
 })
-
-
-
-

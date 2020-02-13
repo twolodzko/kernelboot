@@ -8,4 +8,3 @@ cpp_rmvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = F
 cpp_ruvk <- function(n, y, bandwidth, weights, kernel = "gaussian", shrinked = FALSE) {
     .Call('_kernelboot_cpp_ruvk', PACKAGE = 'kernelboot', n, y, bandwidth, weights, kernel, shrinked)
 }
-

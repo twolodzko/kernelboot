@@ -19,5 +19,3 @@ test_that("bandwidth estimators", {
   expect_false(identical(bw.silv(dat, na.rm = FALSE), bw.scott(dat, na.rm = TRUE)))
 
 })
-
-

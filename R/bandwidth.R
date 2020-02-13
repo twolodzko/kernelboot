@@ -1,5 +1,4 @@
 
-
 #' Bandwidth selector for multivariate kernel density estimation
 #'
 #' Rule of thumb bandwidth selectors for Gaussian kernels as described by

@@ -38,4 +38,3 @@ test_that("univariate kernels", {
   expect_error(ruvk(10, y, adjust = Inf))
 
 })
-

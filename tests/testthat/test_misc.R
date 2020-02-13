@@ -1,5 +1,4 @@
 
-
 test_that("misc tests", {
 
   obj <- kernelboot(mtcars, function(data) coef(lm(mpg ~ ., data = data)), R = 10)

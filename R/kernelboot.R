@@ -302,9 +302,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     stop("unsupported data type")
 
   if (is.data.frame(data) || is.matrix(data)) {
-    # data is data.frame or matrix
-
-    num_cols <- numericColumns(data)             # find numeric columns
+    num_cols <- numericColumns(data)
     ignr_cols <- colnames(data) %in% ignore
     incl_cols <- num_cols & !ignr_cols
   }
@@ -321,10 +319,10 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
     }
   }
 
-  if (!is.simple.vector(adjust))
+  if (!is.simple.vector(adjust) || length(adjust) > 1L)
     stop("adjust is not a scalar")
 
-  bw <- bw * adjust[1L]
+  bw <- bw * adjust
 
   # check for non-numeric, NAs, NaNs, infinite values
   if (!all(is.finite(bw)))

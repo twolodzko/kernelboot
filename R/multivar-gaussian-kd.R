@@ -130,4 +130,3 @@ rmvg <- function(n, y, bw = bw.silv(y), weights = NULL, adjust = 1) {
   return(Az + mu)
 
 }
-
