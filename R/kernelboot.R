@@ -353,7 +353,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     # using future for parallel computing
     repeatFun <- function(n, FUN, workers) {
-      plan(multiprocess, workers = workers)
+      if (parallelly::supportsMulticore()) {
+        oplan <- plan(multicore, workers = workers)
+      } else {
+        oplan <- plan(multisession, workers = workers)
+      }
+      on.exit(plan(oplan))
       future_lapply(1:n, FUN, future.seed = TRUE)
     }
 
