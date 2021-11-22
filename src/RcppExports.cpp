@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cpp_rmvk
 NumericMatrix cpp_rmvk(const int& n, const NumericMatrix& y, const NumericVector& bandwidth, const NumericVector& weights, const std::string& kernel, const bool& shrinked);
 RcppExport SEXP _kernelboot_cpp_rmvk(SEXP nSEXP, SEXP ySEXP, SEXP bandwidthSEXP, SEXP weightsSEXP, SEXP kernelSEXP, SEXP shrinkedSEXP) {
