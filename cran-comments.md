@@ -12,5 +12,4 @@ There are no reverse dependencies.
 
 ## Comments
 
-* Bugfix.
-* By default don't use all the available cores.
+* Updated code for the changes in the new version of future package.
