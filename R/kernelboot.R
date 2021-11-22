@@ -278,7 +278,7 @@
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession multicore
 #' @importFrom future.apply future_lapply
 #'
 #' @export
