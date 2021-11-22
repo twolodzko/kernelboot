@@ -16,5 +16,4 @@ LinkingTo: Rcpp
 Imports: Rcpp, future, future.apply, parallelly
 Suggests: covr, testthat, ks, KernSmooth, cramer
 Encoding: UTF-8
-LazyData: TRUE
 RoxygenNote: 7.1.2
