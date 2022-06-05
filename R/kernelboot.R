@@ -35,7 +35,7 @@
 #' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future.apply]{future_lapply}}).
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
-#' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
+#' @param workers    the number of workers used for parallel computing.
 #'
 #'
 #' @details
