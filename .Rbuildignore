@@ -7,3 +7,4 @@ Readme.rmd
 ^cran-comments\.md$
 ^.github*$
 Makefile
+^CRAN-SUBMISSION$
