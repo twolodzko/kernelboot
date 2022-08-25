@@ -6,3 +6,4 @@ Readme.rmd
 ^codecov\.yml$
 ^cran-comments\.md$
 ^.github*$
+Makefile
