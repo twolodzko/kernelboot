@@ -3,7 +3,6 @@
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/kernelboot)](https://CRAN.R-project.org/package=kernelboot)
 [![GitHub Actions CI](https://github.com/twolodzko/kernelboot/workflows/CI/badge.svg)](https://github.com/twolodzko/kernelboot/actions?query=workflow%3ACI)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/twolodzko/kernelboot?branch=master&svg=true)](https://ci.appveyor.com/project/twolodzko/kernelboot)
 [![Coverage Status](https://img.shields.io/codecov/c/github/twolodzko/kernelboot/master.svg)](https://codecov.io/github/twolodzko/kernelboot?branch=master)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/kernelboot)](https://CRAN.R-project.org/package=kernelboot)
 
