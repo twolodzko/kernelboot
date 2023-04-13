@@ -62,7 +62,7 @@ bootstrap procedure (their values are not altered using random noise).}
 \emph{Warning:} using parallel computing does not necessary have to
 lead to improved performance.}
 
-\item{workers}{the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).}
+\item{workers}{the number of workers used for parallel computing.}
 }
 \description{
 Smoothed bootstrap is an extension of standard bootstrap using kernel densities.
