@@ -12,4 +12,4 @@ There are no reverse dependencies.
 
 ## Comments
 
-* Updated code for the changes in the new version of future package.
+* Updated the docs to get rid of the deprecation warning and future crash due to the future package.

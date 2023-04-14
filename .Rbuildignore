@@ -7,4 +7,6 @@ Readme.rmd
 ^cran-comments\.md$
 ^.github*$
 Makefile
+Justfile
 ^CRAN-SUBMISSION$
+Rplots.pdf

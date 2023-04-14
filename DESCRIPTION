@@ -1,8 +1,8 @@
 Package: kernelboot
 Type: Package
 Title: Smoothed Bootstrap and Random Generation from Kernel Densities
-Version: 0.1.9
-Date: 2022-08-25
+Version: 0.1.10
+Date: 2023-04-14
 Author: Tymoteusz Wolodzko
 Maintainer: Tymoteusz Wolodzko <twolodzko+kernelboot@gmail.com>
 Description: Smoothed bootstrap and functions for random generation from
@@ -16,4 +16,4 @@ LinkingTo: Rcpp
 Imports: Rcpp, future, future.apply, parallelly
 Suggests: covr, testthat, ks, KernSmooth, cramer
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
